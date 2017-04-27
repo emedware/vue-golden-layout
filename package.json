@@ -1,0 +1,17 @@
+{
+  "name": "vue-golden-layout",
+  "version": "1.0.0",
+  "description": "Integration of the golden-layout to Vue",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "fmdm",
+  "license": "ISC",
+  "dependencies": {
+    "vue-property-decorator": "^4.0.0"
+  }
+}
