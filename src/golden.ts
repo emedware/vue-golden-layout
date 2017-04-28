@@ -1,14 +1,15 @@
-import Vue = require('Vue');
+import Vue = require('vue');
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 import $ = require('jquery')
 import GoldenLayout = require('golden-layout')
-import elementResizeEvent = require('element-resize-event')
 import 'golden-layout/src/css/goldenlayout-base.css'
 import 'golden-layout/src/css/goldenlayout-light-theme.css'
 import {goldenContainer} from './gl-roles'
+import resize = require('vue-resize-directive')
 
 @Component({
-	template: '<div ref="layoutRoot"><slot /></div>'
+	template: '<div ref="layoutRoot" v-resize="onResize"><slot /></div>',
+	directives: {resize}
 })
 export class layoutGolden extends goldenContainer {
 	//Settings
@@ -82,7 +83,6 @@ export class layoutGolden extends goldenContainer {
 		});
 
 		gl.init();
-		elementResizeEvent(layoutRoot, ()=> gl.updateSize());
 		gl.on('stateChanged', () => this.$emit('stateChanged', gl.toConfig()));
 		
 		forwardEvt(gl, this, ['itemCreated', 'stackCreated', 'rowCreated', 'tabCreated', 'columnCreated', 'componentCreated', 'selectionChanged',
@@ -91,6 +91,7 @@ export class layoutGolden extends goldenContainer {
 	}
 	contentItem() { return this.gl && this.gl.root; }
 	get state() { return this.gl.config(); }
+	onResize() { this.gl && this.gl.updateSize(); }
 }
 
 function forwardEvt(from, toward, events) {

@@ -20,8 +20,8 @@ body
 	display flex
 	flex-direction column
 </style>
-<script>
-import Vue = require('Vue');
+<script lang="ts">
+import Vue = require('vue');
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 
 @Component

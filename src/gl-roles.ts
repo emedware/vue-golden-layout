@@ -1,4 +1,4 @@
-import Vue from 'Vue';
+import Vue = require('vue');
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 import extend = require('extend')
 

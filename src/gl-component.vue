@@ -9,8 +9,8 @@ div(ref="glSource")
 	height 100%
 	overflow auto
 </style>
-<script>
-import Vue = require('Vue');
+<script lang="ts">
+import Vue = require('vue');
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 import {goldenContainer, goldenChild} from './gl-roles'
 
