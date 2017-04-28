@@ -1,12 +1,23 @@
+<template lang="pug">
+div(ref="glSource")
+	div.glComponent(ref="glCompRoot")
+		slot
+</template>
+<style lang="stylus">
+.glComponent
+	width 100%
+	height 100%
+	overflow auto
+</style>
+<script>
 import Vue = require('Vue');
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 import {goldenContainer, goldenChild} from './gl-roles'
 
-
-@Component({
-	template: '<div><div ref="glCompRoot"><slot /></div></div>'
-})
-export class glComponent extends goldenChild {
+@Component
+	//glSource stays in the display:none hierarchy
+	//glCompRoot is displaced as a golden-layout element
+export default class glComponent extends goldenChild {
 	@Prop() title: string
 	@Watch('title') setTitle(title) {
 		if(this.container) this.container.setTitle(title);
@@ -15,6 +26,7 @@ export class glComponent extends goldenChild {
 	toggleMaximise() {
 		this.container && this.container.toggleMaximise();
 	}
+	//TODO2: Forward glSource' class, styles, etc. toward glCompRoot
 	get childConfig() {
 		return {
 			type: 'component',
@@ -24,3 +36,4 @@ export class glComponent extends goldenChild {
 		}
 	}
 }
+</script>

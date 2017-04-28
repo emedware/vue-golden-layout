@@ -1,5 +1,5 @@
 import {layoutGolden} from './golden'
-import {glComponent} from './gl-component'
+import glComponent = require('./gl-component.vue')
 import {glRow, glCol, glStack} from './gl-group'
 
 export {layoutGolden, glComponent, glRow, glCol, glStack}

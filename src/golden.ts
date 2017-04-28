@@ -60,8 +60,6 @@ export class layoutGolden extends goldenContainer {
 	}
 	mounted() {
 		var layoutRoot = this.$refs.layoutRoot, gl, comps = this.comps;
-		console.log('parent mounted');
-
 		this.config.settings = {
 			hasHeaders: this.hasHeaders,
 			reorderEnabled: this.reorderEnabled,

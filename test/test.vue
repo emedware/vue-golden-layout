@@ -12,8 +12,6 @@
 	</layout-golden>
 </template>
 <style lang="stylus">
-.lm_goldenlayout .lm_content
-	overflow auto 	/* We need to be able to see the content of the items when they overflow */
 body
 	overflow hidden 	/* The 'light' theme let a scroll-bar on the right of the main container */
 .screen
