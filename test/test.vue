@@ -17,8 +17,6 @@ body
 .screen
 	width 100vw
 	height 100vh
-	display flex
-	flex-direction column
 </style>
 <script lang="ts">
 import Vue = require('vue');

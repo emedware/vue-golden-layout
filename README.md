@@ -2,10 +2,8 @@
 Integration of the golden-layout to Vue
 ## Installation
 
-
-~~npm install --save vue-golden-layout~~
 ```
-git clone...
+npm install --save vue-golden-layout
 ```
 
 ## Example
