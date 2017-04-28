@@ -10,16 +10,15 @@ export class goldenContainer extends Vue {
 	registerComp(component): string { return null; }
 
 	//created() { this.lgid = ++lg_uid; }
-	addGlChild(child, comp): number {
+	addGlChild(child, comp, index?) {
 		if(comp) child = extend({componentState: { templateId: this.registerComp(comp) }}, child);
 		var ci = this.contentItem();
-		if(ci) {
-			ci.addChild(child);
-			return ci.contentItems.length-1;
-		} else {
+		if(ci)
+			ci.addChild(child, index);
+		else if(undefined=== index)
 			this.config.content.push(child);
-			return this.config.content.length-1;
-		}
+		else
+			this.config.content.splice(index, 0, child);
 	}
 	removeGlChild(index) {
 		var ci = this.contentItem(), oldLength;
@@ -31,7 +30,6 @@ export class goldenContainer extends Vue {
 			this.config.content.splice(index, 1);
 			for(; index< this.config.content.length; ++index)
 				this.config.content[index].index = index;
-			return this.config.content.length-1;
 		}
 	}
 	contentItem(): any { throw 'Not implemented'; }
@@ -39,8 +37,8 @@ export class goldenContainer extends Vue {
 
 @Component
 export class goldenChild extends Vue {
-	@Prop({type: Number}) width
-	@Prop({type: Number}) height
+	@Prop() width: number
+	@Prop() height: number
 	@Watch('width') reWidth(w) { this.container && this.container.setSize(w, false); }
 	@Watch('height') reHeight(h) { this.container && this.container.setSize(false, h); }
 
@@ -70,7 +68,7 @@ export class goldenChild extends Vue {
 		var dimensions:any = {};
 		if(undefined!== this.width) dimensions.width = this.width;
 		if(undefined!== this.height) dimensions.height = this.height;
-		this.$parent.addGlChild(extend(dimensions, this.childConfig), this);
+		this.$parent.addGlChild(extend(dimensions, this.childConfig), this, this.$parent.$children.indexOf(this));
 	}
 	beforeDestroy() {
 		this.$parent.removeGlChild(this.$parent.$children.indexOf(this));
