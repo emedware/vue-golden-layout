@@ -108,3 +108,9 @@ show()
 close()
 ```
 
+# TODOs
+
+## Re-ordering and interactions
+For now, either Vue interact with the layout, either we let the user re-organise
+- goldenKey property to elements (re-use the v-for :key ?)
+- replicate the reorganisation in the ghost structure (list of empty &lt;div&gt; surrounded by display:none; replicating the layout tree)
