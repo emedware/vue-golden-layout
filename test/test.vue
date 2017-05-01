@@ -1,8 +1,12 @@
 <template>
-	<layout-golden class=".screen">
+	<layout-golden class="screen">
 		<gl-col :closable="false">
 			<gl-component title="compA">
 				<h1>CompA</h1>
+				<button @click="bottomSheet = !bottomSheet">Toggle</button>
+			</gl-component>
+			<gl-component title="compB">
+				<h1>CompB</h1>
 				<button @click="bottomSheet = !bottomSheet">Toggle</button>
 			</gl-component>
 			<gl-component v-if="bottomSheet">
@@ -11,12 +15,14 @@
 		</gl-col>
 	</layout-golden>
 </template>
-<style lang="stylus">
-body
-	overflow hidden 	/* The 'light' theme let a scroll-bar on the right of the main container */
-.screen
-	width 100vw
-	height 100vh
+<style>
+body {
+	overflow: hidden; 	/* The 'light' theme let a scroll-bar on the right of the main container */
+}
+.screen {
+	width: 100vw;
+	height: 100vh;
+}
 </style>
 <script lang="ts">
 import Vue = require('vue');

@@ -14,7 +14,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "compile": "node test/compile.js"
   },
   "repository": {
     "type": "git",
@@ -22,12 +22,25 @@
   },
   "author": "fmdm",
   "license": "MIT",
-  "devDependencies": {
-    "typescript": "^2.2.1",
-    "vue": "^2.2.1"
-  },
+  "devDependencies": {},
   "dependencies": {
-    "vue-property-decorator": "^4.0.0"
+    "@types/jquery": "^2.0.41",
+    "css-loader": "^0.28.0",
+    "extend": "^3.0.1",
+    "golden-layout": "^1.5.7",
+    "html-webpack-plugin": "^2.28.0",
+    "source-map-loader": "^0.2.1",
+    "style-loader": "^0.16.1",
+    "ts-loader": "^2.0.3",
+    "typescript": "^2.2.1",
+    "vue": "^2.2.1",
+    "vue-loader": "^12.0.2",
+    "vue-property-decorator": "^4.0.0",
+    "vue-resize-directive": "^1.0.0",
+    "vue-style-loader": "^3.0.1",
+    "vue-template-compiler": "^2.3.0",
+    "vue-typescript-import-dts": "^3.1.0",
+    "webpack": "^2.4.1"
   },
   "bugs": {
     "url": "https://github.com/eddow/vue-golden-layout/issues"

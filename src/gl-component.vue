@@ -1,13 +1,16 @@
-<template lang="pug">
-div(ref="glSource")
-	div.glComponent(ref="glCompRoot")
-		slot
++<template>
+<div ref="glSource">
+	<div class="glComponent" ref="glCompRoot">
+		<slot />
+	</div>
+</div>
 </template>
-<style lang="stylus">
-.glComponent
-	width 100%
-	height 100%
-	overflow auto
+<style>
+.glComponent {
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+}
 </style>
 <script lang="ts">
 import Vue = require('vue');
