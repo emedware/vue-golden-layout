@@ -30,32 +30,10 @@ var webpack = require("webpack"),
 				test: /\.css$/,
 				loader: "style-loader!css-loader"
 			}, {
-				test: /\.scss$/,
-				loaders: ["style-loader", "css-loader", "postcss-loader", "sass-loader"]
-			}, {
-				enforce: 'pre',
-				test: /\.js$/,
-				exclude: /node_modules/,
-				loader: "source-map-loader"
-			}, {
 				enforce: 'pre',
 				test: /\.tsx?$/,
 				exclude: /node_modules/,
 				use: "source-map-loader"
-			}, {
-				test: /\.gif$/,
-				loader: "url-loader",
-				options: {
-					name: "images/[name]-[hash:6].[ext]",
-					limit: 10000
-				}
-			}, {
-				test: /\.png$/,
-				loader: "url-loader",
-				options: {
-					name: "images/[name]-[hash:6].[ext]",
-					limit: 10000
-				}
 			}, {
 				test: /\.vue$/,
 				loader: 'vue-loader',
