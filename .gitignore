@@ -1,5 +1,3 @@
-lib
 node_modules
 npm-debug.log
-dist/**/*.js
-dist/**/*.map
+dist

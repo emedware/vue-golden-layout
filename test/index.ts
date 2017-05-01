@@ -5,7 +5,7 @@ Vue.use(wgl)
 import App = require('./test.vue');
 
 new Vue({
-	el: 'body',
+	el: 'app',
 	components: {
 		App
 	}
