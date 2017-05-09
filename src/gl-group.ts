@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import Vue = require('vue');
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 import {goldenContainer, goldenChild} from './gl-roles'
 import extend = require('extend')
@@ -7,7 +7,7 @@ import extend = require('extend')
 	template: '<div style="display: none;"><slot /></div>',
 	mixins: [goldenChild]
 })
-class glGroup extends goldenContainer {
+export class glGroup extends goldenContainer {
 	//child properties
 	$parent: goldenContainer
 	@Prop({default: false}) closable: boolean

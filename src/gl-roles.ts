@@ -55,7 +55,7 @@ export class goldenChild extends Vue {
 		this.container && this.container[this.hidden?'hide':'show']();
 	}
 
-	@Prop({default: false}) closable: boolean
+	@Prop({default: true}) closable: boolean
 	close() {
 		this.container && this.container.close();
 	}
