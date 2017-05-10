@@ -1,6 +1,6 @@
 {
   "name": "vue-golden-layout",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Integration of the golden-layout to Vue",
   "main": "src/index.ts",
   "keywords": [
@@ -33,7 +33,7 @@
     "vue-template-compiler": "^2.3.0",
     "vue-typescript-import-dts": "^3.1.0",
     "webpack": "^2.4.1"
-	},
+  },
   "dependencies": {
     "@types/jquery": "^2.0.41",
     "extend": "^3.0.1",
