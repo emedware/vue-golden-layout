@@ -1,6 +1,5 @@
 import Vue = require('vue');
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
-import $ = require('jquery')
 import GoldenLayout = require('golden-layout')
 import 'golden-layout/src/css/goldenlayout-base.css'
 import 'golden-layout/src/css/goldenlayout-light-theme.css'
@@ -72,7 +71,7 @@ export class layoutGolden extends goldenContainer {
 			showMaximiseIcon: this.showMaximiseIcon,
 			showCloseIcon: this.showCloseIcon
     };
-		this.gl = gl = new GoldenLayout(this.config, $(layoutRoot));
+		this.gl = gl = new GoldenLayout(this.config, /*$*/(layoutRoot));
 		gl.registerComponent('template', function(container, state) {
 			var id = state.templateId.split('-');
 			console.assert('lgc'=== id[0] && 2=== id.length, "GoldenLayout consistency: components are registered with a lgc-xxx id")
