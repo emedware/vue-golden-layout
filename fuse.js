@@ -18,6 +18,9 @@ const fuse = FuseBox.init({
 		name: "vue-golden-layout",
 		main: 'src/index.ts'
 	},
+	alias: {
+		vue: 'vue/dist/vue.common.js'
+	},
 	globals: {
 		'vue-golden-layout': '*'
 	}
