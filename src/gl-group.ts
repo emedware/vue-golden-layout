@@ -1,7 +1,7 @@
-import Vue = require('vue');
+import * as Vue from 'vue'
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 import {goldenContainer, goldenChild} from './gl-roles'
-import extend = require('extend')
+import * as extend from 'extend'
 
 @Component({
 	template: '<div style="display: none;"><slot /></div>',

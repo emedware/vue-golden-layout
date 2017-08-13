@@ -1,10 +1,10 @@
-import Vue = require('vue');
+import * as Vue from 'vue'
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
-import GoldenLayout = require('golden-layout')
+import * as GoldenLayout from 'golden-layout'
 import 'golden-layout/src/css/goldenlayout-base.css'
 import 'golden-layout/src/css/goldenlayout-light-theme.css'
 import {goldenContainer} from './gl-roles'
-import resize = require('vue-resize-directive')
+import * as resize from 'vue-resize-directive'
 
 @Component({
 	template: '<div ref="layoutRoot" v-resize="onResize"><slot /></div>',
@@ -71,7 +71,7 @@ export class layoutGolden extends goldenContainer {
 			showMaximiseIcon: this.showMaximiseIcon,
 			showCloseIcon: this.showCloseIcon
     };
-		this.gl = gl = new GoldenLayout(this.config, /*$*/(layoutRoot));
+		this.gl = gl = new GoldenLayout(this.config, /*$*/(<Element>layoutRoot));
 		gl.registerComponent('template', function(container, state) {
 			var id = state.templateId.split('-');
 			console.assert('lgc'=== id[0] && 2=== id.length, "GoldenLayout consistency: components are registered with a lgc-xxx id")

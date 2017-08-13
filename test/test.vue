@@ -25,7 +25,7 @@ body {
 }
 </style>
 <script lang="ts">
-import Vue = require('vue');
+import * as Vue from 'vue'
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 
 @Component

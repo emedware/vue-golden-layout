@@ -24,19 +24,26 @@
   "author": "fmdm",
   "license": "MIT",
   "devDependencies": {
+    "css-loader": "^0.28.4",
     "fuse-box": "^2.2.1",
+    "html-webpack-plugin": "^2.30.1",
+    "source-map-loader": "^0.2.1",
+    "style-loader": "^0.18.2",
+    "ts-loader": "^2.3.2",
+    "vue-loader": "^13.0.4",
     "vue-template-compiler": "^2.3.0",
     "vue-template-es2015-compiler": "^1.5.3",
-    "vue-typescript-import-dts": "^3.1.0"
+    "vue-typescript-import-dts": "^3.1.0",
+    "webpack": "^3.5.4"
   },
   "dependencies": {
     "@types/jquery": "^2.0.41",
-    "vue-property-decorator": "^4.0.0",
     "extend": "^3.0.1",
     "golden-layout": "^1.5.8",
     "jquery": "^3.2.1",
     "typescript": "^2.2.1",
     "vue": "^2.2.1",
+    "vue-property-decorator": "^4.0.0",
     "vue-resize-directive": "^1.0.0"
   },
   "bugs": {

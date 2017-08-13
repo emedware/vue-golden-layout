@@ -1,9 +1,9 @@
-+<template>
-<div ref="glSource">
-	<div class="glComponent" ref="glCompRoot">
-		<slot />
+<template>
+	<div ref="glSource">
+		<div class="glComponent" ref="glCompRoot">
+			<slot />
+		</div>
 	</div>
-</div>
 </template>
 <style>
 .glComponent {
@@ -13,7 +13,7 @@
 }
 </style>
 <script lang="ts">
-import Vue = require('vue');
+import * as Vue from 'vue'
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 import {goldenContainer, goldenChild} from './gl-roles'
 

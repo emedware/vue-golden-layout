@@ -1,6 +1,6 @@
-import Vue = require('vue');
+import * as Vue from 'vue'
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
-import extend = require('extend')
+import * as extend from 'extend'
 
 @Component
 export class goldenContainer extends Vue {
