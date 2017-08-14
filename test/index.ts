@@ -1,6 +1,7 @@
 import * as Vue from 'vue'
-import wgl from '../src'
-Vue.use(wgl)
+import vgl from '../dist/vue-golden-layout'
+//import vgl from '../src'
+Vue.use(<any>vgl)
 
 import App from './test.vue'
 

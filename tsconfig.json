@@ -18,11 +18,10 @@
     "allowJs": true,
 		"typeRoots": ["node_modules/@types"],
 		"baseUrl": "./",
-		"paths": {
-    }
+		"importHelpers": true
   },
 	"exclude": [
-			"node_modules",
-			"**/*.spec.ts"
+		"node_modules",
+		"**/*.spec.ts"
 	]
 }
