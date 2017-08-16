@@ -14,7 +14,7 @@ const fuse = FuseBox.init({
 		QuantumPlugin({
 			bakeApiIntoBundle : 'vue-golden-layout',
 			containedAPI : true,
-			target: 'universal'
+			target: 'npm'
 		})
 	],
 	package: {

@@ -3,3 +3,4 @@ npm-debug.log
 dist
 .yalc
 yalc.lock
+package-lock.json

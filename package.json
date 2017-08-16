@@ -25,7 +25,7 @@
   "license": "MIT",
   "devDependencies": {
     "css-loader": "^0.28.4",
-    "fuse-box": "file:.yalc/fuse-box",
+    "fuse-box": "^2.2.2-beta.15",
     "html-webpack-plugin": "^2.30.1",
     "source-map-loader": "^0.2.1",
     "style-loader": "^0.18.2",
