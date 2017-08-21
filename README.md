@@ -121,3 +121,14 @@ close()
 For now, either Vue interact with the layout, either we let the user re-organise
 - goldenKey property to elements (re-use the v-for :key ?)
 - replicate the reorganisation in the ghost structure (list of empty &lt;div&gt; surrounded by display:none; replicating the layout tree)
+
+# Donations
+I contribute for free with drive, passion and time.
+If you like what I do, you can promote me to do it more.
+
+These are the only *like* buttons that have a real effect.
+
+- [paypal.me/eeddow](https://www.paypal.me/eeddow)
+- ETH: 0xb79b61130bc5726ddab6c1d59c3e0479afe69540
+- BTC: 39ybn3KGNUvZrhifaLJcf4cJdzkGMdfAMT
+- BCH: 3K81iYWwLZuWXY1qHcBL559FYraUqKMkEp
