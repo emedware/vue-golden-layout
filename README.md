@@ -31,10 +31,19 @@ The file dist/index.html then shows test/test.vue in action
 </layout-golden>
 ```
 ## Usage
+This library integrate a straightforward way bundling with [fuse-box](fuse-box.org). If you make a project with this bundler, it will be straight-forward.
+
 ```javascript
 import vgl from 'vue-golden-layout'
 Vue.use(vgl);
 ```
+Unfortunately, fuse-box poorly makes universal bundles. To bundle `vue-golden-layout`, you can simply bundle the sources.
+The sources entry point is in `vue-golden-layout/src/index.ts`
+```javascript
+import vgl from 'vue-golden-layout/src'
+Vue.use(vgl);
+```
+
 The objects are differentiated into : The layout object (golden), the container objects (golden and glRow, glCol and glStack), the contained objects (glRow, glCol and glStack and glComponent).
 
 ### Control
@@ -130,5 +139,5 @@ These are the only *like* buttons that have a real effect.
 
 - [paypal.me/eeddow](https://www.paypal.me/eeddow)
 - ETH: 0xb79b61130bc5726ddab6c1d59c3e0479afe69540
-- BTC: 39ybn3KGNUvZrhifaLJcf4cJdzkGMdfAMT
+- BTC: 38HbE73qfLf2qP6Ce1ppYwZf458nugS3KY
 - BCH: 3K81iYWwLZuWXY1qHcBL559FYraUqKMkEp

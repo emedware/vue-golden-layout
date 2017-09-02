@@ -3,3 +3,9 @@ npm-debug.log
 test
 .yalc
 yalc.lock
+.vscode
+package-lock.*
+*.lock
+semantic
+fuse.*
+.gitignore

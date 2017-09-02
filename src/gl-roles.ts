@@ -21,7 +21,7 @@ export class goldenContainer extends Vue {
 			this.config.content.splice(index, 0, child);
 	}
 	removeGlChild(index) {
-		var ci = this.contentItem(), oldLength;
+		var ci = this.contentItem();
 		if(ci) {
 			ci.removeChild(ci.contentItems[index]);
 			for(; index< ci.contentItems.length; ++index)
