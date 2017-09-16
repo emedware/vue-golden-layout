@@ -1,3 +1,4 @@
+[![npm](https://img.shields.io/npm/v/vue-golden-layout.svg)](https://www.npmjs.com/package/vue-golden-layout)
 # vue-golden-layout
 Integration of the golden-layout to Vue
 ## Installation

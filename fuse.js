@@ -29,6 +29,6 @@ const fuse = FuseBox.init({
 	}
 });
 fuse.bundle("vue-golden-layout")
-	.instructions('> [index.ts]');
+	.instructions('> [index.ts] +fuse-box-css');
 
 fuse.run();
