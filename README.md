@@ -38,8 +38,12 @@ This library integrate a straightforward way bundling with [fuse-box](fuse-box.o
 import vgl from 'vue-golden-layout'
 Vue.use(vgl);
 ```
-Unfortunately, fuse-box poorly makes universal bundles. To bundle `vue-golden-layout`, you can simply bundle the sources.
+
+Your `Vue` alias should be `vue.common`: using `vue.esm` can cause errors.
+
+In case of incompatibility with bundlers, you can bundle `vue-golden-layout` by simply bundling the sources.
 The sources entry point is in `vue-golden-layout/src/index.ts`
+
 ```javascript
 import vgl from 'vue-golden-layout/src'
 Vue.use(vgl);
