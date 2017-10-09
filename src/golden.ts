@@ -6,8 +6,9 @@ import 'golden-layout/src/css/goldenlayout-light-theme.css'
 import {goldenContainer} from './gl-roles'
 import * as resize from 'vue-resize-directive'
 
+import comp from './golden.vue'
 @Component({
-	template: '<div ref="layoutRoot" v-resize="onResize"><slot /></div>',
+	...comp,
 	directives: {resize}
 })
 export class layoutGolden extends goldenContainer {

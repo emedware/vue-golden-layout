@@ -3,8 +3,9 @@ import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 import {goldenContainer, goldenChild} from './gl-roles'
 import * as extend from 'extend'
 
+import comp from './gl-group.vue'
 @Component({
-	template: '<div style="display: none;"><slot /></div>',
+	...comp,
 	mixins: [goldenChild]
 })
 export class glGroup extends goldenContainer {

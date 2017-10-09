@@ -14,7 +14,8 @@ const fuse = FuseBox.init({
 		QuantumPlugin({
 			bakeApiIntoBundle : 'vue-golden-layout',
 			containedAPI : true,
-			target: 'npm'
+			target: 'npm',
+			globalRequire: false
 		})
 	],
 	package: {
@@ -28,7 +29,7 @@ const fuse = FuseBox.init({
 		'vue-golden-layout': '*'
 	}
 });
-fuse.bundle("vue-golden-layout")
-	.instructions('> [index.ts] +fuse-box-css');
+fuse.bundle("vue-golden-layout").target('browser')
+	.instructions('> [index.ts] +fuse-box-css +tslib');
 
 fuse.run();
