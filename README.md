@@ -32,7 +32,7 @@ The file dist/index.html then shows test/test.vue in action
 </layout-golden>
 ```
 ## Usage
-This library integrate a straightforward way bundling with [fuse-box](fuse-box.org). If you make a project with this bundler, it will be straight-forward.
+This library integrate a straightforward way bundling with [fuse-box](http://fuse-box.org/). If you make a project with this bundler, it will be straight-forward.
 
 ```javascript
 import vgl from 'vue-golden-layout'
