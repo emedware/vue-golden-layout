@@ -10,9 +10,7 @@ import * as GoldenLayout from 'golden-layout'
 import {goldenContainer} from './gl-roles'
 import * as resize from 'vue-resize-directive'
 
-@Component({
-	directives: {resize}
-})
+@Component({directives: {resize}})
 export default class layoutGolden extends goldenContainer {
 	//Settings
 	@Prop({type: Boolean, default: true}) hasHeaders

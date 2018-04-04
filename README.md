@@ -10,7 +10,8 @@ In order to test, after cloning, a static application can be compiled :
 
 ```
 npm install
-npm run compile
+npm fuse
+npm run test/compile
 ```
 The file dist/index.html then shows test/test.vue in action
 
@@ -19,7 +20,7 @@ The file dist/index.html then shows test/test.vue in action
 ```html
 <layout-golden>
 	<gl-col>
-		<gl-component @resize="console.log('resize')" title="compA">
+		<gl-component title="compA">
 			<h1>CompA</h1>
 		</gl-component>
 		<gl-row>

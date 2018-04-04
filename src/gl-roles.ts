@@ -57,6 +57,7 @@ export class goldenChild extends Vue {
 	@Prop({default: true}) closable: boolean
 	close() {
 		this.container && this.container.close();
+		this.$destroy();
 	}
 	$parent: goldenContainer
 	created() {

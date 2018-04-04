@@ -2,7 +2,7 @@ var webpack = require("webpack"),
 	path = require("path"),
 	HtmlWebpackPlugin = require('html-webpack-plugin'),
 	devCompiler = webpack({
-		//devtool: 'inline-source-map',
+		devtool: 'inline-source-map',
 		entry: {
 			app: [path.resolve(__dirname, './index.ts')]
 		},
