@@ -1,6 +1,5 @@
-import * as Vue from 'vue'
+import Vue from 'vue'
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
-import * as extend from 'extend'
 
 @Component
 export class goldenContainer extends Vue {
@@ -11,7 +10,7 @@ export class goldenContainer extends Vue {
 
 	//created() { this.lgid = ++lg_uid; }
 	addGlChild(child, comp, index?) {
-		if(comp) child = extend({componentState: { templateId: this.registerComp(comp) }}, child);
+		if(comp) child = {componentState: { templateId: this.registerComp(comp) }, ...child};
 		var ci = this.contentItem();
 		if(ci)
 			ci.addChild(child, index);
@@ -68,7 +67,7 @@ export class goldenChild extends Vue {
 		var dimensions:any = {};
 		if(undefined!== this.width) dimensions.width = this.width;
 		if(undefined!== this.height) dimensions.height = this.height;
-		this.$parent.addGlChild(extend(dimensions, this.childConfig), this, this.$parent.$children.indexOf(this));
+		this.$parent.addGlChild({...dimensions, ...this.childConfig}, this, this.$parent.$children.indexOf(this));
 	}
 	beforeDestroy() {
 		this.$parent.removeGlChild(this.$parent.$children.indexOf(this));

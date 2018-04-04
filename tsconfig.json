@@ -1,12 +1,11 @@
 {
   "compilerOptions": {
-		"outDir": "dist",
+	"outDir": "dist",
     "sourceMap": true,
-		"inlineSources": true,
+	"inlineSources": true,
     "noImplicitAny": false,
     "module": "commonjs",
     "moduleResolution": "node",
-
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "target": "es5",
@@ -16,12 +15,10 @@
     ],
     "allowSyntheticDefaultImports": true,
     "allowJs": true,
-		"typeRoots": ["node_modules/@types"],
-		"baseUrl": "./",
-		"importHelpers": true
+	"typeRoots": ["node_modules/@types"],
+	"baseUrl": "./"
   },
 	"exclude": [
-		"node_modules",
 		"**/*.spec.ts"
 	]
 }
