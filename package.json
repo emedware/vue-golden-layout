@@ -15,7 +15,7 @@
   },
   "scripts": {
     "compile": "node fuse",
-    "compileTest": "node test/compile.js"
+    "test": "node fuse && node test/compile.js"
   },
   "repository": {
     "type": "git",

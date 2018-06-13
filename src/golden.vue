@@ -59,6 +59,11 @@ export default class layoutGolden extends goldenContainer {
 		this.comps.push(component);
 		return 'lgc-'+this.comps.length;
 	}
+	initialisedCB: (()=> void)[]
+	onGlInitialise(cb: ()=> void) {
+		if(this.gl) cb();
+		else (this.initialisedCB || (this.initialisedCB=[])).push(cb);
+	}
 	mounted() {
 		var layoutRoot = this.$refs.layoutRoot, gl, comps = this.comps;
 		this.config.settings = {
@@ -84,7 +89,10 @@ export default class layoutGolden extends goldenContainer {
 
 		gl.init();
 		gl.on('stateChanged', () => this.$emit('stateChanged', gl.toConfig()));
-		
+		gl.on('initialised', () => {
+			if(this.initialisedCB) for(let cb of this.initialisedCB) cb();
+			delete this.initialisedCB;
+		});
 		forwardEvt(gl, this, ['itemCreated', 'stackCreated', 'rowCreated', 'tabCreated', 'columnCreated', 'componentCreated', 'selectionChanged',
 			'windowOpened', 'windowClosed', 'itemDestroyed', 'initialised',
 			'activeContentItemChanged']);

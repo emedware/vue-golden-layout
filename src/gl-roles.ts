@@ -8,7 +8,6 @@ export class goldenContainer extends Vue {
 	}
 	registerComp(component): string { return null; }
 
-	//created() { this.lgid = ++lg_uid; }
 	addGlChild(child, comp, index?) {
 		if(comp) child = {componentState: { templateId: this.registerComp(comp) }, ...child};
 		var ci = this.contentItem();
@@ -32,6 +31,7 @@ export class goldenContainer extends Vue {
 		}
 	}
 	contentItem(): any { throw 'Not implemented'; }
+	onGlInitialise(cb: ()=> void): void { throw 'Not implemented'; }
 }
 
 @Component
@@ -40,6 +40,8 @@ export class goldenChild extends Vue {
 	@Prop() height: number
 	@Watch('width') reWidth(w) { this.container && this.container.setSize(w, false); }
 	@Watch('height') reHeight(h) { this.container && this.container.setSize(false, h); }
+	
+	@Prop() tabId: string
 
 	get childConfig() { return null; }
 	get childEl() { return null; }
@@ -48,6 +50,7 @@ export class goldenChild extends Vue {
 	hide() { this.container && this.container.hide(); }
 	show() { this.container && this.container.show(); }
 	@Prop({default: false}) hidden: boolean
+
 	@Watch('container')
 	@Watch('hidden')
 	setContainer(c) {
@@ -57,12 +60,11 @@ export class goldenChild extends Vue {
 	@Prop({default: true}) closable: boolean
 	close() {
 		this.container && this.container.close();
-		this.$destroy();
 	}
 	$parent: goldenContainer
 	created() {
 		if(!this.$parent.addGlChild)
-			throw new Error('gl-component can only appear directly in a layout-golden container')
+			throw new Error('gl-component can only appear directly in a layout-golden container');
 	}
 	mounted() {
 		var dimensions:any = {};

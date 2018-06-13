@@ -3,12 +3,19 @@
 		<gl-col :closable="false">
 			<gl-component title="compA">
 				<h1>CompA</h1>
+				tab: {{selected}}
 				<button @click="bottomSheet = !bottomSheet">Toggle</button>
 			</gl-component>
-			<gl-component title="compB">
-				<h1>CompB</h1>
-				<button @click="bottomSheet = !bottomSheet">Toggle</button>
-			</gl-component>
+			<gl-stack v-model="selected">
+				<gl-component title="compB" tab-id="b">
+					<h1>CompB</h1>
+					<button @click="selected = 'c'">Toggle</button>
+				</gl-component>
+				<gl-component title="compC" tab-id="c">
+					<h1>CompC</h1>
+					<button @click="selected = 'b'">Toggle</button>
+				</gl-component>
+			</gl-stack>
 			<gl-component v-if="bottomSheet">
 				<h1>Bottom</h1>
 			</gl-component>
@@ -31,5 +38,6 @@ import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 @Component
 export default class App extends Vue {
 	bottomSheet = false
+	selected: string = 'b'
 }
 </script>

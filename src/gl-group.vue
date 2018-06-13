@@ -17,6 +17,9 @@ export default class glGroup extends goldenContainer {
 	registerComp(component): string {
 		return this.$parent.registerComp(component);
 	}
+	onGlInitialise(cb: ()=> void) {
+		this.$parent.onGlInitialise(cb);
+	}
 	contentItem() {
 		var ci = this.$parent.contentItem();
 		//Math.min because the root has only one `contentItems` (me) but I am not the only child
