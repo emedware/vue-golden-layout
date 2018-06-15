@@ -88,7 +88,9 @@ export default class layoutGolden extends goldenContainer {
 		});
 
 		gl.init();
-		gl.on('stateChanged', () => this.$emit('stateChanged', gl.toConfig()));
+		//TODO: GoldenLayout bug : toConfig will query the state of popup window.
+		// If the popup was just created, it will not be initialised and throw
+		gl.on('stateChanged', () => this.$emit('stateChanged'/*, gl.toConfig()*/));
 		gl.on('initialised', () => {
 			if(this.initialisedCB) for(let cb of this.initialisedCB) cb();
 			delete this.initialisedCB;
