@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
+import {Component, Prop, Watch} from 'vue-property-decorator'
 
 @Component
 export class goldenContainer extends Vue {
@@ -8,7 +8,7 @@ export class goldenContainer extends Vue {
 	}
 	registerComp(component): string { return null; }
 
-	addGlChild(child, comp, index?) {
+	addGlChild(child, comp, index?: number) {
 		if(comp) child = {componentState: { templateId: this.registerComp(comp) }, ...child};
 		var ci = this.contentItem();
 		if(ci)
@@ -18,7 +18,7 @@ export class goldenContainer extends Vue {
 		else
 			this.config.content.splice(index, 0, child);
 	}
-	removeGlChild(index) {
+	removeGlChild(index: number) {
 		var ci = this.contentItem();
 		if(ci) {
 			ci.removeChild(ci.contentItems[index]);

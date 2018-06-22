@@ -61,7 +61,7 @@ export default class layoutGolden extends goldenContainer {
 	}
 	initialisedCB: (()=> void)[]
 	onGlInitialise(cb: ()=> void) {
-		if(this.gl) cb();
+		if(this.contentItem()) cb();
 		else (this.initialisedCB || (this.initialisedCB=[])).push(cb);
 	}
 	mounted() {
@@ -77,7 +77,7 @@ export default class layoutGolden extends goldenContainer {
 			showMaximiseIcon: this.showMaximiseIcon,
 			showCloseIcon: this.showCloseIcon
     	};
-		this.gl = gl = new GoldenLayout(this.config, /*$*/(<Element>layoutRoot));
+		this.gl = gl = new GoldenLayout(this.config, <Element>layoutRoot);
 		gl.registerComponent('template', function(container, state) {
 			var id = state.templateId.split('-');
 			console.assert('lgc'=== id[0] && 2=== id.length, "GoldenLayout consistency: components are registered with a lgc-xxx id")

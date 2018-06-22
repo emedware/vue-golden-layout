@@ -4,9 +4,12 @@
 			<gl-row :closable="false">
 				<gl-component title="compA">
 					<h1>CompA</h1>
-					tab: {{selected}}
 					<button @click="bottomSheet = !bottomSheet">Toggle</button>
 					<button @click="addStack">Add</button>
+					<p>
+						<router-link to="/a">test-a</router-link>
+						<router-link to="/b">test-b</router-link>
+					</p>
 				</gl-component>
 				<gl-stack ref="myStack">
 					<gl-component v-for="stackSub in stackSubs" :key="stackSub" :title="'dynamic'+stackSub">
@@ -15,18 +18,11 @@
 					</gl-component>
 				</gl-stack>
 			</gl-row>
-			<gl-stack v-model="selected">
-				<gl-component title="compB" tab-id="b">
-					<h1>CompB</h1>
-					<button @click="selected = 'c'">Toggle</button>
-				</gl-component>
-				<gl-component title="compC" tab-id="c">
-					<h1>CompC</h1>
-					<button @click="selected = 'b'">Toggle</button>
-				</gl-component>
-			</gl-stack>
+			<gl-component title="Route">
+				<golden-router style="width: 100%; height: 100%;" />
+			</gl-component>
 			<gl-component v-if="bottomSheet">
-				<h1>Bottom</h1>
+				Bottom
 			</gl-component>
 		</gl-col>
 	</layout-golden>
@@ -47,7 +43,6 @@ import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 @Component
 export default class App extends Vue {
 	bottomSheet = false
-	selected: string = 'b'
 	stackSubs = [1]
 	ssId: number = 1
 	addStack() {
