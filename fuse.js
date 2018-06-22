@@ -23,7 +23,7 @@ const fuse = FuseBox.init({
 		main: 'index.ts'
 	},
 	alias: {
-		vue: 'vue/dist/vue.esm.js'
+		//vue: 'vue/dist/vue.esm.js'
 	},
 	globals: {
 		'vue-golden-layout': '*'

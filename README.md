@@ -32,6 +32,15 @@ The file dist/index.html then shows test/test.vue in action
 	</gl-col>
 </layout-golden>
 ```
+## Don't forget in order to make it work
+- Include a golden-layout theme CSS.
+```typescript
+import 'golden-layout/src/css/goldenlayout-light-theme.css'
+```
+`goldenlayout-base.css` is already integrated to the library.
+
+- Your `Vue` alias should be `esm`: using any other will cause errors. You *need* to define an alias for vue - either `vue/dist/vue.esm.js` either `vue/dist/vue.runtime.esm.js`
+
 ## Usage
 This library integrate a straightforward way bundling with [fuse-box](http://fuse-box.org/). If you make a project with this bundler, it will be straight-forward.
 
@@ -39,8 +48,6 @@ This library integrate a straightforward way bundling with [fuse-box](http://fus
 import vgl from 'vue-golden-layout'
 Vue.use(vgl);
 ```
-
-Your `Vue` alias should be `vue.common`: using `vue.esm` can cause errors.
 
 In case of incompatibility with bundlers, you can bundle `vue-golden-layout` by simply bundling the sources.
 The sources entry point is in `vue-golden-layout/src/index.ts`
