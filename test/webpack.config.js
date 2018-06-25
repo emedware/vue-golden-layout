@@ -1,14 +1,14 @@
 var webpack = require("webpack"),
 	path = require("path"),
-	HtmlWebpackPlugin = require('html-webpack-plugin'),
-devCompiler = webpack({
+	HtmlWebpackPlugin = require('html-webpack-plugin');
+module.exports = {
 	devtool: 'inline-source-map',
 	entry: {
 		app: [path.resolve(__dirname, './index.ts')]
 	},
 	output: {
 		filename: '[name].js',
-		path: path.resolve(__dirname, "../dist"),
+		path: path.resolve(__dirname, "dist"),
 		chunkFilename: "[chunkhash].js"
 	},
 	plugins: [
@@ -50,11 +50,4 @@ devCompiler = webpack({
 		},
 		extensions: [".tsx", ".ts", ".js", '.html', '.vue']
 	}
-});
-
-devCompiler.run(function(err, stats) {
-	if(err) throw err;
-	console.log(stats.toString({
-		colors: true
-	}));
-});
+};

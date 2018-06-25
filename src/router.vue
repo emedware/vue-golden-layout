@@ -9,19 +9,29 @@ import Vue from 'vue'
 import { Watch, Component, Prop } from 'vue-property-decorator'
 import { glStack } from './gl-group'
 
+//TODO: there might be a type for route
+function defaultTitle(route: any): string {
+	//The last case is to warn the programmer who would have forgotten that detail
+	return (route.meta && route.meta.title) || 'set $route.meta.title';
+}
+
 @Component({components: {golden, glStack}})
 export default class router extends Vue {
 	get ci() { return this.container.contentItem(); }
 	get gl() { return this.layout.gl; }
 	get container(): glStack { return <glStack>this.$refs.container; }
 	get layout(): golden { return <golden>this.$refs.layout; }
+	
+	@Prop({default: defaultTitle}) titler : (route: any)=> string
+
 	@Watch('$route')
 	change(route) {
 		this.layout.onGlInitialise(()=> {
 			this.ci.addChild({
 				type: 'component',
 				componentName: 'route',
-				componentState: { route }
+				componentState: { route },
+				title: this.titler(route)
 			});
 		});
 	}

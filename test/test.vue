@@ -35,6 +35,12 @@ body {
 	width: 100vw;
 	height: 100vh;
 }
+/* This is a hack to remove when fuse-box has a well-set npm mode */
+.glComponent {
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+}
 </style>
 <script lang="ts">
 import Vue from 'vue'

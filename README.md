@@ -137,6 +137,19 @@ show()
 close()
 ```
 
+# golden-router
+
+The router is a `layout-golden` that aims to sublimate the `<router-view />`
+It takes perhaps more options than the later (even if it is not sure) and let people manage their routes in tabs, then having two
+opened in a split screen or even popped-out in another browser window on another physical display.
+
+### Titles
+
+One propriety the `golden-router` has more than `router-view` is due to the fact that tabs must have a title. The property `titler`
+allows you to specify a function that takes a route object in parameter and gives the string that will be used as title.
+
+If none is specified, the default is to take `$route.meta.title` - this means that routes have to be defined with a title in their meta-data.
+
 # TODOs
 
 ## Re-ordering and interactions
