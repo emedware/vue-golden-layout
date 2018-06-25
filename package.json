@@ -1,6 +1,6 @@
 {
   "name": "vue-golden-layout",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Integration of the golden-layout to Vue",
   "main": "dist/vue-golden-layout.js",
   "keywords": [
@@ -37,7 +37,6 @@
     "typescript": "^2.5.3",
     "upgrade": "^1.1.0",
     "vue-loader": "^13.0.5",
-    "vue-property-decorator": "^6.0.0",
     "vue-template-compiler": "^2.4.4",
     "vue-template-es2015-compiler": "^1.5.3",
     "webpack": "^3.6.0"
@@ -46,6 +45,7 @@
     "golden-layout": "^1.5.8",
     "jquery": "^3.2.1",
     "vue": "^2.5.16",
+    "vue-property-decorator": "^6.0.0",
     "vue-resize-directive": "^1.0.0"
   },
   "bugs": {
