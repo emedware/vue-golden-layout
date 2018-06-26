@@ -86,6 +86,17 @@ export default class layoutGolden extends goldenContainer {
 			forwardEvt(container, comp, comp.events);
 			comp.container = container;
 		});
+		//TODO: find a way to register these component programatically, knowing the problem is when it is poped-out,
+		// it doesn't come with the wrapping vue component
+		gl.registerComponent('route', function(container, state) {
+			var comp = state.route.matched[0].components.default;
+			//TODO: comp can be a string too
+			if('object'=== typeof comp)
+				comp = Vue.extend(comp);
+			var div = document.createElement('div');
+			container.getElement().append(div);
+			new comp({el: div});
+		});
 
 		gl.init();
 		//TODO: GoldenLayout bug : toConfig will query the state of popup window.
