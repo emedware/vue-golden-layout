@@ -1,4 +1,4 @@
-const {FuseBox, JSONPlugin, UglifyJSPlugin, CSSPlugin, EnvPlugin, QuantumPlugin, VueComponentPlugin, HTMLPlugin} = require("fuse-box");
+const {FuseBox, JSONPlugin, CSSPlugin, QuantumPlugin, VueComponentPlugin, HTMLPlugin} = require("fuse-box");
 const fuse = FuseBox.init({
 	homeDir: "src",
 	output: "dist/$name.js",
@@ -23,7 +23,7 @@ const fuse = FuseBox.init({
 		main: 'index.ts'
 	},
 	alias: {
-		vue: 'vue/dist/vue.esm.js'
+		//vue: 'vue/dist/vue.esm.js'
 	},
 	globals: {
 		'vue-golden-layout': '*'

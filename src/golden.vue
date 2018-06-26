@@ -61,7 +61,7 @@ export default class layoutGolden extends goldenContainer {
 	}
 	initialisedCB: (()=> void)[]
 	onGlInitialise(cb: ()=> void) {
-		if(this.gl) cb();
+		if(this.contentItem()) cb();
 		else (this.initialisedCB || (this.initialisedCB=[])).push(cb);
 	}
 	mounted() {
@@ -77,7 +77,7 @@ export default class layoutGolden extends goldenContainer {
 			showMaximiseIcon: this.showMaximiseIcon,
 			showCloseIcon: this.showCloseIcon
     	};
-		this.gl = gl = new GoldenLayout(this.config, /*$*/(<Element>layoutRoot));
+		this.gl = gl = new GoldenLayout(this.config, <Element>layoutRoot);
 		gl.registerComponent('template', function(container, state) {
 			var id = state.templateId.split('-');
 			console.assert('lgc'=== id[0] && 2=== id.length, "GoldenLayout consistency: components are registered with a lgc-xxx id")
@@ -85,6 +85,17 @@ export default class layoutGolden extends goldenContainer {
 			container.getElement().append(comp.childEl);
 			forwardEvt(container, comp, comp.events);
 			comp.container = container;
+		});
+		//TODO: find a way to register these component programatically, knowing the problem is when it is poped-out,
+		// it doesn't come with the wrapping vue component
+		gl.registerComponent('route', function(container, state) {
+			var comp = state.route.matched[0].components.default;
+			//TODO: comp can be a string too
+			if('object'=== typeof comp)
+				comp = Vue.extend(comp);
+			var div = document.createElement('div');
+			container.getElement().append(div);
+			new comp({el: div});
 		});
 
 		gl.init();

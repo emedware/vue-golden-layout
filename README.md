@@ -32,6 +32,15 @@ The file dist/index.html then shows test/test.vue in action
 	</gl-col>
 </layout-golden>
 ```
+## Don't forget in order to make it work
+- Include a golden-layout theme CSS.
+```typescript
+import 'golden-layout/src/css/goldenlayout-light-theme.css'
+```
+`goldenlayout-base.css` is already integrated to the library.
+
+- Your `Vue` alias should be `esm`: using any other will cause errors. You *need* to define an alias for vue - either `vue/dist/vue.esm.js` either `vue/dist/vue.runtime.esm.js`
+
 ## Usage
 This library integrate a straightforward way bundling with [fuse-box](http://fuse-box.org/). If you make a project with this bundler, it will be straight-forward.
 
@@ -39,8 +48,6 @@ This library integrate a straightforward way bundling with [fuse-box](http://fus
 import vgl from 'vue-golden-layout'
 Vue.use(vgl);
 ```
-
-Your `Vue` alias should be `vue.common`: using `vue.esm` can cause errors.
 
 In case of incompatibility with bundlers, you can bundle `vue-golden-layout` by simply bundling the sources.
 The sources entry point is in `vue-golden-layout/src/index.ts`
@@ -129,6 +136,19 @@ hide()
 show()
 close()
 ```
+
+# golden-router
+
+The router is a `layout-golden` that aims to sublimate the `<router-view />`
+It takes perhaps more options than the later (even if it is not sure) and let people manage their routes in tabs, then having two
+opened in a split screen or even popped-out in another browser window on another physical display.
+
+### Titles
+
+One propriety the `golden-router` has more than `router-view` is due to the fact that tabs must have a title. The property `titler`
+allows you to specify a function that takes a route object in parameter and gives the string that will be used as title.
+
+If none is specified, the default is to take `$route.meta.title` - this means that routes have to be defined with a title in their meta-data.
 
 # TODOs
 
