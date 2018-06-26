@@ -1,39 +1,39 @@
 <template>
-	<layout-golden class="screen">
-		<gl-col :closable="false">
-			<gl-row :closable="false">
-				<gl-component title="compA">
-					<h1>CompA</h1>
-					<button @click="bottomSheet = !bottomSheet">Toggle</button>
-					<button @click="addStack">Add</button>
-					<p>
-						<router-link to="/a">test-a</router-link>
-						<router-link to="/b">test-b</router-link>
-					</p>
-				</gl-component>
-				<gl-stack ref="myStack">
-					<gl-component v-for="stackSub in stackSubs" :key="stackSub" :title="'dynamic'+stackSub">
-						Added item (id: {{stackSub}})
-						<button @click="remStack(stackSub)">Remove</button>
+	<div>
+		<layout-golden class="hscreen">
+			<gl-col :closable="false">
+				<gl-row :closable="false">
+					<gl-component title="compA">
+						<h1>CompA</h1>
+						<button @click="bottomSheet = !bottomSheet">Toggle</button>
+						<button @click="addStack">Add</button>
+						<p>
+							<router-link to="/a">test-a</router-link>
+							<router-link to="/b">test-b</router-link>
+						</p>
 					</gl-component>
-				</gl-stack>
-			</gl-row>
-			<gl-component title="Route">
-				<golden-router style="width: 100%; height: 100%;" />
-			</gl-component>
-			<gl-component v-if="bottomSheet">
-				Bottom
-			</gl-component>
-		</gl-col>
-	</layout-golden>
+					<gl-stack ref="myStack">
+						<gl-component v-for="stackSub in stackSubs" :key="stackSub" :title="'dynamic'+stackSub">
+							Added item (id: {{stackSub}})
+							<button @click="remStack(stackSub)">Remove</button>
+						</gl-component>
+					</gl-stack>
+				</gl-row>
+				<gl-component v-if="bottomSheet">
+					Bottom
+				</gl-component>
+			</gl-col>
+		</layout-golden>
+		<golden-router class="hscreen" />
+	</div>
 </template>
 <style>
 body {
 	overflow: hidden; 	/* The 'light' theme let a scroll-bar on the right of the main container */
 }
-.screen {
+.hscreen {
 	width: 100vw;
-	height: 100vh;
+	height: 50vh;
 }
 /* This is a hack to remove when fuse-box has a well-set npm mode */
 .glComponent {

@@ -1,6 +1,6 @@
 <template>
 	<golden ref="layout">
-		<gl-stack ref="container" :closable="false" />
+		<gl-stack ref="container" :showPopoutIcon="false" />
 	</golden>
 </template>
 <script lang="ts">
@@ -26,14 +26,15 @@ export default class router extends Vue {
 
 	@Watch('$route')
 	change(route) {
-		this.layout.onGlInitialise(()=> {
-			this.ci.addChild({
-				type: 'component',
-				componentName: 'route',
-				componentState: { route },
-				title: this.titler(route)
+		if(route.matched.length)
+			this.layout.onGlInitialise(()=> {
+				this.ci.addChild({
+					type: 'component',
+					componentName: 'route',
+					componentState: { route },
+					title: this.titler(route)
+				});
 			});
-		});
 	}
 	mounted() {
 		//With immediate: true, the watch is called before $refs are initialised
