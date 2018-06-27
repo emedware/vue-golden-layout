@@ -23,6 +23,8 @@ export default class router extends Vue {
 	get layout(): golden { return <golden>this.$refs.layout; }
 	@Prop({default: defaultTitle}) titler : (route: any)=> string
 //TODO: on tab change, url change
+	stack: any = null
+	stackConfig: any = null
 	@Watch('$route')
 	change(route) {
 		if(route.matched.length)
@@ -39,13 +41,23 @@ export default class router extends Vue {
 					var already = stack.contentItems.find(x=> x.config.componentState.route.fullPath == route.fullPath);
 					if(already) stack.setActiveContentItem(already);
 					else stack.addChild(itemConfig);
-				} else
+				} else {
 					this.ci.addChild({
 						type: 'stack',
 						content: [itemConfig]
 					}, 0);
+					//TODO: if(this.stack) ...
+					this.stack = this.ci.contentItems[0];
+					//this.stackConfig = this.stack.config;	//in order to watch the elements
+					this.$watch(()=> this.stack.config.activeItemIndex, v=> {
+						var route = this.stack.contentItems[v].config.componentState.route;
+						if(route.fullPath != this.$route.fullPath)
+							this.$router.replace(route.fullPath);
+					});
+				}
 			});
 	}
+	//TODO: $destroy on tab-close/stack-close
 	mounted() {
 		//With immediate: true, the watch is called before $refs are initialised
 		this.change(this.$route);

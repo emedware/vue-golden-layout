@@ -150,6 +150,10 @@ allows you to specify a function that takes a route object in parameter and give
 
 If none is specified, the default is to take `$route.meta.title` - this means that routes have to be defined with a title in their meta-data.
 
+# To test
+
+Run `npm run all` - there are two things to bundle: the library and the test program. After that, run `npm run serve`, this will launch the minimalistic server as SPA don't fit with file serving.
+
 # TODOs
 
 ## Re-ordering and interactions
