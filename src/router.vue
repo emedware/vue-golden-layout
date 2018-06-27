@@ -25,6 +25,8 @@ export default class router extends Vue {
 //TODO: on tab change, url change
 	stack: any = null
 	stackConfig: any = null
+	unwatchStack: ()=> void
+	
 	@Watch('$route')
 	change(route) {
 		if(route.matched.length)
@@ -46,10 +48,13 @@ export default class router extends Vue {
 						type: 'stack',
 						content: [itemConfig]
 					}, 0);
-					//TODO: if(this.stack) ...
-					this.stack = this.ci.contentItems[0];
+					stack = this.ci.contentItems[0];
+				}
+				if(this.stack != stack) {
+					if(this.unwatchStack) this.unwatchStack();
+					this.stack = stack;
 					//this.stackConfig = this.stack.config;	//in order to watch the elements
-					this.$watch(()=> this.stack.config.activeItemIndex, v=> {
+					this.unwatchStack = this.$watch(()=> this.stack.config.activeItemIndex, v=> {
 						var route = this.stack.contentItems[v].config.componentState.route;
 						if(route.fullPath != this.$route.fullPath)
 							this.$router.replace(route.fullPath);
