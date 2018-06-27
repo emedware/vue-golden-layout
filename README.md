@@ -143,6 +143,8 @@ The router is a `layout-golden` that aims to sublimate the `<router-view />`
 It takes perhaps more options than the later (even if it is not sure) and let people manage their routes in tabs, then having two
 opened in a split screen or even popped-out in another browser window on another physical display.
 
+The main usage is `<golden-router />`. Any options or `router-view` still have to be implemented.
+
 ### Titles
 
 One propriety the `golden-router` has more than `router-view` is due to the fact that tabs must have a title. The property `titler`
