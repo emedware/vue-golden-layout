@@ -13,7 +13,7 @@
 }
 </style>
 <script lang="ts">
-import Vue from 'vue'
+import { Vue } from './imports'
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 import {goldenContainer, goldenChild} from './gl-roles'
 

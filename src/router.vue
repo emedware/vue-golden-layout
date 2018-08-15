@@ -5,7 +5,7 @@
 </template>
 <script lang="ts">
 import golden from './golden.vue'
-import Vue from 'vue'
+import { Vue } from './imports'
 import { Watch, Component, Prop } from 'vue-property-decorator'
 import { glRow } from './gl-group'
 
@@ -22,25 +22,27 @@ export default class router extends Vue {
 	get container(): glRow { return <glRow>this.$refs.container; }
 	get layout(): golden { return <golden>this.$refs.layout; }
 	@Prop({default: defaultTitle}) titler : (route: any)=> string
-//TODO: on tab change, url change
+	
 	stack: any = null
 	stackConfig: any = null
 	unwatchStack: ()=> void
 	
 	@Watch('$route')
 	change(route) {
-		if(route.matched.length)
+		if(route && route.matched.length)
 			this.layout.onGlInitialise(()=> {
 				var stack = this.ci.contentItems.find(x => 'stack'=== x.type),
 					itemConfig = {
 						type: 'component',
 						componentName: 'route',
-						componentState: { route },
+						componentState: {
+							path: route.fullPath
+						},
 						title: this.titler(route)
 					};
 
 				if(stack) {
-					var already = stack.contentItems.find(x=> x.config.componentState.route.fullPath == route.fullPath);
+					var already = stack.contentItems.find(x=> x.config.componentState.path == route.fullPath);
 					if(already) stack.setActiveContentItem(already);
 					else stack.addChild(itemConfig);
 				} else {
@@ -55,9 +57,9 @@ export default class router extends Vue {
 					this.stack = stack;
 					//this.stackConfig = this.stack.config;	//in order to watch the elements
 					this.unwatchStack = this.$watch(()=> this.stack.config.activeItemIndex, v=> {
-						var route = this.stack.contentItems[v].config.componentState.route;
-						if(route.fullPath != this.$route.fullPath)
-							this.$router.replace(route.fullPath);
+						var path = this.stack.contentItems[v].config.componentState.path;
+						if(path != this.$route.fullPath)
+							this.$router.replace(path);
 					});
 				}
 			});

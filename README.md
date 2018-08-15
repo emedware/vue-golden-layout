@@ -39,8 +39,6 @@ import 'golden-layout/src/css/goldenlayout-light-theme.css'
 ```
 `goldenlayout-base.css` is already integrated to the library.
 
-- Your `Vue` alias should be `esm`: using any other will cause errors. You *need* to define an alias for vue - either `vue/dist/vue.esm.js` either `vue/dist/vue.runtime.esm.js`
-
 ## Usage
 This library integrate a straightforward way bundling with [fuse-box](http://fuse-box.org/). If you make a project with this bundler, it will be straight-forward.
 

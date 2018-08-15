@@ -4,7 +4,7 @@
 	</div>
 </template>
 <script lang="ts">
-import Vue from 'vue'
+import { Vue } from './imports'
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 import * as GoldenLayout from 'golden-layout'
 import {goldenContainer} from './gl-roles'
@@ -65,7 +65,7 @@ export default class layoutGolden extends goldenContainer {
 		else (this.initialisedCB || (this.initialisedCB=[])).push(cb);
 	}
 	mounted() {
-		var layoutRoot = this.$refs.layoutRoot, gl, comps = this.comps;
+		var me = this, layoutRoot = this.$refs.layoutRoot, gl, comps = this.comps;
 		this.config.settings = {
 			hasHeaders: this.hasHeaders,
 			reorderEnabled: this.reorderEnabled,
@@ -89,13 +89,13 @@ export default class layoutGolden extends goldenContainer {
 		//TODO: find a way to register these component programatically, knowing the problem is when it is poped-out,
 		// it doesn't come with the wrapping vue component
 		gl.registerComponent('route', function(container, state) {
-			var comp = state.route.matched[0].components.default;
+			var comp = me.$router.getMatchedComponents(state.path)[0];
 			//TODO: comp can be a string too
 			if('object'=== typeof comp)
 				comp = Vue.extend(comp);
 			var div = document.createElement('div');
 			container.getElement().append(div);
-			new comp({el: div});
+			new comp({el: div, parent: me});
 		});
 
 		gl.init();
