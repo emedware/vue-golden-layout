@@ -13,15 +13,16 @@ import * as resize from 'vue-resize-directive'
 @Component({directives: {resize}})
 export default class layoutGolden extends goldenContainer {
 	//Settings
-	@Prop({type: Boolean, default: true}) hasHeaders
-	@Prop({type: Boolean, default: true}) reorderEnabled
-	@Prop({type: Boolean, default: false}) selectionEnabled
-	@Prop({type: Boolean, default: true}) popoutWholeStack
-	@Prop({type: Boolean, default: true}) blockedPopoutsThrowError
-	@Prop({type: Boolean, default: true}) closePopoutsOnUnload
-	@Prop({type: Boolean, default: true}) showPopoutIcon
-	@Prop({type: Boolean, default: true}) showMaximiseIcon
-	@Prop({type: Boolean, default: true}) showCloseIcon
+	@Prop({default: true}) hasHeaders: boolean
+	@Prop({default: true}) reorderEnabled: boolean
+	@Prop({default: false}) selectionEnabled: boolean
+	@Prop({default: true}) popoutWholeStack: boolean
+	@Prop({default: true}) blockedPopoutsThrowError: boolean
+	@Prop({default: true}) closePopoutsOnUnload: boolean
+	@Prop({default: true}) showPopoutIcon: boolean
+	@Prop({default: true}) showMaximiseIcon: boolean
+	@Prop({default: true}) showCloseIcon: boolean
+	@Prop({default: null}) savedState: any
 
 	
 	@Watch('hasHeaders') @Watch('reorderEnabled') @Watch('selectionEnabled') @Watch('popoutWholeStack')
@@ -32,12 +33,12 @@ export default class layoutGolden extends goldenContainer {
 	}
 
 
-	@Prop({type: Number, default: 5}) borderWidth
-	@Prop({type: Number, default: 10}) minItemHeight
-	@Prop({type: Number, default: 10}) minItemWidth
-	@Prop({type: Number, default: 20}) headerHeight
-	@Prop({type: Number, default: 300}) dragProxyWidth
-	@Prop({type: Number, default: 200}) dragProxyHeight
+	@Prop({default: 5}) borderWidth: number
+	@Prop({default: 10}) minItemHeight: number
+	@Prop({default: 10}) minItemWidth: number
+	@Prop({default: 20}) headerHeight: number
+	@Prop({default: 300}) dragProxyWidth: number
+	@Prop({default: 200}) dragProxyHeight: number
 
 	@Watch('borderWidth') @Watch('minItemHeight') @Watch('minItemWidth')
 	@Watch('headerHeight') @Watch('dragProxyWidth') @Watch('dragProxyHeight')
@@ -66,17 +67,21 @@ export default class layoutGolden extends goldenContainer {
 	}
 	mounted() {
 		var me = this, layoutRoot = this.$refs.layoutRoot, gl, comps = this.comps;
-		this.config.settings = {
-			hasHeaders: this.hasHeaders,
-			reorderEnabled: this.reorderEnabled,
-			selectionEnabled: this.selectionEnabled,
-			popoutWholeStack: this.popoutWholeStack,
-			blockedPopoutsThrowError: this.blockedPopoutsThrowError,
-			closePopoutsOnUnload: this.closePopoutsOnUnload,
-			showPopoutIcon: this.showPopoutIcon,
-			showMaximiseIcon: this.showMaximiseIcon,
-			showCloseIcon: this.showCloseIcon
-    	};
+		if(this.savedState) {
+			this.config = this.savedState;
+		} else {
+			this.config.settings = {
+				hasHeaders: this.hasHeaders,
+				reorderEnabled: this.reorderEnabled,
+				selectionEnabled: this.selectionEnabled,
+				popoutWholeStack: this.popoutWholeStack,
+				blockedPopoutsThrowError: this.blockedPopoutsThrowError,
+				closePopoutsOnUnload: this.closePopoutsOnUnload,
+				showPopoutIcon: this.showPopoutIcon,
+				showMaximiseIcon: this.showMaximiseIcon,
+				showCloseIcon: this.showCloseIcon
+			};
+		}
 		this.gl = gl = new GoldenLayout(this.config, <Element>layoutRoot);
 		gl.registerComponent('template', function(container, state) {
 			var id = state.templateId.split('-');
@@ -99,9 +104,7 @@ export default class layoutGolden extends goldenContainer {
 		});
 
 		gl.init();
-		//TODO: GoldenLayout bug : toConfig will query the state of popup window.
-		// If the popup was just created, it will not be initialised and throw
-		gl.on('stateChanged', () => this.$emit('stateChanged'/*, gl.toConfig()*/));
+		gl.on('stateChanged', ()=> this.$emit('state-changed', gl.config));
 		gl.on('initialised', () => {
 			if(this.initialisedCB) for(let cb of this.initialisedCB) cb();
 			delete this.initialisedCB;
@@ -111,7 +114,6 @@ export default class layoutGolden extends goldenContainer {
 			'activeContentItemChanged']);
 	}
 	contentItem() { return this.gl && this.gl.root; }
-	get state() { return this.gl.config(); }
 	onResize() { this.gl && this.gl.updateSize(); }
 }
 

@@ -26,8 +26,12 @@ export class glStack extends glGroup {
 	}
 	get childConfig() {
 		(<any>this).onGlInitialise(()=> {
-			this.$watch(()=> (<any>this).contentItem().config.activeItemIndex, v=> {
-				this.tabChange((<goldenChild>this.$children[v]).tabId);
+			this.$watch(()=> {
+				var ci : any = (<any>this).contentItem();
+				return ci && ci.config.activeItemIndex;
+			}, v=> {
+				if('number'=== typeof v)
+					this.tabChange((<goldenChild>this.$children[v]).tabId);
 			});
 		});
 		return {
