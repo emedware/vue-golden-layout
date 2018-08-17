@@ -66,25 +66,25 @@ If this rule is broken :
 - This will be displayed in your console: "Dynamic golden-layout components should be named templates instead."
 
 ### Defining a template
-This is done through `slot`s in the `<golden-layout>` element
+This is done through `slot`s in the `<golden-layout>` element (the square brackets stand for "optional")
 ```html
-<template slot="template-name" slot-scope="myState">
+<template slot="template-name"[ slot-scope="myState"]>
 	...
 </template>
 ```
 The content of `myState` can of course be changed. This will be saved/loaded when the overall state is saved/loaded.
 
 ### Using a template
-`gl-component` have a `template` property. This is a string that target the `slot` defined.
-They also (useful for `v-for`s) have a `state` property that will be used as the `slot-scope`
+`gl-component` has a `template` property. This is a string that target the `slot` defined.
+It also (useful for `v-for`s) has a `state` property that will be used as the `slot-scope`
 ```html
-<gl-component v-vor="sth in swhr"
-	template="template-name" :state="sth" />
+<gl-component v-for="sth in swhr" :key="sth.else"
+	template="template-name" :state="sth.state" />
 ```
 
-### Properties
+## Properties
 
-#### Contained objects
+### Contained objects
 
 ```typescript
 title: string

@@ -4,8 +4,7 @@
 	</div>
 </template>
 <script lang="ts">
-//import { Vue } from './imports'
-import Vue from 'vue'
+import { Vue } from './imports'
 import {Component, Inject, Model, Prop, Watch, Emit} from 'vue-property-decorator'
 import * as GoldenLayout from 'golden-layout'
 import {goldenContainer} from './gl-roles'
@@ -126,6 +125,7 @@ export default class layoutGolden extends goldenContainer {
 			});
 		})(tpl);
 		gl.init();
+		//TODO: GL docs specifies not to rely on gl.config but use `toConfig()` (that fails when opening a popup)
 		gl.on('stateChanged', ()=> this.gotState(gl.config));
 		gl.on('initialised', () => {
 			if(this.initialisedCB) for(let cb of this.initialisedCB) cb();
