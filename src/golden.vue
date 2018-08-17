@@ -101,26 +101,28 @@ export default class layoutGolden extends goldenContainer {
 		for(var tpl in this.tplPreload)
 			gl.registerComponent(tpl, this.tplPreload[tpl]);
 		delete this.tplPreload;
+		function appendVNodes(container, vNodes) {
+			var el = document.createElement('div');
+			container.getElement().append(el);
+			new Vue({
+				render: function(ce) {
+					return ce('div', {
+						class: 'glComponent'
+					}, vNodes);
+				},
+				el
+			});
+		}
 		var slots = (<any>this).$slots;
 		for(var tpl in slots) if('default'!== tpl) ((tpl)=> {
 			gl.registerComponent(tpl, function(container) {
-				new Vue({
-					render: function(ce) {
-						return ce('div', slots[tpl]);
-					},
-					el: container.getElement()[0]
-				});
+				appendVNodes(container, slots[tpl]);
 			});
 		})(tpl);
 		var scopedSlots = (<any>this).$scopedSlots;
 		for(var tpl in scopedSlots) ((tpl)=> {
 			gl.registerComponent(tpl, function(container, state) {
-				new Vue({
-					render: function(ce) {
-						return ce('div', scopedSlots[tpl](state));
-					},
-					el: container.getElement()[0]
-				});
+				appendVNodes(container, scopedSlots[tpl](state));
 			});
 		})(tpl);
 		gl.init();

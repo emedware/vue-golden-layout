@@ -57,32 +57,51 @@ Vue.use(vgl);
 
 The objects are differentiated into : The layout object (golden), the container objects (golden and glRow, glCol and glStack), the contained objects (glRow, glCol and glStack and glComponent).
 
-### Control
-The purpose has been to have it mainly behaving with Vue so :
-- use v-if to add/remove an element
-- v-for is supposed to work too but has not been tested
+## Named templates
 
-Properties like 'hidden' and 'title' are watched (but the 'hidden' property sucks)
-#### CSS
+In order to use `v-if` and `v-for` to control the content, templates have to be defined and used with a name.
+If this rule is broken :
+- Popup will display blank
+- Loading a saved state will fail
+- This will be displayed in your console: "Dynamic golden-layout components should be named templates instead."
+
+### Defining a template
+This is done through `slot`s in the `<golden-layout>` element
+```html
+<template slot="template-name" slot-scope="myState">
+	...
+</template>
+```
+The content of `myState` can of course be changed. This will be saved/loaded when the overall state is saved/loaded.
+
+### Using a template
+`gl-component` have a `template` property. This is a string that target the `slot` defined.
+They also (useful for `v-for`s) have a `state` property that will be used as the `slot-scope`
+```html
+<gl-component v-vor="sth in swhr"
+	template="template-name" :state="sth" />
+```
+
+### Properties
+
+#### Contained objects
+
+```typescript
+title: string
+width: number
+height: number
+closable: boolean
+hidden: boolean
+```
+## Low-level functionalities
+
+### CSS
 The glComponent answers to this class to fit in the layout child container, that you can override
 ```stylus
 .glComponent
 	width 100%
 	height 100%
 	overflow auto
-```
-### Properties
-#### glComponent
-```typescript
-title: string
-```
-#### Contained objects
-
-```typescript
-width: number
-height: number
-closable: boolean
-hidden: boolean
 ```
 
 ### Events
