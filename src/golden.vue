@@ -104,7 +104,7 @@ export default class layoutGolden extends goldenContainer {
 		});
 
 		gl.init();
-		gl.on('stateChanged', ()=> this.$emit('state-changed', gl.config));
+		gl.on('stateChanged', ()=> this.$emit('state', gl.config));
 		gl.on('initialised', () => {
 			if(this.initialisedCB) for(let cb of this.initialisedCB) cb();
 			delete this.initialisedCB;

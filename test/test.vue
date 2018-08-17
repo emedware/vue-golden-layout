@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<layout-golden class="hscreen" @state-changed="onState">
+		<layout-golden class="hscreen" @state="onState">
 			<gl-col :closable="false">
 				<gl-row :closable="false">
 					<gl-component title="compA">
