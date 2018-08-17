@@ -66,6 +66,16 @@ export default class router extends Vue {
 	}
 	//TODO: $destroy on tab-close/stack-close
 	mounted() {
+		var layout = this.layout;
+		this.gl.registerComponent('route', function(container, state) {
+			var comp = layout.$router.getMatchedComponents(state.path)[0];
+			//TODO: comp can be a string too
+			if('object'=== typeof comp)
+				comp = Vue.extend(comp);
+			var div = document.createElement('div');
+			container.getElement().append(div);
+			new comp({el: div, parent: layout});
+		});
 		//With immediate: true, the watch is called before $refs are initialised
 		this.change(this.$route);
 	}
