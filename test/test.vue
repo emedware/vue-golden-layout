@@ -1,12 +1,13 @@
 <template>
 	<div>
-		<layout-golden class="hscreen">
+		<layout-golden class="hscreen" ref="glRef">
 			<gl-col :closable="false">
 				<gl-row :closable="false">
 					<gl-component title="compA">
 						<h1>CompA</h1>
 						<button @click="bottomSheet = !bottomSheet">Toggle</button>
 						<button @click="addStack">Add</button>
+						<button @click="config">Config</button>
 						<p>
 							<router-link to="/a">test-a</router-link>
 							<router-link to="/b">test-b</router-link>
@@ -51,9 +52,19 @@ export default class App extends Vue {
 	bottomSheet = false
 	stackSubs = [1]
 	ssId: number = 1
+	devWarned = false
+	
 	addStack() {
 		//this.$refs.myStack.addGlChild(...)
 		this.stackSubs.push(++this.ssId);
+	}
+	config() {
+		var config = this.$refs.glRef.gl.toConfig();
+		console.dir(config);
+		if(!this.devWarned) {
+			alert('Config displayed in the development console');
+			this.devWarned = true;
+		}
 	}
 	remStack(id) {
 		var ndx = this.stackSubs.indexOf(id);
