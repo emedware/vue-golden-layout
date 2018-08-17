@@ -1,12 +1,12 @@
 <template>
-	<golden ref="layout">
+	<golden ref="layout" :state="state" @state="gotState">
 		<gl-row ref="container" />
 	</golden>
 </template>
 <script lang="ts">
 import golden from './golden.vue'
 import { Vue } from './imports'
-import { Watch, Component, Prop } from 'vue-property-decorator'
+import { Watch, Component, Prop, Emit } from 'vue-property-decorator'
 import { glRow } from './gl-group'
 
 //TODO: there might be a type for route
@@ -22,6 +22,10 @@ export default class router extends Vue {
 	get container(): glRow { return <glRow>this.$refs.container; }
 	get layout(): golden { return <golden>this.$refs.layout; }
 	@Prop({default: defaultTitle}) titler : (route: any)=> string
+	@Prop({default: null}) state: any
+
+	@Emit('state')
+	gotState(state) {}
 	
 	stack: any = null
 	stackConfig: any = null

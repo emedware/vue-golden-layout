@@ -93,6 +93,13 @@ height: number
 closable: boolean
 hidden: boolean
 ```
+
+## Saving/restoring states
+
+The `golden-layout` as the `golden-router` both have a *property* and an *event* named `state`.
+- The event is triggered when the state has changed (even deeply, like a deep watch).
+- The property is used **at mount** to initialise the configuration. After that, any change will have no effect.
+
 ## Low-level functionalities
 
 ### CSS
@@ -160,7 +167,7 @@ The router is a `layout-golden` that aims to sublimate the `<router-view />`
 It takes perhaps more options than the later (even if it is not sure) and let people manage their routes in tabs, then having two
 opened in a split screen or even popped-out in another browser window on another physical display.
 
-The main usage is `<golden-router />`. Any options or `router-view` still have to be implemented.
+The main usage is `<golden-router />`. Any options of `router-view` still have to be implemented.
 
 ### Titles
 
@@ -179,5 +186,4 @@ Run `npm run all` - there are two things to bundle: the library and the test pro
 For now, either Vue interact with the layout, either we let the user re-organise
 - goldenKey property to elements (re-use the v-for :key ?)
 - replicate the reorganisation in the ghost structure (list of empty &lt;div&gt; surrounded by display:none; replicating the layout tree)
-- Use container.setState( state ) or container.extendState( state ) to allow dynamic set of model
-- use slots and templates with their names. Also, have `lgc-x` template names instead of state
+- Use container.setState( state ) or container.extendState( state ) to allow dynamic set of state
