@@ -4,7 +4,8 @@
 	</div>
 </template>
 <script lang="ts">
-import { Vue } from './imports'
+//import { Vue } from './imports'
+import Vue from 'vue'
 import {Component, Inject, Model, Prop, Watch, Emit} from 'vue-property-decorator'
 import * as GoldenLayout from 'golden-layout'
 import {goldenContainer} from './gl-roles'
@@ -57,11 +58,21 @@ export default class layoutGolden extends goldenContainer {
     },*/
 
 	gl: any
-	comps = []
+	tplCount = 0
+	tplPreload = {}
 	//We generate IDs for the layout to be able to save/load
 	registerComp(component): string {
-		this.comps.push(component);
-		return 'lgc-'+this.comps.length;
+		var tpl = 'tpl'+(++this.tplCount);
+		var tplData = function(container, state) {
+			container.getElement().append(component.childEl);
+			forwardEvt(container, component, component.events);
+			component.container = container;
+		};
+		if(this.gl) {
+			this.gl.registerComponent(tpl, tplData);
+			/*if DEBUG*/ console.warn('Dynamic golden-layout components should be named templates instead.');
+		} else this.tplPreload[tpl] = tplData;
+		return tpl;
 	}
 	initialisedCB: (()=> void)[]
 	onGlInitialise(cb: ()=> void) {
@@ -69,7 +80,7 @@ export default class layoutGolden extends goldenContainer {
 		else (this.initialisedCB || (this.initialisedCB=[])).push(cb);
 	}
 	mounted() {
-		var me = this, layoutRoot = this.$refs.layoutRoot, gl, comps = this.comps;
+		var me = this, layoutRoot = this.$refs.layoutRoot, gl;
 		if(this.state) {
 			this.config = this.state;
 		} else {
@@ -86,26 +97,34 @@ export default class layoutGolden extends goldenContainer {
 			};
 		}
 		this.gl = gl = new GoldenLayout(this.config, <Element>layoutRoot);
-		gl.registerComponent('template', function(container, state) {
-			var id = state.templateId.split('-');
-			console.assert('lgc'=== id[0] && 2=== id.length, "GoldenLayout consistency: components are registered with a lgc-xxx id")
-			var comp = comps[id[1]-1];
-			container.getElement().append(comp.childEl);
-			forwardEvt(container, comp, comp.events);
-			comp.container = container;
-		});
-		//TODO: find a way to register these component programatically, knowing the problem is when it is poped-out,
-		// it doesn't come with the wrapping vue component
-		gl.registerComponent('route', function(container, state) {
-			var comp = me.$router.getMatchedComponents(state.path)[0];
-			//TODO: comp can be a string too
-			if('object'=== typeof comp)
-				comp = Vue.extend(comp);
-			var div = document.createElement('div');
-			container.getElement().append(div);
-			new comp({el: div, parent: me});
-		});
-
+		
+		for(var tpl in this.tplPreload)
+			gl.registerComponent(tpl, this.tplPreload[tpl]);
+		delete this.tplPreload;
+		function appendVNodes(container, vNodes) {
+			var el = document.createElement('div');
+			container.getElement().append(el);
+			new Vue({
+				render: function(ce) {
+					return ce('div', {
+						class: 'glComponent'
+					}, vNodes);
+				},
+				el
+			});
+		}
+		var slots = (<any>this).$slots;
+		for(var tpl in slots) if('default'!== tpl) ((tpl)=> {
+			gl.registerComponent(tpl, function(container) {
+				appendVNodes(container, slots[tpl]);
+			});
+		})(tpl);
+		var scopedSlots = (<any>this).$scopedSlots;
+		for(var tpl in scopedSlots) ((tpl)=> {
+			gl.registerComponent(tpl, function(container, state) {
+				appendVNodes(container, scopedSlots[tpl](state));
+			});
+		})(tpl);
 		gl.init();
 		gl.on('stateChanged', ()=> this.gotState(gl.config));
 		gl.on('initialised', () => {

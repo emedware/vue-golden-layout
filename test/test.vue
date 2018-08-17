@@ -1,6 +1,13 @@
 <template>
 	<div>
 		<layout-golden class="hscreen" ref="topGl">
+			<template slot="stackCtr" slot-scope="{ stackSub }">
+				Added item (id: {{stackSub}})
+				<button @click="remStack(stackSub)">Remove</button>
+			</template>
+			<template slot="bottom">
+				Bottom
+			</template>
 			<gl-col :closable="false">
 				<gl-row :closable="false">
 					<gl-component title="compA">
@@ -13,15 +20,12 @@
 						</p>
 					</gl-component>
 					<gl-stack ref="myStack">
-						<gl-component v-for="stackSub in stackSubs" :key="stackSub" :title="'dynamic'+stackSub">
-							Added item (id: {{stackSub}})
-							<button @click="remStack(stackSub)">Remove</button>
-						</gl-component>
+						<gl-component v-for="stackSub in stackSubs" :key="stackSub"
+							:title="'dynamic'+stackSub"
+							template="stackCtr" :state="{stackSub}" />
 					</gl-stack>
 				</gl-row>
-				<gl-component v-if="bottomSheet">
-					Bottom
-				</gl-component>
+				<gl-component v-if="bottomSheet" template="bottom" />
 			</gl-col>
 		</layout-golden>
 		<golden-router class="hscreen" />

@@ -22,6 +22,9 @@ import {goldenContainer, goldenChild} from './gl-roles'
 	//glCompRoot is displaced as a golden-layout element
 export default class glComponent extends goldenChild {
 	@Prop() title: string
+	@Prop() template: string
+	@Prop() state: any
+
 	@Watch('title') setTitle(title) {
 		if(this.container) this.container.setTitle(title);
 	}
@@ -35,8 +38,9 @@ export default class glComponent extends goldenChild {
 			type: 'component',
 			title: this.title,
 			isClosable: this.closable,
-			componentName: 'template'
-		}
+			componentName: this.template,
+			componentState: this.state
+		};
 	}
 }
 </script>

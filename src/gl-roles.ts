@@ -9,7 +9,12 @@ export class goldenContainer extends Vue {
 	registerComp(component): string { return null; }
 
 	addGlChild(child, comp, index?: number) {
-		if(comp) child = {componentState: { templateId: this.registerComp(comp) }, ...child};
+		if(comp) {
+			if(!child.componentName)
+				child.componentName = this.registerComp(comp);
+			if(!child.componentState)
+				child.componentState = {};
+		}
 		var ci = this.contentItem();
 		if(ci)
 			ci.addChild(child, index);
