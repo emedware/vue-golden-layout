@@ -5,7 +5,7 @@
 </template>
 <script lang="ts">
 import { Vue } from './imports'
-import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
+import {Component, Inject, Model, Prop, Watch, Emit} from 'vue-property-decorator'
 import * as GoldenLayout from 'golden-layout'
 import {goldenContainer} from './gl-roles'
 import * as resize from 'vue-resize-directive'
@@ -22,7 +22,7 @@ export default class layoutGolden extends goldenContainer {
 	@Prop({default: true}) showPopoutIcon: boolean
 	@Prop({default: true}) showMaximiseIcon: boolean
 	@Prop({default: true}) showCloseIcon: boolean
-	@Prop({default: null}) savedState: any
+	@Prop({default: null}) state: any
 
 	
 	@Watch('hasHeaders') @Watch('reorderEnabled') @Watch('selectionEnabled') @Watch('popoutWholeStack')
@@ -45,6 +45,9 @@ export default class layoutGolden extends goldenContainer {
 	dimensionsChanged() {
 		//TODO: change settings in this.gl
 	}
+
+	@Emit('state')
+	gotState(state) {}
 /*
     labels: {
         close: 'close',
@@ -67,8 +70,8 @@ export default class layoutGolden extends goldenContainer {
 	}
 	mounted() {
 		var me = this, layoutRoot = this.$refs.layoutRoot, gl, comps = this.comps;
-		if(this.savedState) {
-			this.config = this.savedState;
+		if(this.state) {
+			this.config = this.state;
 		} else {
 			this.config.settings = {
 				hasHeaders: this.hasHeaders,
@@ -104,7 +107,7 @@ export default class layoutGolden extends goldenContainer {
 		});
 
 		gl.init();
-		gl.on('stateChanged', ()=> this.$emit('state', gl.config));
+		gl.on('stateChanged', ()=> this.gotState(gl.config));
 		gl.on('initialised', () => {
 			if(this.initialisedCB) for(let cb of this.initialisedCB) cb();
 			delete this.initialisedCB;

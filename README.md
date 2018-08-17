@@ -160,3 +160,5 @@ Run `npm run all` - there are two things to bundle: the library and the test pro
 For now, either Vue interact with the layout, either we let the user re-organise
 - goldenKey property to elements (re-use the v-for :key ?)
 - replicate the reorganisation in the ghost structure (list of empty &lt;div&gt; surrounded by display:none; replicating the layout tree)
+- Use container.setState( state ) or container.extendState( state ) to allow dynamic set of model
+- use slots and templates with their names. Also, have `lgc-x` template names instead of state

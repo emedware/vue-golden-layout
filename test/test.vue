@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<layout-golden class="hscreen" @state="onState">
+		<layout-golden class="hscreen" ref="topGl">
 			<gl-col :closable="false">
 				<gl-row :closable="false">
 					<gl-component title="compA">
@@ -46,13 +46,21 @@ body {
 import Vue from 'vue'
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 
+function getState() {
+	var stored = localStorage['browserGL'];
+	return stored ? JSON.parse(stored) : null;
+}
 @Component
 export default class App extends Vue {
 	bottomSheet = false
 	stackSubs = [1]
 	ssId: number = 1
 	devWarned = false
+	state = getState()
 	
+	changedState(state) {
+		localStorage['browserGL'] = JSON.stringify(state);
+	}
 	addStack() {
 		//this.$refs.myStack.addGlChild(...)
 		this.stackSubs.push(++this.ssId);
@@ -62,8 +70,6 @@ export default class App extends Vue {
 		if(~ndx)
 			this.stackSubs.splice(ndx, 1);
 	}
-	onState(state) {
-		console.dir(state);
-	}
+	// this.$refs.topGl.gl is the golden-layout object
 }
 </script>
