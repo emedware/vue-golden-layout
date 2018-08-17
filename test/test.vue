@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<layout-golden class="hscreen" ref="topGl">
+		<layout-golden class="hscreen" ref="topGl" @state="changedState" :state="state">
 			<template slot="stackCtr" slot-scope="{ stackSub }">
 				Added item (id: {{stackSub}})
 				<button @click="remStack(stackSub)">Remove</button>
