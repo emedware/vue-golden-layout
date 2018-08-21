@@ -14,8 +14,8 @@ export default class glGroup extends goldenContainer {
 	$parent: goldenContainer
 	@Prop({default: false}) closable: boolean
 	/// Only the layout object centralise the components
-	registerComp(component): string {
-		return this.$parent.registerComp(component);
+	registerComponent(component): string {
+		return this.$parent.registerComponent(component);
 	}
 	onGlInitialise(cb: ()=> void) {
 		this.$parent.onGlInitialise(cb);

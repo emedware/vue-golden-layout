@@ -14,16 +14,13 @@ const fuse = FuseBox.init({
 		QuantumPlugin({
 			bakeApiIntoBundle : 'vue-golden-layout',
 			containedAPI : true,
-			target: 'npm',
+			target: 'npm',	//'npm-browser' ??
 			globalRequire: false
 		})
 	],
 	package: {
 		name: "vue-golden-layout",
 		main: 'index.ts'
-	},
-	alias: {
-		//vue: 'vue/dist/vue.esm.js'
 	},
 	globals: {
 		'vue-golden-layout': '*'

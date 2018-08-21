@@ -1,8 +1,13 @@
 <template>
-	<golden ref="layout" :state="state" @state="gotState">
+	<golden ref="layout" :state="state" @state="gotState" :ll-components="routeComponents" class="golden-router">
 		<gl-row ref="container" />
 	</golden>
 </template>
+<style>
+.golden-router .lm_content {
+	overflow-y: auto;
+}
+</style>
 <script lang="ts">
 import golden from './golden.vue'
 import { Vue } from './imports'
@@ -68,18 +73,23 @@ export default class router extends Vue {
 				}
 			});
 	}
+	get routeComponents() {
+		var me= this;
+		return {}; /*{
+			route: function(container, state) {
+				var layout = me.layout;
+				var comp = layout.$router.getMatchedComponents(state.path)[0];
+				//TODO: comp can be a string too
+				if('object'=== typeof comp)
+					comp = Vue.extend(comp);
+				var div = document.createElement('div');
+				container.getElement().append(div);
+				new comp({el: div, parent: layout});
+			}
+		};*/
+	}
 	//TODO: $destroy on tab-close/stack-close
 	mounted() {
-		var layout = this.layout;
-		this.gl.registerComponent('route', function(container, state) {
-			var comp = layout.$router.getMatchedComponents(state.path)[0];
-			//TODO: comp can be a string too
-			if('object'=== typeof comp)
-				comp = Vue.extend(comp);
-			var div = document.createElement('div');
-			container.getElement().append(div);
-			new comp({el: div, parent: layout});
-		});
 		//With immediate: true, the watch is called before $refs are initialised
 		this.change(this.$route);
 	}

@@ -23,6 +23,7 @@ export default class layoutGolden extends goldenContainer {
 	@Prop({default: true}) showMaximiseIcon: boolean
 	@Prop({default: true}) showCloseIcon: boolean
 	@Prop({default: null}) state: any
+	@Prop({default: ()=> {}}) llComponents: {[name: string]: ()=>any}
 
 	
 	@Watch('hasHeaders') @Watch('reorderEnabled') @Watch('selectionEnabled') @Watch('popoutWholeStack')
@@ -59,19 +60,21 @@ export default class layoutGolden extends goldenContainer {
 	gl: any
 	tplCount = 0
 	tplPreload = {}
-	//We generate IDs for the layout to be able to save/load
-	registerComp(component): string {
-		var tpl = 'tpl'+(++this.tplCount);
-		var tplData = function(container, state) {
-			container.getElement().append(component.childEl);
-			forwardEvt(container, component, component.events);
-			component.container = container;
-		};
+	
+	registerComponent(component/*: Vue|()=>any*/, name: string): string {
+		if(!name) name = 'tpl'+(++this.tplCount);
+		var tplData = 'function'=== typeof component ?
+			component :
+			function(container, state) {
+				container.getElement().append(component.childEl);
+				forwardEvt(container, component, component.events);
+				component.container = container;
+			};
 		if(this.gl) {
-			this.gl.registerComponent(tpl, tplData);
+			this.gl.registerComponent(name, tplData);
 			/*if DEBUG*/ console.warn('Dynamic golden-layout components should be named templates instead.');
-		} else this.tplPreload[tpl] = tplData;
-		return tpl;
+		} else this.tplPreload[name] = tplData;
+		return name;
 	}
 	initialisedCB: (()=> void)[]
 	onGlInitialise(cb: ()=> void) {
@@ -124,6 +127,23 @@ export default class layoutGolden extends goldenContainer {
 				appendVNodes(container, scopedSlots[tpl](state));
 			});
 		})(tpl);
+		var llComps = (<any>this).llComponents;
+		for(var tpl in llComps) ((tpl)=> {
+			gl.registerComponent(tpl, llComps[tpl]);
+		})(tpl);
+
+		//TODO: Find a way to let that in touter.vue
+		
+		gl.registerComponent('route', function(container, state) {
+			var comp = me.$router.getMatchedComponents(state.path)[0];
+			//TODO: comp can be a string too
+			if('object'=== typeof comp)
+				comp = Vue.extend(comp);
+			var div = document.createElement('div');
+			container.getElement().append(div);
+			new comp({el: div, parent: me});
+		});
+
 		gl.init();
 		//TODO: GL docs specifies not to rely on gl.config but use `toConfig()` (that fails when opening a popup)
 		gl.on('stateChanged', ()=> this.gotState(gl.config));

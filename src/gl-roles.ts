@@ -6,12 +6,12 @@ export class goldenContainer extends Vue {
 	config: any = {
 		content: []
 	}
-	registerComp(component): string { return null; }
+	registerComponent(component): string { return null; }
 
 	addGlChild(child, comp, index?: number) {
 		if(comp) {
 			if(!child.componentName)
-				child.componentName = this.registerComp(comp);
+				child.componentName = this.registerComponent(comp);
 			if(!child.componentState)
 				child.componentState = {};
 		}

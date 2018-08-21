@@ -102,6 +102,10 @@ The `golden-layout` as the `golden-router` both have a *property* and an *event*
 
 ## Low-level functionalities
 
+### ll-components
+The `golden-layout` component can be given a property `ll-components` (standing for low-level components) that is basically a dictionary of golden-layout style generating functions, the key being the template name.
+An exemlpe is visible in `router.vue`
+
 ### CSS
 The glComponent answers to this class to fit in the layout child container, that you can override
 ```stylus
