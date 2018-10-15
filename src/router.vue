@@ -44,9 +44,7 @@ export default class router extends Vue {
 					itemConfig = {
 						type: 'component',
 						componentName: 'route',
-						componentState: {
-							path: route.fullPath
-						},
+						componentState: route,
 						title: this.titler(route)
 					};
 

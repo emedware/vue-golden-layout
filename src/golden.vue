@@ -10,6 +10,16 @@ import * as GoldenLayout from 'golden-layout'
 import {goldenContainer} from './gl-roles'
 import * as resize from 'vue-resize-directive'
 
+
+function renderVNodes(el, vNodes, options?) {
+    return new Vue({
+        render: function(ce) {
+            return ce('div', options, vNodes);
+        },
+        el
+    });
+}
+
 @Component({directives: {resize}})
 export default class layoutGolden extends goldenContainer {
 	//Settings
@@ -106,14 +116,9 @@ export default class layoutGolden extends goldenContainer {
 		function appendVNodes(container, vNodes) {
 			var el = document.createElement('div');
 			container.getElement().append(el);
-			new Vue({
-				render: function(ce) {
-					return ce('div', {
-						class: 'glComponent'
-					}, vNodes);
-				},
-				el
-			});
+            renderVNodes(el, vNodes, {
+                class: 'glComponent'
+            });
 		}
 		var slots = (<any>this).$slots;
 		for(var tpl in slots) if('default'!== tpl) ((tpl)=> {
@@ -132,16 +137,26 @@ export default class layoutGolden extends goldenContainer {
 			gl.registerComponent(tpl, llComps[tpl]);
 		})(tpl);
 
-		//TODO: Find a way to let that in touter.vue
+		//TODO: Find a way to let that in router.vue Now=> component is not registered when poping out
 		
 		gl.registerComponent('route', function(container, state) {
-			var comp = me.$router.getMatchedComponents(state.path)[0];
+			var comp = me.$router.getMatchedComponents(state.fullPath)[0];
 			//TODO: comp can be a string too
 			if('object'=== typeof comp)
 				comp = Vue.extend(comp);
-			var div = document.createElement('div');
-			container.getElement().append(div);
-			new comp({el: div, parent: me});
+			var router = me.$parent, div,
+                template = router.$scopedSlots.default ?
+                    router.$scopedSlots.default(state) :
+                    router.$slots.default;
+            if(template) {   //template is a VNode
+                var dob = renderVNodes(container.getElement()[0], [template]);
+                div = dob.$el.querySelector('main');
+            } else {
+                div = document.createElement('main');
+			    container.getElement().append(div);
+            }
+            if(div)
+			    new comp({el: div, parent: me});
 		});
 
 		gl.init();

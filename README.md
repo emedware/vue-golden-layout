@@ -173,6 +173,11 @@ opened in a split screen or even popped-out in another browser window on another
 
 The main usage is `<golden-router />`. Any options of `router-view` still have to be implemented.
 
+## Slots
+
+A default content can be provided - with or without scope : if a scope is queried, it will be the route object.
+If this content is provided, it should contain a `<main />` thag that will be filled with the loaded component.
+
 ### Titles
 
 One propriety the `golden-router` has more than `router-view` is due to the fact that tabs must have a title. The property `titler`

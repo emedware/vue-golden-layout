@@ -1,5 +1,11 @@
 <template>
 	<div>
+		<golden-router class="hscreen">
+            <div slot-scope="{ meta }">
+                <div> Title: {{meta && meta.title}} </div>
+                <main />
+            </div>
+		</golden-router>
 		<layout-golden class="hscreen" ref="topGl" @state="changedState" :state="state">
 			<template slot="stackCtr" slot-scope="{ stackSub }">
 				Added item (id: {{stackSub}})
@@ -28,7 +34,6 @@
 				<gl-component v-if="bottomSheet" template="bottom" />
 			</gl-col>
 		</layout-golden>
-		<golden-router class="hscreen" />
 	</div>
 </template>
 <style>
