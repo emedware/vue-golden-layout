@@ -97,7 +97,7 @@ hidden: boolean
 
 ## Saving/restoring states
 
-The `golden-layout` as the `golden-router` both have a *property* and an *event* named `state`.
+The `golden-layout` has a *property* and an *event* named `state`.
 - The event is triggered when the state has changed (even deeply, like a deep watch).
 - The property is used **at mount** to initialise the configuration. After that, any change will have no effect.
 
@@ -166,12 +166,12 @@ close()
 The router is a `glContainer` that aims to sublimate the `<router-view />`
 It let people manage their routes in tabs, open them in a split screen or even popped-out in another browser window on another physical display.
 
-The main usage is `<gl-router />`. Any options of `router-view` still have to be implemented.
+The main usage is `<gl-router />`. Any options of `router-view` still has to be implemented.
 
 ## Slots
 
 A default content can be provided - with or without scope : if a scope is queried, it will be the route object.
-If this content is provided, it should contain a `<main />` thag that will be filled with the loaded component.
+If this content is provided, it should contain a `<main />` tag that will be filled with the loaded component.
 
 ## Properties
 ### titler

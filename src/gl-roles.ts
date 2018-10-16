@@ -87,7 +87,7 @@ export class goldenChild extends Vue {
 	}
 	$parent: goldenContainer
 	created() {
-		if(!this.$parent.addGlChild)
+		if(!this.$parent instanceof goldenContainer)
 			throw new Error('gl-component can only appear directly in a golden-layout container');
 	}
 	nodePath() {
@@ -108,9 +108,7 @@ export class goldenChild extends Vue {
 		if(this.glObject)   //It can be destroyed in reaction of the removal of the glObject too
 			this.$parent.removeGlChild(this.glParent.glChildren.indexOf(this));
 	}
-	@Watch('glObject')
-	@Emit('destroy')
-	glDestroyed(v) { return !v; }
+	@Watch('glObject') @Emit() destroy(v) { return !v; }
 
 	events: string[] = ['stateChanged', 'titleChanged', 'activeContentItemChanged', 'itemDestroyed', 'itemCreated',
 		'componentCreated', 'rowCreated', 'columnCreated', 'stackCreated', 'destroy', 'destroyed']
