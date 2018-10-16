@@ -40,35 +40,37 @@ export default class router extends Vue {
 	change(route) {
 		if(route && route.matched.length)
 			this.layout.onGlInitialise(()=> {
-				var stack = this.ci.contentItems.find(x => 'stack'=== x.type),
-					itemConfig = {
-						type: 'component',
-						componentName: 'route',
-						componentState: route,
-						title: this.titler(route)
-					};
+                if(!this.gl._isFullPage) {
+                    var stack = this.ci.contentItems.find(x => 'stack'=== x.type),
+                        itemConfig = {
+                            type: 'component',
+                            componentName: 'route',
+                            componentState: route,
+                            title: this.titler(route)
+                        };
 
-				if(stack) {
-					var already = stack.contentItems.find(x=> x.config.componentState.path == route.fullPath);
-					if(already) stack.setActiveContentItem(already);
-					else stack.addChild(itemConfig);
-				} else {
-					this.ci.addChild({
-						type: 'stack',
-						content: [itemConfig]
-					}, 0);
-					stack = this.ci.contentItems[0];
-				}
-				if(this.stack != stack) {
-					if(this.unwatchStack) this.unwatchStack();
-					this.stack = stack;
-					//this.stackConfig = this.stack.config;	//in order to watch the elements
-					this.unwatchStack = this.$watch(()=> this.stack.config.activeItemIndex, v=> {
-						var path = this.stack.contentItems[v].config.componentState.path;
-						if(path != this.$route.fullPath)
-							this.$router.replace(path);
-					});
-				}
+                    if(stack) {
+                        var already = stack.contentItems.find(x=> x.config.componentState.path == route.fullPath);
+                        if(already) stack.setActiveContentItem(already);
+                        else stack.addChild(itemConfig);
+                    } else {
+                        this.ci.addChild({
+                            type: 'stack',
+                            content: [itemConfig]
+                        }, 0);
+                        stack = this.ci.contentItems[0];
+                    }
+                    if(this.stack != stack) {
+                        if(this.unwatchStack) this.unwatchStack();
+                        this.stack = stack;
+                        //this.stackConfig = this.stack.config;	//in order to watch the elements
+                        this.unwatchStack = this.$watch(()=> this.stack.config.activeItemIndex, v=> {
+                            var path = this.stack.contentItems[v].config.componentState.path;
+                            if(path != this.$route.fullPath)
+                                this.$router.replace(path);
+                        });
+                    }
+                }
 			});
 	}
 	get routeComponents() {
