@@ -8,11 +8,19 @@ class glGroup extends group {
 }
 @Component
 export class glRow extends glGroup {
-	get childConfig() { return {isClosable: this.closable, type: 'row', ...this.config}; }
+	get childConfig() { return {
+        isClosable: this.closable,
+        type: 'row',
+        ...this.config
+    }; }
 }
 @Component
 export class glCol extends glGroup {
-	get childConfig() { return {isClosable: this.closable, type: 'column', ...this.config}; }
+	get childConfig() { return {
+        isClosable: this.closable,
+        type: 'column',
+        ...this.config
+    }; }
 }
 @Component
 export class glStack extends glGroup {
@@ -20,25 +28,25 @@ export class glStack extends glGroup {
 	@Model('tab-change') activeTab: string
 	@Emit() tabChange(tabId) { }
 	@Watch('activeTab') progTabChange(tabId) {
-		for(var child of this.$children)
+		for(var child of this.glChildren)
 			if((<goldenChild>child).tabId === tabId)
-				(<any>this).contentItem().setActiveContentItem((<any>child).container.parent);
+				(<any>this).glObject.setActiveContentItem((<any>child).container.parent);
 	}
 	get childConfig() {
 		(<any>this).onGlInitialise(()=> {
 			this.$watch(()=> {
-				var ci : any = (<any>this).contentItem();
+				var ci : any = (<any>this).glObject;
 				return ci && ci.config.activeItemIndex;
 			}, v=> {
 				if('number'=== typeof v)
-					this.tabChange((<goldenChild>this.$children[v]).tabId);
+					this.tabChange((<goldenChild>this.glChildren[v]).tabId);
 			});
 		});
 		return {
 			//TODO: initialisation with an activeItemIndex different from 0 makes a bug (renders wrongly tab 0)
 			activeItemIndex: Math.max(0, (<any>this.$children).findIndex(c => c.tabId === this.activeTab)),
 			isClosable: this.closable,
-			type: 'stack'
-		, ...this.config};
+			type: 'stack',
+		    ...this.config};
 	}
 }

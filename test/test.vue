@@ -1,12 +1,6 @@
 <template>
 	<div>
-		<golden-router class="hscreen">
-            <div slot-scope="{ meta }">
-                <div> Title: {{meta && meta.title}} </div>
-                <main />
-            </div>
-		</golden-router>
-		<layout-golden class="hscreen" ref="topGl" @state="changedState" :state="state">
+		<golden-layout class="hscreen" ref="topGl" @state="changedState" :state="state">
 			<template slot="stackCtr" slot-scope="{ stackSub }">
 				Added item (id: {{stackSub}})
 				<button @click="remStack(stackSub)">Remove</button>
@@ -15,6 +9,12 @@
 				Bottom
 			</template>
 			<gl-col :closable="false">
+                <gl-router>
+                    <div slot-scope="{ meta }">
+                        <div> Title: {{meta && meta.title}} </div>
+                        <main />
+                    </div>
+                </gl-router>
 				<gl-row :closable="false">
 					<gl-component title="compA">
 						<h1>CompA</h1>
@@ -29,12 +29,13 @@
 					<gl-stack ref="myStack">
 						<gl-component v-for="stackSub in stackSubs" :key="stackSub"
 							:title="'dynamic'+stackSub"
+                            @destroy="closed(stackSub)"
 							template="stackCtr" :state="{stackSub}" />
 					</gl-stack>
 				</gl-row>
 				<gl-component v-if="bottomSheet" template="bottom" />
 			</gl-col>
-		</layout-golden>
+		</golden-layout>
 	</div>
 </template>
 <style>
@@ -43,7 +44,7 @@ body {
 }
 .hscreen {
 	width: 100vw;
-	height: 50vh;
+	height: 100vh;
 }
 /* This is a hack to remove when fuse-box has a well-set npm mode */
 .glComponent {
@@ -57,22 +58,34 @@ import Vue from 'vue'
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 import {letters} from './router'
 
-function getState() {
-	var stored = localStorage['browserGL'];
-	return stored ? JSON.parse(stored) : null;
-}
+var stored = localStorage.browserGL;
+stored = stored ? JSON.parse(stored) : {
+    state: null,
+    stackSubs: [1],
+    ssId: 1
+};
+
 @Component
 export default class App extends Vue {
 	bottomSheet = false
-	stackSubs = [1]
-	ssId: number = 1
+	stackSubs: number[] = stored.stackSubs
+	ssId: number = stored.ssId
 	devWarned = false
-	state = getState()
+	state = stored.state
 	letters = letters
 
 	changedState(state) {
-		localStorage['browserGL'] = JSON.stringify(state);
+		localStorage.browserGL = JSON.stringify({
+            state,
+            stackSubs: this.stackSubs,
+            ssId: this.ssId
+        });
 	}
+    closed(n) {
+        var ndx = this.stackSubs.indexOf(n);
+        console.assert(!!~ndx, 'Element in state array');
+        this.stackSubs.splice(ndx, 1);
+    }
 	addStack() {
 		//this.$refs.myStack.addGlChild(...)
 		this.stackSubs.push(++this.ssId);

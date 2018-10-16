@@ -18,7 +18,7 @@ The file dist/index.html then shows test/test.vue in action
 ## Example
 
 ```html
-<layout-golden>
+<golden-layout>
 	<gl-col>
 		<gl-component title="compA">
 			<h1>CompA</h1>
@@ -30,7 +30,7 @@ The file dist/index.html then shows test/test.vue in action
 			...
 		</gl-stack>
 	</gl-col>
-</layout-golden>
+</golden-layout>
 ```
 ## Don't forget in order to make it work
 - Include a golden-layout theme CSS.
@@ -102,9 +102,12 @@ The `golden-layout` as the `golden-router` both have a *property* and an *event*
 
 ## Low-level functionalities
 
-### ll-components
-The `golden-layout` component can be given a property `ll-components` (standing for low-level components) that is basically a dictionary of golden-layout style generating functions, the key being the template name.
-An exemlpe is visible in `router.vue`
+### global components
+Some golden-layout global component can be given before any instanciation (while declaring classes) by calling this function:
+```typescript
+static registerGlobalComponent(name: string, comp: (gl: goldenLayout)=> (container: any, state: any)=> void)
+```
+`(container: any, state: any)=> void` is the signature of a gloden-layout component and they are created per golden-layout instances
 
 ### CSS
 The glComponent answers to this class to fit in the layout child container, that you can override
@@ -165,25 +168,27 @@ show()
 close()
 ```
 
-# golden-router
+# gl-router
 
-The router is a `layout-golden` that aims to sublimate the `<router-view />`
-It takes perhaps more options than the later (even if it is not sure) and let people manage their routes in tabs, then having two
-opened in a split screen or even popped-out in another browser window on another physical display.
+The router is a `glContainer` that aims to sublimate the `<router-view />`
+It let people manage their routes in tabs, open them in a split screen or even popped-out in another browser window on another physical display.
 
-The main usage is `<golden-router />`. Any options of `router-view` still have to be implemented.
+The main usage is `<gl-router />`. Any options of `router-view` still have to be implemented.
 
 ## Slots
 
 A default content can be provided - with or without scope : if a scope is queried, it will be the route object.
 If this content is provided, it should contain a `<main />` thag that will be filled with the loaded component.
 
-### Titles
+## Properties
+### titler
 
-One propriety the `golden-router` has more than `router-view` is due to the fact that tabs must have a title. The property `titler`
-allows you to specify a function that takes a route object in parameter and gives the string that will be used as title.
-
+Allows you to specify a function that takes a route object in parameter and gives the string that will be used as tab title.
 If none is specified, the default is to take `$route.meta.title` - this means that routes have to be defined with a title in their meta-data.
+
+### empty-route
+
+Specify the URL to use when the user closes all the tabs (`"/"` by default)
 
 # To test
 

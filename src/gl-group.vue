@@ -14,16 +14,11 @@ export default class glGroup extends goldenContainer {
 	$parent: goldenContainer
 	@Prop({default: false}) closable: boolean
 	/// Only the layout object centralise the components
-	registerComponent(component): string {
-		return this.$parent.registerComponent(component);
+	registerComponent(component/*: Vue|()=>any*/, name?: string): string {
+		return this.$parent.registerComponent(component, name);
 	}
 	onGlInitialise(cb: ()=> void) {
 		this.$parent.onGlInitialise(cb);
-	}
-	contentItem() {
-		var ci = this.$parent.contentItem();
-		//Math.min because the root has only one `contentItems` (me) but I am not the only child
-		return ci && ci.contentItems[Math.min(this.$parent.$children.indexOf(this), ci.contentItems.length)];
 	}
 }
 </script>
