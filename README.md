@@ -11,9 +11,10 @@ In order to test, after cloning, a static application can be compiled :
 ```
 npm install
 npm fuse
-npm run test/compile
+npm run test
+npm run serve
 ```
-The file dist/index.html then shows test/test.vue in action
+There is an SAP server on localhost:8080
 
 ## Example
 
@@ -40,7 +41,7 @@ import 'golden-layout/src/css/goldenlayout-light-theme.css'
 `goldenlayout-base.css` is already integrated to the library.
 
 ## Usage
-This library integrate a straightforward way bundling with [fuse-box](http://fuse-box.org/). If you make a project with this bundler, it will be straight-forward.
+This library integrate a straightforward way bundling with [fuse-box](http://fuse-box.org/). The test is bundled with webpack to make sure it works.
 
 ```javascript
 import vgl from 'vue-golden-layout'
@@ -111,11 +112,12 @@ static registerGlobalComponent(name: string, comp: (gl: goldenLayout)=> (contain
 
 ### CSS
 The glComponent answers to this class to fit in the layout child container, that you can override
-```stylus
-.glComponent
-	width 100%
-	height 100%
-	overflow auto
+```css
+.glComponent {
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+}
 ```
 
 ### Events
@@ -136,18 +138,9 @@ initialised
 activeContentItemChanged
 ```
 #### Contained objects
-Straight forwards from golden-layout, refer to their doc
-```javascript
-show
-shown
-maximised
-minimised
-resize
-hide
-close
-open
-destroy
-```
+
+`destroy` is provided for all components beside the golden-layout object. It occurs on user's closure of pop-out.
+
 ### Methods
 #### Container
 These are defined on the container objects
@@ -155,7 +148,7 @@ These are defined on the container objects
 ```javascript
 addGlChild(child, comp)
 ```
-'child' is a configuration object (cfr golden-layout doc.), 'comp' is a vue component of a contained object
+`child` is a configuration object (cfr golden-layout doc.), 'comp' is a vue component of a contained object
 The child.componentState.templateId will be managed : don't fuss with the IDs, just give the component (your specified ID won't be replaced)
 ```javascript
 removeGlChild(index)
@@ -189,15 +182,3 @@ If none is specified, the default is to take `$route.meta.title` - this means th
 ### empty-route
 
 Specify the URL to use when the user closes all the tabs (`"/"` by default)
-
-# To test
-
-Run `npm run all` - there are two things to bundle: the library and the test program. After that, run `npm run serve`, this will launch the minimalistic server as SPA don't fit with file serving.
-
-# TODOs
-
-## Re-ordering and interactions
-For now, either Vue interact with the layout, either we let the user re-organise
-- goldenKey property to elements (re-use the v-for :key ?)
-- replicate the reorganisation in the ghost structure (list of empty &lt;div&gt; surrounded by display:none; replicating the layout tree)
-- Use container.setState( state ) or container.extendState( state ) to allow dynamic set of state
