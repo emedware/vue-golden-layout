@@ -1,8 +1,14 @@
 import Vue from 'vue';
-const routes = [
-	{ path: '/a', component: {template: '<p>test-A</p>'}, meta: {title: 'A-test'}},
-	{ path: '/b', component: {template: '<p>test-B</p>'}, meta: {title: 'B-test'}}
-];
+export const letters = 'abcdef';
+const routes = [];
+for(let l of letters) {
+    let L = l.toUpperCase();
+    routes.push({
+        path: `/${l}`,
+        component: {template: `<p>test-${L}</p>`},
+        meta: {title: `${L}-test`}
+    });
+}
 
 import VueRouter from 'vue-router'
 

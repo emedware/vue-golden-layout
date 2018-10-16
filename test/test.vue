@@ -20,9 +20,10 @@
 						<h1>CompA</h1>
 						<button @click="bottomSheet = !bottomSheet">Toggle</button>
 						<button @click="addStack">Add</button>
-						<p>
-							<router-link to="/a">test-a</router-link>
-							<router-link to="/b">test-b</router-link>
+                        <p>
+                            <span v-for="l in letters" :key="l">
+                                <router-link :to="`/${l}`">test-{{l}}</router-link>&nbsp;
+                            </span>
 						</p>
 					</gl-component>
 					<gl-stack ref="myStack">
@@ -54,6 +55,7 @@ body {
 <script lang="ts">
 import Vue from 'vue'
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
+import {letters} from './router'
 
 function getState() {
 	var stored = localStorage['browserGL'];
@@ -66,7 +68,8 @@ export default class App extends Vue {
 	ssId: number = 1
 	devWarned = false
 	state = getState()
-	
+	letters = letters
+
 	changedState(state) {
 		localStorage['browserGL'] = JSON.stringify(state);
 	}
