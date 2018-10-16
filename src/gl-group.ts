@@ -9,18 +9,18 @@ class glGroup extends group {
 @Component
 export class glRow extends glGroup {
 	get childConfig() { return {
-        isClosable: this.closable,
-        type: 'row',
-        ...this.config
-    }; }
+		isClosable: this.closable,
+		type: 'row',
+		...this.config
+	}; }
 }
 @Component
 export class glCol extends glGroup {
 	get childConfig() { return {
-        isClosable: this.closable,
-        type: 'column',
-        ...this.config
-    }; }
+		isClosable: this.closable,
+		type: 'column',
+		...this.config
+	}; }
 }
 @Component
 export class glStack extends glGroup {
@@ -47,6 +47,6 @@ export class glStack extends glGroup {
 			activeItemIndex: Math.max(0, (<any>this.$children).findIndex(c => c.tabId === this.activeTab)),
 			isClosable: this.closable,
 			type: 'stack',
-		    ...this.config};
+			...this.config};
 	}
 }

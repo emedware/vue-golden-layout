@@ -9,31 +9,31 @@
 				Bottom
 			</template>
 			<gl-col :closable="false">
-                <gl-router>
-                    <div slot-scope="{ meta }">
-                        <div> Title: {{meta && meta.title}} </div>
-                        <main />
-                    </div>
-                </gl-router>
+				<gl-router>
+					<div slot-scope="{ meta }">
+						<div> Title: {{meta && meta.title}} </div>
+						<main />
+					</div>
+				</gl-router>
 				<gl-row :closable="false">
 					<gl-component title="compA">
 						<h1>CompA</h1>
 						<button @click="bottomSheet = !bottomSheet">Toggle</button>
 						<button @click="addStack">Add</button>
-                        <p>
-                            <span v-for="l in letters" :key="l">
-                                <router-link :to="`/${l}`">test-{{l}}</router-link>&nbsp;
-                            </span>
+						<p>
+							<span v-for="l in letters" :key="l">
+								<router-link :to="`/${l}`">test-{{l}}</router-link>&nbsp;
+							</span>
 						</p>
 					</gl-component>
 					<gl-stack ref="myStack">
 						<gl-component v-for="stackSub in stackSubs" :key="stackSub"
 							:title="'dynamic'+stackSub"
-                            @destroy="closed(stackSub)"
+							@destroy="closed(stackSub)"
 							template="stackCtr" :state="{stackSub}" />
 					</gl-stack>
 				</gl-row>
-				<gl-component v-if="bottomSheet" template="bottom" />
+				<gl-component v-if="bottomSheet" template="bottom" @destroy="bottomSheet = false" />
 			</gl-col>
 		</golden-layout>
 	</div>
@@ -60,14 +60,15 @@ import {letters} from './router'
 
 var stored = localStorage.browserGL;
 stored = stored ? JSON.parse(stored) : {
-    state: null,
-    stackSubs: [1],
-    ssId: 1
+	state: null,
+	stackSubs: [1],
+	ssId: 1,
+	bottomSheet: false
 };
 
 @Component
 export default class App extends Vue {
-	bottomSheet = false
+	bottomSheet = stored.bottomSheet
 	stackSubs: number[] = stored.stackSubs
 	ssId: number = stored.ssId
 	devWarned = false
@@ -76,16 +77,17 @@ export default class App extends Vue {
 
 	changedState(state) {
 		localStorage.browserGL = JSON.stringify({
-            state,
-            stackSubs: this.stackSubs,
-            ssId: this.ssId
-        });
+			state,
+			stackSubs: this.stackSubs,
+			ssId: this.ssId,
+			bottomSheet: this.bottomSheet
+		});
 	}
-    closed(n) {
-        var ndx = this.stackSubs.indexOf(n);
-        console.assert(!!~ndx, 'Element in state array');
-        this.stackSubs.splice(ndx, 1);
-    }
+	closed(n) {
+		var ndx = this.stackSubs.indexOf(n);
+		console.assert(!!~ndx, 'Element in state array');
+		this.stackSubs.splice(ndx, 1);
+	}
 	addStack() {
 		//this.$refs.myStack.addGlChild(...)
 		this.stackSubs.push(++this.ssId);

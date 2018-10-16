@@ -6,61 +6,61 @@
   "ts:main": "src/index.ts",
   "typings": "src/index.ts",
   "keywords": [
-    "vue",
-    "golden-layout",
-    "golden",
-    "layout",
-    "integration"
+	"vue",
+	"golden-layout",
+	"golden",
+	"layout",
+	"integration"
   ],
   "directories": {
-    "test": "test"
+	"test": "test"
   },
   "scripts": {
-    "compile": "node fuse",
-    "all": "npm run compile && npm run test",
-    "test": "webpack --config test/webpack.config.js",
-    "serve": "node test/server"
+	"compile": "node fuse",
+	"all": "npm run compile && npm run test",
+	"test": "webpack --config test/webpack.config.js",
+	"serve": "node test/server"
   },
   "repository": {
-    "type": "git",
-    "url": "git+https://github.com/eddow/vue-golden-layout.git"
+	"type": "git",
+	"url": "git+https://github.com/eddow/vue-golden-layout.git"
   },
   "author": "fmdm",
   "license": "MIT",
   "devDependencies": {
-    "@types/jquery": "^2.0.41",
-    "acorn-es7-plugin": "^1.1.7",
-    "babel-core": "^6.26.0",
-    "css-loader": "^0.28.7",
-    "express": "^4.16.3",
-    "fuse-box": "^3.4.0",
-    "html-webpack-plugin": "^2.30.1",
-    "source-map-loader": "^0.2.1",
-    "style-loader": "^0.18.2",
-    "ts-loader": "^2.3.7",
-    "tslib": "^1.9.0",
-    "tslint": "^5.11.0",
-    "typescript": "^2.5.3",
-    "upgrade": "^1.1.0",
-    "vue": "^2.5.17",
-    "vue-loader": "^13.0.5",
-    "vue-router": "^3.0.1",
-    "vue-template-compiler": "^2.5.17",
-    "vue-template-es2015-compiler": "^1.5.3",
-    "webpack": "^3.6.0"
+	"@types/jquery": "^2.0.41",
+	"acorn-es7-plugin": "^1.1.7",
+	"babel-core": "^6.26.0",
+	"css-loader": "^0.28.7",
+	"express": "^4.16.3",
+	"fuse-box": "^3.4.0",
+	"html-webpack-plugin": "^2.30.1",
+	"source-map-loader": "^0.2.1",
+	"style-loader": "^0.18.2",
+	"ts-loader": "^2.3.7",
+	"tslib": "^1.9.0",
+	"tslint": "^5.11.0",
+	"typescript": "^2.5.3",
+	"upgrade": "^1.1.0",
+	"vue": "^2.5.17",
+	"vue-loader": "^13.0.5",
+	"vue-router": "^3.0.1",
+	"vue-template-compiler": "^2.5.17",
+	"vue-template-es2015-compiler": "^1.5.3",
+	"webpack": "^3.6.0"
   },
   "dependencies": {
-    "golden-layout": "^1.5.8",
-    "jquery": "^3.2.1",
-    "vue-property-decorator": "^6.0.0",
-    "vue-resize-directive": "^1.0.0"
+	"golden-layout": "^1.5.8",
+	"jquery": "^3.2.1",
+	"vue-property-decorator": "^6.0.0",
+	"vue-resize-directive": "^1.0.0"
   },
   "peerDependencies": {
-    "vue": "^2.5.17",
-    "vue-router": "^3.0.1"
+	"vue": "^2.5.17",
+	"vue-router": "^3.0.1"
   },
   "bugs": {
-    "url": "https://github.com/eddow/vue-golden-layout/issues"
+	"url": "https://github.com/eddow/vue-golden-layout/issues"
   },
   "homepage": "https://github.com/eddow/vue-golden-layout"
 }

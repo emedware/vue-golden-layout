@@ -6,21 +6,21 @@ export class goldenContainer extends Vue {
 	config: any = {
 		content: []
 	}
-    glObject: any = null
+	glObject: any = null
 	registerComponent(component/*: Vue|()=>any*/, name?: string): string { throw 'unimplemented'; }
-    childPath(comp: Vue): string {
-        var rv = this.nodePath?`${this.nodePath()}.`:'';
-        var ndx = this.$children.indexOf(comp);
-        console.assert(~ndx, 'Children exists');
-        return rv+ndx;
-    }
-    getChild(path: string) {
-        var nrs = path.split('.');
-        var ndx = nrs.shift();
-        var next = this.$children[ndx];
-        console.assert(next, "Vue structure correspond to loaded GL configuration");
-        return nrs.length ? next.getChild(nrs.join('.')) : next;
-    }
+	childPath(comp: Vue): string {
+		var rv = this.nodePath?`${this.nodePath()}.`:'';
+		var ndx = this.$children.indexOf(comp);
+		console.assert(~ndx, 'Children exists');
+		return rv+ndx;
+	}
+	getChild(path: string) {
+		var nrs = path.split('.');
+		var ndx = nrs.shift();
+		var next = this.$children[ndx];
+		console.assert(next, "Vue structure correspond to loaded GL configuration");
+		return nrs.length ? next.getChild(nrs.join('.')) : next;
+	}
 
 	addGlChild(child, comp, index?: number) {
 		if(comp && 'component'=== child.type) {
@@ -49,9 +49,9 @@ export class goldenContainer extends Vue {
 				this.config.content[index].index = index;
 		}
 	}
-    get glChildren() {
-        return this.glObject.contentItems.map(x=> x.vueObject);
-    }
+	get glChildren() {
+		return this.glObject.contentItems.map(x=> x.vueObject);
+	}
 	onGlInitialise(cb: ()=> void): void { throw 'Not implemented'; }
 	events: string[] = ['open', 'resize', 'destroy', 'close', 'tab', 'hide', 'show']
 }
@@ -64,11 +64,11 @@ export class goldenChild extends Vue {
 	@Watch('height') reHeight(h) { this.container && this.container.setSize(false, h); }
 	
 	@Prop() tabId: string
-    glObject: any = null
+	glObject: any = null
 
 	get childConfig() { return null; }
 	get childEl() { return null; }
-    get glParent() { return this.glObject.parent.vueObject; }
+	get glParent() { return this.glObject.parent.vueObject; }
 	container = null;
 
 	hide() { this.container && this.container.hide(); }
@@ -90,28 +90,28 @@ export class goldenChild extends Vue {
 		if(!this.$parent.addGlChild)
 			throw new Error('gl-component can only appear directly in a golden-layout container');
 	}
-    nodePath() {
-        return this.$parent.childPath(this);
-    }
+	nodePath() {
+		return this.$parent.childPath(this);
+	}
 
 	mounted() {
 		var dimensions:any = {};
 		if(undefined!== this.width) dimensions.width = this.width;
 		if(undefined!== this.height) dimensions.height = this.height;
 		this.$parent.addGlChild({
-            ...dimensions,
-            ...this.childConfig,
-            vue: this.nodePath()
-        }, this, this.$parent.$children.indexOf(this));
+			...dimensions,
+			...this.childConfig,
+			vue: this.nodePath()
+		}, this, this.$parent.$children.indexOf(this));
 	}
 	beforeDestroy() {
-        if(this.glObject)   //It can be destroyed in reaction of the removal of the glObject too
-		    this.$parent.removeGlChild(this.glParent.glChildren.indexOf(this));
+		if(this.glObject)   //It can be destroyed in reaction of the removal of the glObject too
+			this.$parent.removeGlChild(this.glParent.glChildren.indexOf(this));
 	}
-    @Watch('glObject')
-    @Emit('destroy')
-    glDestroyed(v) { return !v; }
+	@Watch('glObject')
+	@Emit('destroy')
+	glDestroyed(v) { return !v; }
 
 	events: string[] = ['stateChanged', 'titleChanged', 'activeContentItemChanged', 'itemDestroyed', 'itemCreated',
-        'componentCreated', 'rowCreated', 'columnCreated', 'stackCreated', 'destroy', 'destroyed']
+		'componentCreated', 'rowCreated', 'columnCreated', 'stackCreated', 'destroy', 'destroyed']
 }

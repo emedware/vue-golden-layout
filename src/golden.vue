@@ -5,7 +5,7 @@
 </template>
 <style>
 .lm_goldenlayout .lm_content {
-    overflow-y: auto;
+	overflow-y: auto;
 }
 </style>
 <script lang="ts">
@@ -19,10 +19,10 @@ var globalComponents: {[name: string] : (gl: goldenLayout)=> (container: any, st
 
 @Component({directives: {resize}})
 export default class goldenLayout extends goldenContainer {
-    static registerGlobalComponent(name: string, comp: (gl: goldenLayout)=> (container: any, state: any)=> void) {
-        console.assert(!globalComponents[name], `Component name "${name}" unused`);
-        globalComponents[name] = comp;
-    }
+	static registerGlobalComponent(name: string, comp: (gl: goldenLayout)=> (container: any, state: any)=> void) {
+		console.assert(!globalComponents[name], `Component name "${name}" unused`);
+		globalComponents[name] = comp;
+	}
 
 	//Settings
 	@Prop({default: true}) hasHeaders: boolean
@@ -60,12 +60,12 @@ export default class goldenLayout extends goldenContainer {
 	@Emit('state')
 	gotState(state) {}
 /*
-    labels: {
-        close: 'close',
-        maximise: 'maximise',
-        minimise: 'minimise',
-        popout: 'open in new window'
-    },*/
+	labels: {
+		close: 'close',
+		maximise: 'maximise',
+		minimise: 'minimise',
+		popout: 'open in new window'
+	},*/
 
 	gl: any
 	tplCount = 0
@@ -116,9 +116,9 @@ export default class goldenLayout extends goldenContainer {
 		function appendVNodes(container, vNodes) {
 			var el = document.createElement('div');
 			container.getElement().append(el);
-            renderVNodes(el, vNodes, {
-                class: 'glComponent'
-            });
+			renderVNodes(el, vNodes, {
+				class: 'glComponent'
+			});
 		}
 		var slots = (<any>this).$slots;
 		for(var tpl in slots) if('default'!== tpl) ((tpl)=> {
@@ -138,18 +138,18 @@ export default class goldenLayout extends goldenContainer {
 
 		gl.init();
 		var stateChangedTimeout = false;
-        var raiseStateChanged = ()=> {
-            setTimeout(()=> {
-                try {
-                    //gl.toConfig() raise exceptions when opening a popup
-                    //it allso raise a 'stateChanged' event when closing a popup => inf call
-                    this.gotState(gl.toConfig());
-                }
-                catch(e) {
-                    raiseStateChanged();
-                }
-            }, 500);
-        };
+		var raiseStateChanged = ()=> {
+			setTimeout(()=> {
+				try {
+					//gl.toConfig() raise exceptions when opening a popup
+					//it allso raise a 'stateChanged' event when closing a popup => inf call
+					this.gotState(gl.toConfig());
+				}
+				catch(e) {
+					raiseStateChanged();
+				}
+			}, 500);
+		};
 		gl.on('stateChanged', raiseStateChanged);
 		gl.on('initialised', () => {
 			if(this.initialisedCB) for(let cb of this.initialisedCB) cb(gl);
@@ -157,20 +157,20 @@ export default class goldenLayout extends goldenContainer {
 		});
 		gl.on('itemCreated', (itm) => {
 			itm.vueObject = itm === gl.root ? this :
-                itm.config.vue ? this.getChild(itm.config.vue) :
-                {};
-            itm.vueObject.glObject = itm;
-            if(itm.config.vue) {
-                itm.config.__defineGetter__('vue', ()=> itm.vueObject.nodePath());
-            }
+				itm.config.vue ? this.getChild(itm.config.vue) :
+				{};
+			itm.vueObject.glObject = itm;
+			if(itm.config.vue) {
+				itm.config.__defineGetter__('vue', ()=> itm.vueObject.nodePath());
+			}
 		});
 		gl.on('itemDestroyed', (itm) => {
 			itm.vueObject.glObject = null;
-            //Bugfix: when destroying a tab before itm, stack' activeItemIndex is not updated and become invalid
-            if('stack'=== itm.parent.type && itm.parent.contentItems.indexOf(itm) < itm.parent.config.activeItemIndex)
-                setTimeout(()=> {
-                    --itm.parent.config.activeItemIndex;
-                });
+			//Bugfix: when destroying a tab before itm, stack' activeItemIndex is not updated and become invalid
+			if('stack'=== itm.parent.type && itm.parent.contentItems.indexOf(itm) < itm.parent.config.activeItemIndex)
+				setTimeout(()=> {
+					--itm.parent.config.activeItemIndex;
+				});
 		});
 		forwardEvt(gl, this, ['itemCreated', 'stackCreated', 'rowCreated', 'tabCreated', 'columnCreated', 'componentCreated', 'selectionChanged',
 			'windowOpened', 'windowClosed', 'itemDestroyed', 'initialised',
@@ -179,13 +179,13 @@ export default class goldenLayout extends goldenContainer {
 	onResize() { this.gl && this.gl.updateSize(); }
 }
 
-function renderVNodes(el, vNodes, options?) {
-    return new Vue({
-        render: function(ce) {
-            return ce('div', options, vNodes);
-        },
-        el
-    });
+export function renderVNodes(el, vNodes, options?) {
+	return new Vue({
+		render: function(ce) {
+			return ce('div', options, vNodes);
+		},
+		el
+	});
 }
 function forwardEvt(from, toward, events) {
 	for(let event of events)
