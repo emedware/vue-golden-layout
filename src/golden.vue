@@ -107,6 +107,14 @@ export default class goldenLayout extends goldenContainer {
 				showMaximiseIcon: this.showMaximiseIcon,
 				showCloseIcon: this.showCloseIcon
 			};
+			this.config.dimensions = {
+				borderWidth: this.borderWidth,
+				minItemHeight: this.minItemHeight,
+				minItemWidth: this.minItemWidth,
+				headerHeight: this.headerHeight,
+				dragProxyWidth: this.dragProxyWidth,
+				dragProxyHeight: this.dragProxyHeight
+			};
 		}
 		this.gl = gl = new GoldenLayout(this.config, <Element>layoutRoot);
 		
