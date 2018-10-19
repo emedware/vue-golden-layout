@@ -1,6 +1,6 @@
 {
   "name": "vue-golden-layout",
-  "version": "1.5.1",
+  "version": "1.5.3",
   "description": "Integration of the golden-layout to Vue",
   "main": "dist/vue-golden-layout.js",
   "ts:main": "src/index.ts",

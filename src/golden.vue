@@ -124,7 +124,7 @@ export default class goldenLayout extends goldenContainer {
 		function appendVNodes(container, vNodes) {
 			var el = document.createElement('div');
 			container.getElement().append(el);
-			renderVNodes(el, vNodes, {
+			renderVNodes(me, el, vNodes, {
 				class: 'glComponent'
 			});
 		}
@@ -144,8 +144,6 @@ export default class goldenLayout extends goldenContainer {
 			gl.registerComponent(tpl, globalComponents[tpl](this));
 		})(tpl);
 
-		gl.init();
-		var stateChangedTimeout = false;
 		var raiseStateChanged = ()=> {
 			setTimeout(()=> {
 				try {
@@ -183,15 +181,19 @@ export default class goldenLayout extends goldenContainer {
 		forwardEvt(gl, this, ['itemCreated', 'stackCreated', 'rowCreated', 'tabCreated', 'columnCreated', 'componentCreated', 'selectionChanged',
 			'windowOpened', 'windowClosed', 'itemDestroyed', 'initialised',
 			'activeContentItemChanged']);
+		gl.init();
 	}
 	onResize() { this.gl && this.gl.updateSize(); }
 }
 
-export function renderVNodes(el, vNodes, options?) {
+export function renderVNodes(parent, el, vNodes, options?) {
 	return new Vue({
 		render: function(ce) {
-			return ce('div', options, vNodes);
+			return vNodes instanceof Array ?
+                ce('div', options, vNodes) :
+                vNodes;
 		},
+        parent,
 		el
 	});
 }

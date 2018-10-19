@@ -9,7 +9,7 @@
 				Bottom
 			</template>
 			<template slot="route" slot-scope="{ meta }">
-				<div> Title: {{meta && meta.title}} </div>
+                <p-head :title="meta && meta.title" />
 				<main />
 			</template>
 			<gl-col :closable="false">
@@ -56,6 +56,7 @@ body {
 import Vue from 'vue'
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 import {letters} from './router'
+import PHead from './p-head.vue'
 
 var stored = localStorage.browserGL;
 stored = stored ? JSON.parse(stored) : {
@@ -65,7 +66,7 @@ stored = stored ? JSON.parse(stored) : {
 	bottomSheet: false
 };
 
-@Component
+@Component({components: {PHead}})
 export default class App extends Vue {
 	bottomSheet = stored.bottomSheet
 	stackSubs: number[] = stored.stackSubs

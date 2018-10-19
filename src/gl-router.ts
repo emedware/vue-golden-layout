@@ -21,8 +21,7 @@ goldenLayout.registerGlobalComponent(RouteComponentName, gl=> function(container
 			gl.$scopedSlots.route(state) :
 			gl.$slots.route;
 		if(template) {   //template is a VNode
-			var dob = renderVNodes(container.getElement()[0], [template]);
-			div = dob.$el.querySelector('main');
+			div = renderVNodes(gl, container.getElement()[0], template).$el.querySelector('main');
 		} else {
 			div = document.createElement('main');
 			container.getElement().append(div);
