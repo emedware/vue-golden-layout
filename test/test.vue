@@ -8,13 +8,12 @@
 			<template slot="bottom">
 				Bottom
 			</template>
+			<template slot="route" slot-scope="{ meta }">
+				<div> Title: {{meta && meta.title}} </div>
+				<main />
+			</template>
 			<gl-col :closable="false">
-				<gl-router>
-					<div slot-scope="{ meta }">
-						<div> Title: {{meta && meta.title}} </div>
-						<main />
-					</div>
-				</gl-router>
+				<gl-router />
 				<gl-row :closable="false">
 					<gl-component title="compA">
 						<h1>CompA</h1>

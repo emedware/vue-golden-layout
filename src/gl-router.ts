@@ -9,16 +9,17 @@ function defaultTitle(route: any): string {
 	return (route.meta && route.meta.title) || 'set $route.meta.title';
 }
 
-goldenLayout.registerGlobalComponent('route', gl=> function(container, state) {
+const RouteComponentName = '$router-route';
+
+goldenLayout.registerGlobalComponent(RouteComponentName, gl=> function(container, state) {
 	gl.onGlInitialise(()=> {
-		var router = container.parent.parent.parent.vueObject,
-			comp = router.$router.getMatchedComponents(state.fullPath)[0];
+		var comp = gl.$router.getMatchedComponents(state.fullPath)[0];
 		//TODO: comp can be a string too
 		if('object'=== typeof comp)
 			comp = Vue.extend(comp);
-		var div, template = router.$scopedSlots.default ?
-			router.$scopedSlots.default(state) :
-			router.$slots.default;
+		var div, template = gl.$scopedSlots.route ?
+			gl.$scopedSlots.route(state) :
+			gl.$slots.route;
 		if(template) {   //template is a VNode
 			var dob = renderVNodes(container.getElement()[0], [template]);
 			div = dob.$el.querySelector('main');
@@ -26,7 +27,9 @@ goldenLayout.registerGlobalComponent('route', gl=> function(container, state) {
 			div = document.createElement('main');
 			container.getElement().append(div);
 		}
-		if(div) new comp({el: div, parent: router});
+		var parent = container.parent.parent;
+		while(!parent.vueObject || !parent.vueObject._isVue) parent = parent.parent;
+		if(div) new comp({el: div, parent: parent.vueObject});
 		else console.error('Missing <main /> tag in route-page design');
 	});
 });
@@ -35,7 +38,7 @@ goldenLayout.registerGlobalComponent('route', gl=> function(container, state) {
 export default class glRouter extends glRow {
 	@Prop({default: defaultTitle}) titler : (route: any)=> string
 	@Prop({default: '/'}) emptyRoute: string
-
+	
 	get stack() {
 		var ci = this.glObject, rv;
 		if(!ci) return null;
@@ -61,7 +64,7 @@ export default class glRouter extends glRow {
 			this.$set(config, 'activeItemIndex', aii);
 		}
 		var aci = this.stack.getActiveContentItem();
-		if(aci && 'route'=== aci.config.componentName) {
+		if(aci && RouteComponentName=== aci.config.componentName) {
 			path = aci.config.componentState.fullPath;
 		} else
 			path = this.emptyRoute;
@@ -81,7 +84,7 @@ export default class glRouter extends glRow {
 					if(already) stack.setActiveContentItem(already);
 					else stack.addChild({
 						type: 'component',
-						componentName: 'route',
+						componentName: RouteComponentName,
 						componentState: route,
 						title: this.titler(route)
 					});
