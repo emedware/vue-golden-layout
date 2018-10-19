@@ -84,7 +84,13 @@ export default class glRouter extends glRow {
 					else stack.addChild({
 						type: 'component',
 						componentName: RouteComponentName,
-						componentState: route,
+						componentState: {
+                            ...route,
+                            matched: route.matched.map(x=> ({
+                                ...x,
+                                component: null
+                            }))
+                        },
 						title: this.titler(route)
 					});
 				}
