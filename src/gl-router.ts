@@ -65,7 +65,7 @@ export default class glRouter extends glRow {
 		}
 		var aci = this.stack.getActiveContentItem();
 		if(aci && RouteComponentName=== aci.config.componentName) {
-			path = aci.config.componentState.fullPath;
+			path = aci.config.componentState;
 		} else
 			path = this.emptyRoute;
 		if(path != this.$route.fullPath)
