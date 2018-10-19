@@ -13,12 +13,13 @@ const RouteComponentName = '$router-route';
 
 goldenLayout.registerGlobalComponent(RouteComponentName, gl=> function(container, state) {
 	gl.onGlInitialise(()=> {
-		var comp = gl.$router.getMatchedComponents(state.fullPath)[0];
+		var comp = gl.$router.getMatchedComponents(state)[0],
+            route = gl.$router.resolve(state).route;
 		//TODO: comp can be a string too
 		if('object'=== typeof comp)
 			comp = Vue.extend(comp);
 		var div, template = gl.$scopedSlots.route ?
-			gl.$scopedSlots.route(state) :
+			gl.$scopedSlots.route(route) :
 			gl.$slots.route;
 		if(template) {   //template is a VNode
 			div = renderVNodes(gl, container.getElement()[0], template).$el.querySelector('main');
@@ -85,11 +86,7 @@ export default class glRouter extends glRow {
 						type: 'component',
 						componentName: RouteComponentName,
 						componentState: {
-                            ...route,
-                            matched: route.matched.map(x=> ({
-                                ...x,
-                                component: null
-                            }))
+                            path: route.fullPath
                         },
 						title: this.titler(route)
 					});
