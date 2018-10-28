@@ -14,7 +14,8 @@ const RouteComponentName = '$router-route';
 goldenLayout.registerGlobalComponent(RouteComponentName, gl=> function(container, state) {
 	gl.onGlInitialise(()=> {
 		var comp = gl.$router.getMatchedComponents(state.path)[0],
-            route = gl.$router.resolve(state.path).route;
+            route = gl.$router.resolve(state.path).route,
+            component;
 		//TODO: comp can be a string too
 		if('object'=== typeof comp)
 			comp = Vue.extend(comp);
@@ -25,41 +26,37 @@ goldenLayout.registerGlobalComponent(RouteComponentName, gl=> function(container
             template = parent.$scopedSlots.default ?
                 parent.$scopedSlots.default(route) :
                 parent.$slots.default;
-        parent = new Vue({
+        // template is <VNode?>
+        component = template ? new Vue({
             render(ce) {
-                return !template ?
-                    ce('main') :
-                    template instanceof Array ?
+                return template instanceof Array ?
                     ce('div', {}, template) :
                     template;
             },
             mounted() {
-                this.cachedComp = new comp({el: parent.$el.querySelector('main'), parent: parent});
-            },
-            updated() {
-                this.cachedComp.$mount(parent.$el.querySelector('main'));
-            },
+                this.cachedComp = new comp({el: component.$el.querySelector('main'), parent: component});
+            }
             parent: parent
-        });
+        }) : new comp({parent: parent});
         //Simulate a _routerRoot object so that all children have a $route object set to this route object
-        parent._routerRoot = Object.create(parent._routerRoot);
-        Object.defineProperty(parent._routerRoot, '_route', {
+        component._routerRoot = Object.create(component._routerRoot);
+        Object.defineProperty(component._routerRoot, '_route', {
             value: route,
             writable: false
         });
-        Object.defineProperty(parent._routerRoot, '_router', {
-            value: Object.create(parent._routerRoot._router),
+        Object.defineProperty(component._routerRoot, '_router', {
+            value: Object.create(component._routerRoot._router),
             writable: false
         });
-        Object.defineProperty(parent._routerRoot._router, 'history', {
-            value: Object.create(parent._routerRoot._router.history),
+        Object.defineProperty(component._routerRoot._router, 'history', {
+            value: Object.create(component._routerRoot._router.history),
             writable: false
         });
-        Object.defineProperty(parent._routerRoot._router.history, 'current', {
+        Object.defineProperty(component._routerRoot._router.history, 'current', {
             value: route,
             writable: false
         });
-        parent.$mount(container.getElement()[0]);
+        component.$mount(container.getElement()[0]);
 	});
 });
 
