@@ -13,24 +13,53 @@ const RouteComponentName = '$router-route';
 
 goldenLayout.registerGlobalComponent(RouteComponentName, gl=> function(container, state) {
 	gl.onGlInitialise(()=> {
-		var comp = gl.$router.getMatchedComponents(state)[0],
-            route = gl.$router.resolve(state).route;
+		var comp = gl.$router.getMatchedComponents(state.path)[0],
+            route = gl.$router.resolve(state.path).route;
 		//TODO: comp can be a string too
 		if('object'=== typeof comp)
 			comp = Vue.extend(comp);
-		var div, template = gl.$scopedSlots.route ?
-			gl.$scopedSlots.route(route) :
-			gl.$slots.route;
-		if(template) {   //template is a VNode
-			div = renderVNodes(gl, container.getElement()[0], template).$el.querySelector('main');
-		} else {
-			div = document.createElement('main');
-			container.getElement().append(div);
-		}
-		var parent = container.parent.parent;
+		var div, template, parent = container.parent.parent;
 		while(!parent.vueObject || !parent.vueObject._isVue) parent = parent.parent;
-		if(div) new comp({el: div, parent: parent.vueObject});
-		else console.error('Missing <main /> tag in route-page design');
+        parent = parent.vueObject;
+        if(parent.isRouter)
+            template = parent.$scopedSlots.default ?
+                parent.$scopedSlots.default(route) :
+                parent.$slots.default;
+        parent = new Vue({
+            render(ce) {
+                return !template ?
+                    ce('main') :
+                    template instanceof Array ?
+                    ce('div', {}, template) :
+                    template;
+            },
+            mounted() {
+                this.cachedComp = new comp({el: parent.$el.querySelector('main'), parent: parent});
+            },
+            updated() {
+                this.cachedComp.$mount(parent.$el.querySelector('main'));
+            },
+            parent: parent
+        });
+        //Simulate a _routerRoot object so that all children have a $route object set to this route object
+        parent._routerRoot = Object.create(parent._routerRoot);
+        Object.defineProperty(parent._routerRoot, '_route', {
+            value: route,
+            writable: false
+        });
+        Object.defineProperty(parent._routerRoot, '_router', {
+            value: Object.create(parent._routerRoot._router),
+            writable: false
+        });
+        Object.defineProperty(parent._routerRoot._router, 'history', {
+            value: Object.create(parent._routerRoot._router.history),
+            writable: false
+        });
+        Object.defineProperty(parent._routerRoot._router.history, 'current', {
+            value: route,
+            writable: false
+        });
+        parent.$mount(container.getElement()[0]);
 	});
 });
 
@@ -95,6 +124,7 @@ export default class glRouter extends glRow {
 	}
 	
 	mounted() {
+        this.isRouter = true;
 		//With immediate: true, the watch is called before $refs are initialised
 		this.change(this.$route);
 	}

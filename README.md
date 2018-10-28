@@ -100,6 +100,9 @@ hidden: boolean
 The `golden-layout` has a *property* and an *event* named `state`.
 - The event is triggered when the state has changed (even deeply, like a deep watch).
 - The property is used **at mount** to initialise the configuration. After that, any change will have no effect.
+Notes:
+- The property `state` can be given minified or not
+- The event `state` gives indeed the minified version of the config, and the expanded version as a second argument.# slot
 
 ## Low-level functionalities
 
@@ -170,8 +173,9 @@ The main usage is `<gl-router />`. Any options of `router-view` still has to be 
 
 ## Slots
 
-A `route` template can be created in the containing `golden-layout` - with or without scope : if a scope is queried, it will be the route object.
-If this content is provided, it will be used for each route. It should contain a `<main />` tag that will be filled with the actual component.
+A default content can be provided - with or without scope : if a scope is queried, it will be the route object
+If this content is provided, it should contain a `<main />` tag that will be filled with the loaded component.
+Note: the provided template will be ignored when maximised/popped-out.
 
 ## Properties
 ### titler

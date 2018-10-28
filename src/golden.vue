@@ -58,7 +58,7 @@ export default class goldenLayout extends goldenContainer {
 	}
 
 	@Emit('state')
-	gotState(state) {}
+	gotState(state, expanded) {}
 /*
 	labels: {
 		close: 'close',
@@ -94,7 +94,9 @@ export default class goldenLayout extends goldenContainer {
 	mounted() {
 		var me = this, layoutRoot = this.$refs.layoutRoot, gl;
 		if(this.state) {
-			this.config = this.state;
+			this.config = this.state.content ?
+                this.state :
+                GoldenLayout.unminifyConfig(this.state);
 		} else {
 			this.config.settings = {
 				hasHeaders: this.hasHeaders,
@@ -149,7 +151,8 @@ export default class goldenLayout extends goldenContainer {
 				try {
 					//gl.toConfig() raise exceptions when opening a popup
 					//it allso raise a 'stateChanged' event when closing a popup => inf call
-					this.gotState(gl.toConfig());
+                    var config = gl.toConfig();
+					this.gotState(GoldenLayout.minifyConfig(config), config);
 				}
 				catch(e) {
 					raiseStateChanged();
