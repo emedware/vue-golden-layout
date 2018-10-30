@@ -87,7 +87,7 @@ export class goldenChild extends Vue {
 	}
 	$parent: goldenContainer
 	created() {
-		if(!this.$parent instanceof goldenContainer)
+		if(!(this.$parent instanceof goldenContainer))
 			throw new Error('gl-component can only appear directly in a golden-layout container');
 	}
 	nodePath() {

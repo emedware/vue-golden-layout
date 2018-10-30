@@ -9,7 +9,7 @@ import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 export default class PHead extends Vue {
     @Prop() title: string
     created() {
-        console.assert(this.$parent.$parent, 'Vue object linked to root');
+        console.assert(!!this.$parent.$parent, 'Vue object linked to root');
     }
 }
 </script>

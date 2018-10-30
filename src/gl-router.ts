@@ -35,7 +35,7 @@ goldenLayout.registerGlobalComponent(RouteComponentName, gl=> function(container
             },
             mounted() {
                 this.cachedComp = new comp({el: component.$el.querySelector('main'), parent: component});
-            }
+            },
             parent
         }) : new comp({parent});
         if(!(create instanceof Promise)) create = Promise.resolve(create);
@@ -64,7 +64,7 @@ goldenLayout.registerGlobalComponent(RouteComponentName, gl=> function(container
 	});
 });
 
-@Component()
+@Component
 export default class glRouter extends glRow {
 	@Prop({default: defaultTitle}) titler : (route: any)=> string
 	@Prop({default: '/'}) emptyRoute: string
@@ -123,9 +123,8 @@ export default class glRouter extends glRow {
 				}
 			});
 	}
-	
+	isRouter: boolean = true
 	mounted() {
-        this.isRouter = true;
 		//With immediate: true, the watch is called before $refs are initialised
 		this.change(this.$route);
 	}
