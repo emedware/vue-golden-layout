@@ -9,13 +9,14 @@ Today, the library has become stable enough for us to take care to keep a stable
 ```
 npm i -S vue-golden-layout
 ```
-In order to test, after cloning, a static application can be compiled :
 
-```
-npm install
-npm start
-```
-You can browse the file `test/dist/index.html` in your browser.
+> For the ones who clone, in order to test, a static sample application can be compiled :
+> 
+> ```
+> npm install
+> npm start
+> ```
+> The file `test/dist/index.html` can be opened in the browser.
 
 ## Don't forget in order to make it work
 - Include a golden-layout theme CSS.
@@ -34,7 +35,7 @@ import vgl from 'vue-golden-layout'
 Vue.use(vgl);
 ```
 
-In case of incompatibility with bundlers, you can bundle `vue-golden-layout` by simply bundling the sources.
+In case of incompatibility with bundlers, `vue-golden-layout` can be bundeled by the sources.
 The sources entry point is in `vue-golden-layout/src/index.ts`
 
 ```javascript
@@ -58,7 +59,7 @@ In order to use `v-if` and `v-for` to control the content, templates have to be 
 If this rule is broken :
 - Popup will display blank
 - Loading a saved state will fail
-- This will be displayed in your console: "Dynamic golden-layout components should be named templates instead."
+- This will be displayed in the console: "Dynamic golden-layout components should be named templates instead."
 
 ### Defining a template
 This is done through `slot`s in the `<golden-layout>` element (the square brackets stand for "optional")
@@ -109,7 +110,7 @@ static registerGlobalComponent(name: string, comp: (gl: goldenLayout)=> (contain
 `(container: any, state: any)=> void` is the signature of a gloden-layout component and they are created per golden-layout instances
 
 ### CSS
-The glComponent are the ones directly included in the `<div>` controlled and sized by golden-layout and answers to this class to fit in the layout child container, that you can override
+The glComponent are the ones directly included in the `<div>` controlled and sized by golden-layout and answers to this class to fit in the layout child container, that can be overridden
 ```css
 .glComponent {
 	width: 100%;
@@ -125,7 +126,7 @@ Each vue object has a `glObject` property and, vice versa, each golden-layout ob
 
 #### Virtual vs actual tree
 
-Vue objects (rows, components, stacks, ...) all have a `$parent` that retrieve their Vue' parent. Also, we might retrieve their children with `$children`.
+Vue objects (rows, components, stacks, ...) all have a `$parent` that retrieve their Vue' parent. Also their children might be retrieved with `$children`.
 
 Though, the user might change the order of things and who contain what. To retrieve the golden-layout-wise hierarchy, we can use `glParent` as well as `glChindren` on the vue objects to retrieve vue objects.
 
@@ -148,27 +149,7 @@ activeContentItemChanged
 ```
 #### Contained objects
 
-`destroy` is provided for all components beside the golden-layout object. It occurs on user's closure **or pop-out**.
-
-### Methods
-#### Container
-These are defined on the container objects
-
-```javascript
-addGlChild(child, comp)
-```
-`child` is a configuration object (cfr golden-layout doc.), 'comp' is a vue component of a contained object
-The child.componentState.templateId will be managed : don't fuss with the IDs, just give the component (your specified ID won't be replaced)
-```javascript
-removeGlChild(index)
-```
-This function is called automatically on VueComponent.beforeDestroy
-#### Contained objects
-```javascript
-hide()
-show()
-close()
-```
+The event `destroy` is provided for all components beside the golden-layout object. It occurs on user's closure **or pop-out**.
 
 # gl-router
 
