@@ -16,9 +16,6 @@
 		"test": "test"
 	},
 	"scripts": {
-		"compile": "webpack",
-		"all": "npm run compile && npm run test",
-		"test": "webpack --config test/webpack.config.js",
 		"start": "webpack --watch --config test/webpack.config.js"
 	},
 	"repository": {
@@ -46,6 +43,7 @@
 		"upgrade": "^1.1.0",
 		"vue": "^2.5.17",
 		"vue-loader": "^15.4.2",
+		"vue-property-decorator": "^6.0.0",
 		"vue-router": "^3.0.1",
 		"vue-template-compiler": "^2.5.17",
 		"vue-template-es2015-compiler": "^1.5.3",
@@ -56,11 +54,10 @@
 	},
 	"dependencies": {
 		"golden-layout": "^1.5.8",
-		"jquery": "^3.2.1",
-		"vue-property-decorator": "^6.0.0",
-		"vue-resize-directive": "^1.0.0"
+		"vue-resize-directive": "^1.1.4"
 	},
 	"peerDependencies": {
+		"jquery": "^3.2.1",
 		"vue": "^2.5.17",
 		"vue-router": "^3.0.1"
 	},

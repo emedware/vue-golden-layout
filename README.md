@@ -1,6 +1,9 @@
 [![npm](https://img.shields.io/npm/v/vue-golden-layout.svg)](https://www.npmjs.com/package/vue-golden-layout)
 # vue-golden-layout
 Integration of the golden-layout to Vue
+## Annoucement 30-oct-18
+Today, the library has become stable enough for us to take care to keep a stable master branch. Let's get this libray from "hobby" level to "serious" one.
+
 ## Installation
 
 ```
@@ -14,29 +17,16 @@ npm start
 ```
 You can browse the file `test/dist/index.html` in your browser.
 
-## Example
-
-```html
-<golden-layout>
-	<gl-col>
-		<gl-component title="compA">
-			<h1>CompA</h1>
-		</gl-component>
-		<gl-row>
-			...
-		</gl-row>
-		<gl-stack>
-			...
-		</gl-stack>
-	</gl-col>
-</golden-layout>
-```
 ## Don't forget in order to make it work
 - Include a golden-layout theme CSS.
 ```typescript
 import 'golden-layout/src/css/goldenlayout-light-theme.css'
 ```
+Available themes are `light`, `dark`, `soda`, `translucent`.
+
 `goldenlayout-base.css` is already integrated to the library.
+
+ - `vue-golden-layout` *has* to be bundled with an `esm` version of `Vue`.
 
 ## Usage
 ```javascript
@@ -52,7 +42,15 @@ import vgl from 'vue-golden-layout/src'
 Vue.use(vgl);
 ```
 
-The objects are differentiated into : The layout object (golden), the container objects (golden and glRow, glCol and glStack), the contained objects (glRow, glCol and glStack and glComponent).
+## Inserting components
+
+Component can be described *by extension* - namely, by giving their content using the data from the defining component.
+```html
+<gl-component>
+    <h1>Heydoo</h1>
+    Price: {{priceLess}}
+</gl-component>
+```
 
 ## Named templates
 
@@ -95,10 +93,11 @@ hidden: boolean
 
 The `golden-layout` has a *property* and an *event* named `state`.
 - The event is triggered when the state has changed (even deeply, like a deep watch).
-- The property is used **at mount** to initialise the configuration. After that, any change will have no effect.
+- The property is used [**at mount**](https://github.com/eddow/vue-golden-layout/issues/20#issuecomment-433828678) to initialise the configuration. After that, any change will have no effect.
+
 Notes:
 - The property `state` can be given minified or not
-- The event `state` gives indeed the minified version of the config, and the expanded version as a second argument.# slot
+- The event `state` gives indeed the minified version of the config, and the expanded version as a second argument.
 
 ## Low-level functionalities
 
@@ -118,6 +117,17 @@ The glComponent are the ones directly included in the `<div>` controlled and siz
 	overflow: auto;
 }
 ```
+### Objects linking
+
+Golden-layout and Vue both have objects representing their internal state. A `glRow` is associated with a `ContentItem`.
+
+Each vue object has a `glObject` property and, vice versa, each golden-layout object has a `vueObject` property linking to each another.
+
+#### Virtual vs actual tree
+
+Vue objects (rows, components, stacks, ...) all have a `$parent` that retrieve their Vue' parent. Also, we might retrieve their children with `$children`.
+
+Though, the user might change the order of things and who contain what. To retrieve the golden-layout-wise hierarchy, we can use `glParent` as well as `glChindren` on the vue objects to retrieve vue objects.
 
 ### Events
 #### Layout 
@@ -138,7 +148,7 @@ activeContentItemChanged
 ```
 #### Contained objects
 
-`destroy` is provided for all components beside the golden-layout object. It occurs on user's closure of pop-out.
+`destroy` is provided for all components beside the golden-layout object. It occurs on user's closure **or pop-out**.
 
 ### Methods
 #### Container
@@ -169,16 +179,17 @@ The main usage is `<gl-router />`. Any options of `router-view` still has to be 
 
 ## Slots
 
-A default content to render all routes can be provided as the `route` slot template - with or without scope : if a scope is queried, it will be the route object
-If this content is provided, it should contain a `<main />` tag that will be filled with the loaded component.
+A default content to render all routes can be provided as the `route` slot template - with or without scope : if a scope is queried, it will be the route object.
+If this content is provided, it should contain a `<main />` tag that will be filled with the loaded route component.
+
 Note: the provided template will be ignored when maximised/popped-out.
 
 ## Properties
-### titler
+### `titler`
 
-Allows you to specify a function that takes a route object in parameter and gives the string that will be used as tab title.
+Allows to specify a function that takes a route object in parameter and gives the string that will be used as tab title.
 If none is specified, the default is to take `$route.meta.title` - this means that routes have to be defined with a title in their meta-data.
 
-### empty-route
+### `empty-route`
 
 Specify the URL to use when the user closes all the tabs (`"/"` by default)

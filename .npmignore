@@ -6,5 +6,4 @@ yalc.lock
 .vscode
 package-lock.*
 *.lock
-fuse.*
 .gitignore

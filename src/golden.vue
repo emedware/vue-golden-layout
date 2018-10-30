@@ -3,11 +3,6 @@
 		<slot />
 	</div>
 </template>
-<style>
-.lm_goldenlayout .lm_content {
-	overflow-y: auto;
-}
-</style>
 <script lang="ts">
 import Vue from 'vue'
 import {Component, Inject, Model, Prop, Watch, Emit} from 'vue-property-decorator'

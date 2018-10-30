@@ -1,5 +1,5 @@
 <template>
-    <div class="glComponent" ref="glCompRoot">
+    <div class="glComponent">
         <slot />
     </div>
 </template>
@@ -16,8 +16,6 @@ import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 import {goldenContainer, goldenChild} from './gl-roles'
 
 @Component
-	//glSource stays in the display:none hierarchy
-	//glCompRoot is displaced as a golden-layout element
 export default class glComponent extends goldenChild {
 	@Prop() title: string
 	@Prop() template: string
@@ -29,7 +27,7 @@ export default class glComponent extends goldenChild {
 	toggleMaximise() {
 		this.container && this.container.toggleMaximise();
 	}
-	//TODO2: Forward glSource' class, styles, etc. toward glCompRoot
+    
 	get childConfig() {
 		return {
 			type: 'component',
