@@ -12,9 +12,8 @@ In order to test, after cloning, a static application can be compiled :
 npm install
 npm fuse
 npm run test
-npm run serve
 ```
-There is an SAP server on localhost:8080
+You can browse the file `test/dist/index.html` in your browser.
 
 ## Example
 

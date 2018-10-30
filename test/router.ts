@@ -13,7 +13,7 @@ for(let l of letters) {
 import VueRouter from 'vue-router'
 
 export default new VueRouter({
-	mode: 'history',
+	mode: 'hash',
 	routes
 })
 Vue.use(VueRouter);
