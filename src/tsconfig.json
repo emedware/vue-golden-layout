@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-	"outDir": "dist",
+	"outDir": "../dist",
 	"sourceMap": true,
-	"inlineSources": true,
+	"declaration": true,
 	"noImplicitAny": false,
 	"module": "commonjs",
 	"moduleResolution": "node",
@@ -11,12 +11,12 @@
 	"target": "es5",
 	"lib": [
 	  "dom",
-	  "es5"
+	  "es5",
+	  "es6"
 	],
 	"allowSyntheticDefaultImports": true,
-	"allowJs": true,
 	"typeRoots": ["node_modules/@types"],
-	"baseUrl": "./"
+    "baseUrl": "./"
   },
 	"exclude": [
 		"**/*.spec.ts"

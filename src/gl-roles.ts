@@ -1,4 +1,4 @@
-import { Vue } from './imports'
+import Vue from 'vue'
 import {Component, Prop, Watch, Emit} from 'vue-property-decorator'
 
 @Component
@@ -9,9 +9,10 @@ export class goldenContainer extends Vue {
 	glObject: any = null
 	registerComponent(component/*: Vue|()=>any*/, name?: string): string { throw 'unimplemented'; }
 	childPath(comp: Vue): string {
-		var rv = this.nodePath?`${this.nodePath()}.`:'';
+        var childMe = <goldenChild><any>this;
+		var rv = childMe.nodePath?`${childMe.nodePath()}.`:'';
 		var ndx = this.$children.indexOf(comp);
-		console.assert(~ndx, 'Children exists');
+		console.assert(!!~ndx, 'Children exists');
 		return rv+ndx;
 	}
 	getChild(path: string) {

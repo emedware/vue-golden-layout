@@ -2,7 +2,7 @@ import {Component, Model, Watch, Emit} from 'vue-property-decorator'
 import {goldenChild} from './gl-roles'
 import group from './gl-group.vue'
 //We have to re-define : ts is lost with Vue files
-class glGroup extends group {
+export class glGroup extends group {
 	closable: boolean
 	config: any
 }

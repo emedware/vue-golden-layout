@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import vgl from '../dist/vue-golden-layout.js'
+import vgl from 'vue-golden-layout'
 import 'golden-layout/src/css/goldenlayout-light-theme.css'
 Vue.use(<any>vgl)
 

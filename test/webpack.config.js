@@ -1,8 +1,10 @@
 var webpack = require("webpack"),
 	path = require("path"),
-	HtmlWebpackPlugin = require('html-webpack-plugin');
+	HtmlWebpackPlugin = require('html-webpack-plugin'),
+    VueLoader = require('vue-loader');
 module.exports = {
-	devtool: 'inline-source-map',
+    mode: 'development',
+	devtool: 'eval',
 	entry: {
 		app: [path.resolve(__dirname, './index.ts')]
 	},
@@ -12,11 +14,11 @@ module.exports = {
 		chunkFilename: "[chunkhash].js"
 	},
 	plugins: [
-		//https://github.com/jantimon/html-webpack-plugin
 		new HtmlWebpackPlugin({
 			template: 'test/index.ejs',
 			title: 'vue-golden-layout'
-		})
+		}),
+        new VueLoader.VueLoaderPlugin()
 	],
 	module: {
 		rules: [{
@@ -45,9 +47,10 @@ module.exports = {
 		}]
 	},
 	resolve: {
-		alias: {
-			vue: 'vue/dist/vue.esm.js'
-		},
+        alias: {
+			vue: 'vue/dist/vue.esm.js', //route are only given a template and need to be compiled client-side
+            'vue-golden-layout': path.resolve(__dirname, '../src/index.ts')
+        },
 		extensions: [".tsx", ".ts", ".js", '.html', '.vue']
 	}
 };

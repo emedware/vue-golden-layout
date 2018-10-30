@@ -1,6 +1,6 @@
 import { Watch, Component, Prop, Emit } from 'vue-property-decorator'
-import { glRow } from './gl-group'
-import { Vue } from './imports'
+import { glRow } from './gl-groups'
+import Vue from 'vue'
 import goldenLayout, {renderVNodes} from './golden.vue'
 
 //TODO: there might be a type for route
@@ -13,7 +13,7 @@ const RouteComponentName = '$router-route';
 
 goldenLayout.registerGlobalComponent(RouteComponentName, gl=> function(container, state) {
 	gl.onGlInitialise(()=> {
-		var comp = gl.$router.getMatchedComponents(state.path)[0],
+		var comp: Vue|any = gl.$router.getMatchedComponents(state.path)[0],
             route = gl.$router.resolve(state.path).route,
             component;
 		//TODO: comp can be a string too
@@ -68,6 +68,8 @@ goldenLayout.registerGlobalComponent(RouteComponentName, gl=> function(container
 
 @Component
 export default class glRouter extends glRow {
+    $router
+    $route
 	@Prop({default: defaultTitle}) titler : (route: any)=> string
 	@Prop({default: '/'}) emptyRoute: string
 	

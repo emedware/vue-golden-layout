@@ -10,8 +10,7 @@ In order to test, after cloning, a static application can be compiled :
 
 ```
 npm install
-npm fuse
-npm run test
+npm start
 ```
 You can browse the file `test/dist/index.html` in your browser.
 
@@ -40,8 +39,6 @@ import 'golden-layout/src/css/goldenlayout-light-theme.css'
 `goldenlayout-base.css` is already integrated to the library.
 
 ## Usage
-This library integrate a straightforward way bundling with [fuse-box](http://fuse-box.org/). The test is bundled with webpack to make sure it works.
-
 ```javascript
 import vgl from 'vue-golden-layout'
 Vue.use(vgl);

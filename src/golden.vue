@@ -9,7 +9,7 @@
 }
 </style>
 <script lang="ts">
-import { Vue } from './imports'
+import Vue from 'vue'
 import {Component, Inject, Model, Prop, Watch, Emit} from 'vue-property-decorator'
 import * as GoldenLayout from 'golden-layout'
 import {goldenContainer} from './gl-roles'
@@ -19,6 +19,7 @@ var globalComponents: {[name: string] : (gl: goldenLayout)=> (container: any, st
 
 @Component({directives: {resize}})
 export default class goldenLayout extends goldenContainer {
+    $router
 	static registerGlobalComponent(name: string, comp: (gl: goldenLayout)=> (container: any, state: any)=> void) {
 		console.assert(!globalComponents[name], `Component name "${name}" unused`);
 		globalComponents[name] = comp;

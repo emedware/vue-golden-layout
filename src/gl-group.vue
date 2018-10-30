@@ -4,7 +4,7 @@
 	</div>
 </template>
 <script lang="ts">
-import { Vue } from './imports'
+import Vue from 'vue'
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 import {goldenContainer, goldenChild} from './gl-roles'
 

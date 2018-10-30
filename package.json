@@ -4,7 +4,7 @@
 	"description": "Integration of the golden-layout to Vue",
 	"main": "dist/vue-golden-layout.js",
 	"ts:main": "src/index.ts",
-	"typings": "src/index.ts",
+	"typings": "dist/vue-golden-layout.d.ts",
 	"keywords": [
 		"vue",
 		"golden-layout",
@@ -16,10 +16,10 @@
 		"test": "test"
 	},
 	"scripts": {
-		"compile": "node fuse",
+		"compile": "webpack",
 		"all": "npm run compile && npm run test",
 		"test": "webpack --config test/webpack.config.js",
-		"serve": "node test/server"
+		"start": "webpack --watch --config test/webpack.config.js"
 	},
 	"repository": {
 		"type": "git",
@@ -28,25 +28,32 @@
 	"author": "fmdm",
 	"license": "MIT",
 	"devDependencies": {
+		"@types/core-js": "^2.5.0",
 		"@types/jquery": "^2.0.41",
+		"@types/node": "^10.12.1",
 		"acorn-es7-plugin": "^1.1.7",
 		"babel-core": "^6.26.0",
+		"core-js": "^2.5.7",
 		"css-loader": "^0.28.7",
-		"fuse-box": "^3.4.0",
-		"html-webpack-plugin": "^2.30.1",
+		"fuse-box": "^3.6.0",
+		"html-webpack-plugin": "^3.2.0",
 		"source-map-loader": "^0.2.1",
 		"style-loader": "^0.18.2",
-		"ts-loader": "^2.3.7",
+		"ts-loader": "^5.2.2",
 		"tslib": "^1.9.0",
 		"tslint": "^5.11.0",
 		"typescript": "^2.5.3",
+		"uglifyjs-webpack-plugin": "^2.0.1",
 		"upgrade": "^1.1.0",
 		"vue": "^2.5.17",
-		"vue-loader": "^13.0.5",
+		"vue-loader": "^15.4.2",
 		"vue-router": "^3.0.1",
 		"vue-template-compiler": "^2.5.17",
 		"vue-template-es2015-compiler": "^1.5.3",
-		"webpack": "^3.6.0"
+		"webpack": "^4.23.1",
+		"webpack-cli": "^3.1.2",
+		"webpack-dts-bundle": "0.0.2",
+		"webpack-node-externals": "^1.7.2"
 	},
 	"dependencies": {
 		"golden-layout": "^1.5.8",
