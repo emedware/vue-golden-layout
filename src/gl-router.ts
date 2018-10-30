@@ -59,7 +59,9 @@ goldenLayout.registerGlobalComponent(RouteComponentName, gl=> function(container
                 value: route,
                 writable: false
             });
-            component.$mount(container.getElement()[0]);
+			var el = document.createElement('div');
+			container.getElement().append(el);
+            component.$mount(el);
         });
 	});
 });

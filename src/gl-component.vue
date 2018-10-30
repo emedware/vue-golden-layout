@@ -1,9 +1,7 @@
 <template>
-	<div ref="glSource">
-		<div class="glComponent" ref="glCompRoot">
-			<slot />
-		</div>
-	</div>
+    <div class="glComponent" ref="glCompRoot">
+        <slot />
+    </div>
 </template>
 <style>
 .glComponent {
@@ -28,7 +26,6 @@ export default class glComponent extends goldenChild {
 	@Watch('title') setTitle(title) {
 		if(this.container) this.container.setTitle(title);
 	}
-	get childEl() { return this.$refs.glCompRoot; }
 	toggleMaximise() {
 		this.container && this.container.toggleMaximise();
 	}

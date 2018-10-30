@@ -76,7 +76,7 @@ export default class goldenLayout extends goldenContainer {
 		var tplData = 'function'=== typeof component ?
 			component :
 			function(container, state) {
-				container.getElement().append(component.childEl);
+				container.getElement().append(component.$el);
 				forwardEvt(container, component, component.events);
 				component.container = container;
 			};
@@ -192,9 +192,7 @@ export default class goldenLayout extends goldenContainer {
 export function renderVNodes(parent, el, vNodes, options?) {
 	return new Vue({
 		render: function(ce) {
-			return vNodes instanceof Array ?
-                ce('div', options, vNodes) :
-                vNodes;
+			return ce('div', options, vNodes instanceof Array ? vNodes : [vNodes]);
 		},
         parent,
 		el

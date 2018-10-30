@@ -67,7 +67,6 @@ export class goldenChild extends Vue {
 	glObject: any = null
 
 	get childConfig() { return null; }
-	get childEl() { return null; }
 	get glParent() { return this.glObject.parent.vueObject; }
 	container = null;
 

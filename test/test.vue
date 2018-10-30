@@ -1,42 +1,40 @@
 <template>
-	<div>
-		<golden-layout class="hscreen" ref="topGl" @state="changedState" :state="state">
-			<template slot="stackCtr" slot-scope="{ stackSub }">
-				Added item (id: {{stackSub}})
-				<button @click="remStack(stackSub)">Remove</button>
-			</template>
-			<template slot="bottom">
-				Bottom
-			</template>
-			<gl-col :closable="false">
-				<gl-router>
-                    <template slot="route" slot-scope="{ meta }">
-                        <p-head :title="meta && meta.title" />
-                        <main />
-                    </template>
-                </gl-router>
-				<gl-row :closable="false">
-					<gl-component title="compA">
-						<h1>CompA</h1>
-						<button @click="bottomSheet = !bottomSheet">Toggle</button>
-						<button @click="addStack">Add</button>
-						<p>
-							<span v-for="l in letters" :key="l">
-								<router-link :to="`/${l}`">test-{{l}}</router-link>&nbsp;
-							</span>
-						</p>
-					</gl-component>
-					<gl-stack ref="myStack">
-						<gl-component v-for="stackSub in stackSubs" :key="stackSub"
-							:title="'dynamic'+stackSub"
-							@destroy="closed(stackSub)"
-							template="stackCtr" :state="{stackSub}" />
-					</gl-stack>
-				</gl-row>
-				<gl-component v-if="bottomSheet" template="bottom" @destroy="bottomSheet = false" />
-			</gl-col>
-		</golden-layout>
-	</div>
+    <golden-layout class="hscreen" @state="changedState" :state="state">
+        <div slot="stackCtr" slot-scope="{ stackSub }" class="test-template">
+            Added item (id: {{stackSub}})
+            <button @click="remStack(stackSub)">Remove</button>
+        </div>
+        <template slot="bottom">
+            Bottom
+        </template>
+        <gl-col :closable="false">
+            <gl-router>
+                <template slot="route" slot-scope="{ meta }">
+                    <p-head :title="meta && meta.title" />
+                    <main />
+                </template>
+            </gl-router>
+            <gl-row :closable="false">
+                <gl-component title="compA" class="test-component">
+                    <h1>CompA</h1>
+                    <button @click="bottomSheet = !bottomSheet">Toggle</button>
+                    <button @click="addStack">Add</button>
+                    <p>
+                        <span v-for="l in letters" :key="l">
+                            <router-link :to="`/${l}`">test-{{l}}</router-link>&nbsp;
+                        </span>
+                    </p>
+                </gl-component>
+                <gl-stack ref="myStack">
+                    <gl-component v-for="stackSub in stackSubs" :key="stackSub"
+                        :title="'dynamic'+stackSub"
+                        @destroy="closed(stackSub)"
+                        template="stackCtr" :state="{stackSub}" />
+                </gl-stack>
+            </gl-row>
+            <gl-component v-if="bottomSheet" template="bottom" @destroy="bottomSheet = false" />
+        </gl-col>
+    </golden-layout>
 </template>
 <style>
 body {
@@ -45,12 +43,6 @@ body {
 .hscreen {
 	width: 100vw;
 	height: 100vh;
-}
-/* This is a hack to remove when fuse-box has a well-set npm mode */
-.glComponent {
-	width: 100%;
-	height: 100%;
-	overflow: auto;
 }
 </style>
 <script lang="ts">
@@ -98,6 +90,5 @@ export default class App extends Vue {
 		if(~ndx)
 			this.stackSubs.splice(ndx, 1);
 	}
-	// this.$refs.topGl.gl is the golden-layout object
 }
 </script>

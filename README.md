@@ -113,7 +113,7 @@ static registerGlobalComponent(name: string, comp: (gl: goldenLayout)=> (contain
 `(container: any, state: any)=> void` is the signature of a gloden-layout component and they are created per golden-layout instances
 
 ### CSS
-The glComponent answers to this class to fit in the layout child container, that you can override
+The glComponent are the ones directly included in the `<div>` controlled and sized by golden-layout and answers to this class to fit in the layout child container, that you can override
 ```css
 .glComponent {
 	width: 100%;
