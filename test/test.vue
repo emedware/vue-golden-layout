@@ -10,7 +10,7 @@
 			</template>
 			<gl-col :closable="false">
 				<gl-router>
-                    <template slot-scope="{ meta }">
+                    <template slot="route" slot-scope="{ meta }">
                         <p-head :title="meta && meta.title" />
                         <main />
                     </template>

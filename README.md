@@ -172,7 +172,7 @@ The main usage is `<gl-router />`. Any options of `router-view` still has to be 
 
 ## Slots
 
-A default content can be provided - with or without scope : if a scope is queried, it will be the route object
+A default content to render all routes can be provided as the `route` slot template - with or without scope : if a scope is queried, it will be the route object
 If this content is provided, it should contain a `<main />` tag that will be filled with the loaded component.
 Note: the provided template will be ignored when maximised/popped-out.
 

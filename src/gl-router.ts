@@ -23,9 +23,9 @@ goldenLayout.registerGlobalComponent(RouteComponentName, gl=> function(container
 		while(!parent.vueObject || !parent.vueObject._isVue) parent = parent.parent;
         parent = parent.vueObject;
         if(parent.isRouter)
-            template = parent.$scopedSlots.default ?
-                parent.$scopedSlots.default(route) :
-                parent.$slots.default;
+            template = parent.$scopedSlots.route ?
+                parent.$scopedSlots.route(route) :
+                parent.$slots.route;
         // template is <VNode?>
         component = template ? new Vue({
             render(ce) {
