@@ -4,7 +4,7 @@ Integration of the golden-layout to Vue
 ## Installation
 
 ```
-npm install --save vue-golden-layout
+npm i -S vue-golden-layout
 ```
 In order to test, after cloning, a static application can be compiled :
 

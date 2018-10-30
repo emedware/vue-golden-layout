@@ -2,11 +2,10 @@ var webpack = require("webpack"),
 	path = require("path"),
     externals = require('webpack-node-externals'),
     {default: DtsBundlePlugin} = require('webpack-dts-bundle'),
-    UglifyJsPlugin = require('uglifyjs-webpack-plugin'),
     VueLoader = require('vue-loader');
 
 module.exports = {
-    mode: 'production',
+    mode: 'development',    //This is meant to be bundled afterward anyway
 	entry: {
 		'vue-golden-layout': [path.resolve(__dirname, 'src/index.ts')],
 	},
@@ -18,13 +17,6 @@ module.exports = {
         umdNamedDefine: true,
         libraryExport: 'default'
 	},
-    optimization: {
-        minimizer: [
-            new UglifyJsPlugin({
-                sourceMap: true
-            })
-        ]
-    },
 	plugins: [
         new DtsBundlePlugin({
             name: 'vue-golden-layout',
