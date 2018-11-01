@@ -15,16 +15,18 @@
                 </template>
             </gl-router>
             <gl-row :closable="false">
-                <gl-component title="compA" class="test-component">
-                    <h1>CompA</h1>
-                    <button @click="bottomSheet = !bottomSheet">Toggle</button>
-                    <button @click="addStack">Add</button>
-                    <p>
-                        <span v-for="l in letters" :key="l">
-                            <router-link :to="`/${l}`">test-{{l}}</router-link>&nbsp;
-                        </span>
-                    </p>
-                </gl-component>
+                <gl-stack>
+                    <gl-component title="compA" class="test-component">
+                        <h1>CompA</h1>
+                        <button @click="bottomSheet = !bottomSheet">Toggle</button>
+                        <button @click="addStack">Add</button>
+                        <p>
+                            <span v-for="l in letters" :key="l">
+                                <router-link :to="`/${l}`">test-{{l}}</router-link>&nbsp;
+                            </span>
+                        </p>
+                    </gl-component>
+                </gl-stack>
                 <gl-stack ref="myStack">
                     <gl-component v-for="stackSub in stackSubs" :key="stackSub"
                         :title="'dynamic'+stackSub"
@@ -32,7 +34,9 @@
                         template="stackCtr" :state="{stackSub}" />
                 </gl-stack>
             </gl-row>
-            <gl-component v-if="bottomSheet" template="bottom" @destroy="bottomSheet = false" />
+            <gl-stack>
+                <gl-component v-if="bottomSheet" template="bottom" @destroy="bottomSheet = false" />
+            </gl-stack>
         </gl-col>
     </golden-layout>
 </template>

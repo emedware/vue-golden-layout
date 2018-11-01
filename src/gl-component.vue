@@ -14,6 +14,7 @@
 import Vue from 'vue'
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 import {goldenContainer, goldenChild} from './gl-roles'
+import { glStack } from './gl-groups'
 
 @Component
 export default class glComponent extends goldenChild {
@@ -26,6 +27,11 @@ export default class glComponent extends goldenChild {
 	}
 	toggleMaximise() {
 		this.container && this.container.toggleMaximise();
+	}
+
+	created() {
+		if(!(this.$parent instanceof glStack))
+			throw new Error('gl-component can only appear directly in a golden-layout stack');
 	}
     
 	get childConfig() {
