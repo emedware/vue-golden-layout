@@ -5,7 +5,10 @@ var webpack = require("webpack"),
     VueLoader = require('vue-loader');
 
 module.exports = {
-    mode: 'development',    //This is meant to be bundled afterward anyway
+	mode: 'development',    //This is meant to be bundled afterward anyway
+	optimization: {
+		minimize: false
+	},
 	entry: {
 		'vue-golden-layout': [path.resolve(__dirname, 'src/index.ts')],
 	},

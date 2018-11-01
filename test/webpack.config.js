@@ -3,7 +3,10 @@ var webpack = require("webpack"),
 	HtmlWebpackPlugin = require('html-webpack-plugin'),
     VueLoader = require('vue-loader');
 module.exports = {
-    mode: 'development',
+	mode: 'development',
+	optimization: {
+		minimize: false
+	},
 	devtool: 'eval',
 	entry: {
 		app: [path.resolve(__dirname, './index.ts')]
