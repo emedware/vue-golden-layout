@@ -68,7 +68,7 @@ export class goldenChild extends Vue {
 	glObject: any = null
 
 	get childConfig() { return null; }
-	get glParent() { return this.glObject.parent.vueObject; }
+	
 	container = null;
 
 	hide() { this.container && this.container.hide(); }
@@ -106,7 +106,10 @@ export class goldenChild extends Vue {
 	}
 	beforeDestroy() {
 		if(this.glObject)   //It can be destroyed in reaction of the removal of the glObject too
-			this.$parent.removeGlChild(this.glParent.glChildren.indexOf(this));
+		{
+			this.glObject.parent.removeChild(this.glObject);
+		}
+			
 	}
 	@Watch('glObject') @Emit() destroy(v) { return !v; }
 
