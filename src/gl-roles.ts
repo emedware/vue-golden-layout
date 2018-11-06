@@ -102,7 +102,7 @@ export class goldenChild extends Vue {
 			...dimensions,
 			...this.childConfig,
 			vue: this.nodePath()
-		}, this, this.$parent.$children.indexOf(this));
+		}, this);
 	}
 	beforeDestroy() {
 		if(this.glObject)   //It can be destroyed in reaction of the removal of the glObject too
