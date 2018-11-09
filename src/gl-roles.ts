@@ -32,7 +32,7 @@ export class goldenContainer extends Vue {
 		}
 		var ci = this.glObject;
 		if(ci)
-			ci.addChild(child, index);
+			ci.addChild(child, Math.min(index, ci.header.tabs.length));
 		else if(undefined=== index)
 			this.config.content.push(child);
 		else

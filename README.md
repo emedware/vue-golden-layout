@@ -42,6 +42,10 @@ The sources entry point is in `vue-golden-layout/src/index.ts`
 import vgl from 'vue-golden-layout/src'
 Vue.use(vgl);
 ```
+# What happens inside of `<golden-layout>`?
+## Structure
+
+Elements like `<gl-row>`, `<gl-col>` and `<gl-stack>` can be represented in a tree - they respectively stand for a golden-layout row, column and stack.
 
 ## Inserting components
 
