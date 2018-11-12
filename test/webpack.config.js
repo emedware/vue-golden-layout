@@ -6,7 +6,7 @@ module.exports = {
     mode: 'development',
 	devtool: 'eval',
 	entry: {
-		app: [path.resolve(__dirname, './index.ts')]
+		app: [path.resolve(__dirname, './index.ts'), 'webpack-dev-server-status-bar']
 	},
 	output: {
 		filename: '[name].js',
@@ -15,7 +15,7 @@ module.exports = {
 	},
 	plugins: [
 		new HtmlWebpackPlugin({
-			template: 'test/index.ejs',
+			template: path.resolve(__dirname, './index.ejs'),
 			title: 'vue-golden-layout'
 		}),
         new VueLoader.VueLoaderPlugin()
@@ -52,5 +52,14 @@ module.exports = {
             'vue-golden-layout': path.resolve(__dirname, '../src/index.ts')
         },
 		extensions: [".tsx", ".ts", ".js", '.html', '.vue']
-	}
+	},
+    devServer: {
+        contentBase: path.join(__dirname, 'dist'),
+        compress: true,
+        port: 9000,
+        overlay: true,
+        stats: {
+            colors: true
+        }
+    }
 };

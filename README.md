@@ -14,9 +14,9 @@ npm i -S vue-golden-layout
 > 
 > ```
 > npm install
-> npm start
+> npm test
 > ```
-> The file `test/dist/index.html` can be opened in the browser.
+> You can now browse `http://localhost:9000`
 
 ## Don't forget in order to make it work
 - Include a golden-layout theme CSS.

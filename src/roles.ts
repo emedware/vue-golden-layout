@@ -93,7 +93,6 @@ export class goldenChild extends goldenItem {
 	nodePath() {
 		return this.$parent.childPath(this);
 	}
-
 	mounted() {
 		var dimensions:any = {};
 		if(undefined!== this.width) dimensions.width = this.width;
@@ -102,7 +101,7 @@ export class goldenChild extends goldenItem {
 			...dimensions,
 			...this.childConfig,
 			vue: this.nodePath()
-		}, this, this.$parent.$children.indexOf(this));
+		}, this);
 	}
 	beforeDestroy() {
 		if(this.glObject)   //It can be destroyed in reaction of the removal of the glObject too
