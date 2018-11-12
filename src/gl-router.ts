@@ -1,5 +1,5 @@
 import { Watch, Component, Prop, Emit } from 'vue-property-decorator'
-import { glRow } from './gl-groups'
+import glDstack from './gl-dstack'
 import Vue from 'vue'
 import goldenLayout, {renderVNodes} from './golden.vue'
 
@@ -67,36 +67,17 @@ goldenLayout.registerGlobalComponent(RouteComponentName, gl=> function(container
 });
 
 @Component
-export default class glRouter extends glRow {
+export default class glRouter extends glDstack {
     $router
     $route
 	@Prop({default: defaultTitle}) titler : (route: any)=> string
 	@Prop({default: '/'}) emptyRoute: string
-	
-	get stack() {
-		var ci = this.glObject, rv;
-		if(!ci) return null;
-		rv = ci.contentItems.find(x => 'stack'=== x.type);
-		if(!rv) {
-			ci.addChild({
-				type: 'stack',
-				content: []
-			}, 0);
-			rv = ci.contentItems[0];
-		}
-		return rv;
-	}
+    @Prop({default: 'router'}) dstackId: string
 
-	@Watch('stack.vueObject.glObject')
+	@Watch('stack')
 	@Watch('stack.config.activeItemIndex')
 	setPath(v) {
 		var path;
-		//stacks created by the users are created without an activeItemIndex
-		if(v && 'object'=== typeof v) { //set `activeItemIndex` observed
-			var config = v.config, aii = config.activeItemIndex;
-			delete config.activeItemIndex;
-			this.$set(config, 'activeItemIndex', aii);
-		}
 		var aci = this.stack.getActiveContentItem();
 		if(aci && RouteComponentName=== aci.config.componentName) {
 			path = aci.config.componentState;

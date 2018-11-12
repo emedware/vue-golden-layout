@@ -23,6 +23,15 @@ export default class glDstack extends glRow {
 		return rv;
 	}
     
+	@Watch('stack.vueObject.glObject')
+    observe(obj) {
+        //stacks created by the users are created without an activeItemIndex
+        //set `activeItemIndex` observed
+        var config = obj.config, aii = config.activeItemIndex;
+        delete config.activeItemIndex;
+        this.$set(config, 'activeItemIndex', aii);
+    }
+
 	created() {
         this.onGlInitialise(gl=> {
             if(gl.isSubWindow)
