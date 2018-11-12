@@ -54,7 +54,7 @@ export class goldenContainer extends goldenItem {
 	get glChildren() {
 		return this.glObject.contentItems.map(x=> x.vueObject);
 	}
-	onGlInitialise(cb: ()=> void): void { throw 'Not implemented'; }
+	onGlInitialise(cb: (any?)=> void): void { throw 'Not implemented'; }
 	events: string[] = ['open', 'resize', 'destroy', 'close', 'tab', 'hide', 'show']
 }
 
