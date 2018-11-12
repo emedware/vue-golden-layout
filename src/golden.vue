@@ -7,7 +7,7 @@
 import Vue from 'vue'
 import {Component, Inject, Model, Prop, Watch, Emit} from 'vue-property-decorator'
 import * as GoldenLayout from 'golden-layout'
-import {goldenContainer} from './gl-roles'
+import {goldenContainer} from './roles'
 import * as resize from 'vue-resize-directive'
 
 var globalComponents: {[name: string] : (gl: goldenLayout)=> (container: any, state: any)=> void} = {};

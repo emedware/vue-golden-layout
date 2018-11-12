@@ -1,5 +1,5 @@
 import {Component, Model, Watch, Emit} from 'vue-property-decorator'
-import {goldenChild} from './gl-roles'
+import {goldenChild} from './roles'
 import group from './gl-group.vue'
 //We have to re-define : ts is lost with Vue files
 export class glGroup extends group {

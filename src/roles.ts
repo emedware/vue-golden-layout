@@ -1,12 +1,15 @@
 import Vue from 'vue'
 import {Component, Prop, Watch, Emit} from 'vue-property-decorator'
 
+export class goldenItem extends Vue {
+	glObject: any = null
+}
+
 @Component
-export class goldenContainer extends Vue {
+export class goldenContainer extends goldenItem {
 	config: any = {
 		content: []
 	}
-	glObject: any = null
 	registerComponent(component/*: Vue|()=>any*/, name?: string): string { throw 'unimplemented'; }
 	childPath(comp: Vue): string {
         var childMe = <goldenChild><any>this;
@@ -56,14 +59,13 @@ export class goldenContainer extends Vue {
 }
 
 @Component
-export class goldenChild extends Vue {
+export class goldenChild extends goldenItem {
 	@Prop() width: number
 	@Prop() height: number
 	@Watch('width') reWidth(w) { this.container && this.container.setSize(w, false); }
 	@Watch('height') reHeight(h) { this.container && this.container.setSize(false, h); }
 	
 	@Prop() tabId: string
-	glObject: any = null
 
 	get childConfig() { return null; }
 	get glParent() { return this.glObject.parent.vueObject; }
