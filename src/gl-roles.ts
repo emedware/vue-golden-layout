@@ -23,7 +23,7 @@ export class goldenContainer extends Vue {
 		return nrs.length ? next.getChild(nrs.join('.')) : next;
 	}
 
-	addGlChild(child, comp, index?: number) {
+	addGlChild(child, comp) {
 		if(comp && 'component'=== child.type) {
 			if(!child.componentName)
 				child.componentName = this.registerComponent(comp);
@@ -32,11 +32,9 @@ export class goldenContainer extends Vue {
 		}
 		var ci = this.glObject;
 		if(ci)
-			ci.addChild(child, Math.min(index, ci.header.tabs.length));
-		else if(undefined=== index)
-			this.config.content.push(child);
+			ci.addChild(child, ci.header.tabs.length);
 		else
-			this.config.content.splice(index, 0, child);
+			this.config.content.push(child);
 	}
 	removeGlChild(index: number) {
 		var ci = this.glObject;
