@@ -25,7 +25,8 @@ export class goldenContainer extends goldenItem {
 		console.assert(next, "Vue structure correspond to loaded GL configuration");
 		return nrs.length ? next.getChild(nrs.join('.')) : next;
 	}
-
+    //In order to be overriden
+    get glChildrenTarget() { return this.glObject; }
 	addGlChild(child, comp) {
 		if(comp && 'component'=== child.type) {
 			if(!child.componentName)
@@ -33,7 +34,7 @@ export class goldenContainer extends goldenItem {
 			if(!child.componentState)
 				child.componentState = {};
 		}
-		var ci = this.glObject;
+		var ci = this.glChildrenTarget;
 		if(ci)
 			ci.addChild(child, ci.header.tabs.length);
 		else

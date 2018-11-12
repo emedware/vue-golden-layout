@@ -1,4 +1,6 @@
 <template>
+<div>
+    <button class="reset" @click="reset">Reset localStorage</button>
     <golden-layout class="hscreen" @state="changedState" :state="state">
         <div slot="stackCtr" slot-scope="{ stackSub }" class="test-template">
             Added item (id: {{stackSub}})
@@ -25,16 +27,17 @@
                         </span>
                     </p>
                 </gl-component>
-                <gl-stack ref="myStack">
+                <gl-dstack ref="myStack" dstack-id="dynamics">
                     <gl-component v-for="stackSub in stackSubs" :key="stackSub"
                         :title="'dynamic'+stackSub"
                         @destroy="closed(stackSub)"
                         template="stackCtr" :state="{stackSub}" />
-                </gl-stack>
+                </gl-dstack>
             </gl-row>
             <gl-component v-if="bottomSheet" template="bottom" @destroy="bottomSheet = false" />
         </gl-col>
     </golden-layout>
+</div>
 </template>
 <style>
 body {
@@ -43,6 +46,16 @@ body {
 .hscreen {
 	width: 100vw;
 	height: 100vh;
+}
+.reset {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    float: right;
+    z-index: 9000;
+}
+.reset:hover {
+    background-color: red;
 }
 </style>
 <script lang="ts">
@@ -76,13 +89,16 @@ export default class App extends Vue {
 			bottomSheet: this.bottomSheet
 		});
 	}
+    reset() {
+        delete localStorage.browserGL;
+        location.reload();
+    }
 	closed(n) {
 		var ndx = this.stackSubs.indexOf(n);
 		console.assert(!!~ndx, 'Element in state array');
 		this.stackSubs.splice(ndx, 1);
 	}
 	addStack() {
-		//this.$refs.myStack.addGlChild(...)
 		this.stackSubs.push(++this.ssId);
 	}
 	remStack(id) {
