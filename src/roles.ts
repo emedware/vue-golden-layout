@@ -35,7 +35,7 @@ export class goldenContainer extends goldenItem {
 		}
 		var ci = this.glObject;
 		if(ci)
-			ci.addChild(child, ci.header.tabs.length);
+			ci.addChild(child);
 		else
 			this.config.content.push(child);
 	}
@@ -105,7 +105,9 @@ export class goldenChild extends goldenItem {
 	}
 	beforeDestroy() {
 		if(this.glObject)   //It can be destroyed in reaction of the removal of the glObject too
-			this.$parent.removeGlChild(this.glParent.glChildren.indexOf(this));
+		{
+			this.glObject.parent.removeChild(this.glObject);
+		}
 	}
 	@Watch('glObject') @Emit() destroy(v) { return !v; }
 
