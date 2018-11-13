@@ -16,6 +16,7 @@ module.exports = {
 	plugins: [
 		new HtmlWebpackPlugin({
 			template: path.resolve(__dirname, './index.ejs'),
+            favicon: path.resolve(__dirname, './favicon.ico'),
 			title: 'vue-golden-layout'
 		}),
         new VueLoader.VueLoaderPlugin()
@@ -58,6 +59,7 @@ module.exports = {
         compress: true,
         port: 9000,
         overlay: true,
+        historyApiFallback: true,
         stats: {
             colors: true
         }
