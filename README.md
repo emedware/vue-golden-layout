@@ -52,8 +52,8 @@ Elements like `<gl-row>`, `<gl-col>` and `<gl-stack>` can be represented in a tr
 Component can be described *by extension* - namely, by giving their content using the data from the defining component.
 ```html
 <gl-component>
-    <h1>Heydoo</h1>
-    Price: {{priceLess}}
+	<h1>Heydoo</h1>
+	Price: {{priceLess}}
 </gl-component>
 ```
 

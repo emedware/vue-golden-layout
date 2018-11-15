@@ -14,7 +14,7 @@ var globalComponents: {[name: string] : (gl: goldenLayout)=> (container: any, st
 
 @Component({directives: {resize}})
 export default class goldenLayout extends goldenContainer {
-    $router
+	$router
 	static registerGlobalComponent(name: string, comp: (gl: goldenLayout)=> (container: any, state: any)=> void) {
 		console.assert(!globalComponents[name], `Component name "${name}" unused`);
 		globalComponents[name] = comp;
@@ -91,8 +91,8 @@ export default class goldenLayout extends goldenContainer {
 		var me = this, layoutRoot = this.$refs.layoutRoot, gl;
 		if(this.state) {
 			this.config = this.state.content ?
-                this.state :
-                GoldenLayout.unminifyConfig(this.state);
+				this.state :
+				GoldenLayout.unminifyConfig(this.state);
 		} else {
 			this.config.settings = {
 				hasHeaders: this.hasHeaders,
@@ -126,28 +126,38 @@ export default class goldenLayout extends goldenContainer {
 				class: 'glComponent'
 			});
 		}
+		//#region Register gl-components
+		// Components registered with this.registerComponent(...)
+		for(var tpl in this.tplPreload)
+			gl.registerComponent(tpl, this.tplPreload[tpl]);
+		delete this.tplPreload;
 		var slots = (<any>this).$slots;
+		// Register direct-children templates
 		for(var tpl in slots) if('default'!== tpl) ((tpl)=> {
 			gl.registerComponent(tpl, function(container) {
 				appendVNodes(container, slots[tpl]);
 			});
 		})(tpl);
 		var scopedSlots = (<any>this).$scopedSlots;
+		// Register direct-children templates with a scope
 		for(var tpl in scopedSlots) ((tpl)=> {
 			gl.registerComponent(tpl, function(container, state) {
 				appendVNodes(container, scopedSlots[tpl](state));
 			});
 		})(tpl);
+		// Register global components given by other vue-components
 		for(var tpl in globalComponents) ((tpl)=> {
 			gl.registerComponent(tpl, globalComponents[tpl](this));
 		})(tpl);
+		//#endregion
 
+		//#region Events
 		var raiseStateChanged = ()=> {
 			setTimeout(()=> {
 				try {
 					//gl.toConfig() raise exceptions when opening a popup
 					//it allso raise a 'stateChanged' event when closing a popup => inf call
-                    var config = gl.toConfig();
+					var config = gl.toConfig();
 					this.gotState(GoldenLayout.minifyConfig(config), config);
 				}
 				catch(e) {
@@ -180,6 +190,7 @@ export default class goldenLayout extends goldenContainer {
 		forwardEvt(gl, this, ['itemCreated', 'stackCreated', 'rowCreated', 'tabCreated', 'columnCreated', 'componentCreated', 'selectionChanged',
 			'windowOpened', 'windowClosed', 'itemDestroyed', 'initialised',
 			'activeContentItemChanged']);
+		//#endregion
 		gl.init();
 	}
 	onResize() { this.gl && this.gl.updateSize(); }
@@ -190,7 +201,7 @@ export function renderVNodes(parent, el, vNodes, options?) {
 		render: function(ce) {
 			return ce('div', options, vNodes instanceof Array ? vNodes : [vNodes]);
 		},
-        parent,
+		parent,
 		el
 	});
 }

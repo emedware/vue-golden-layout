@@ -8,7 +8,7 @@ export class glGroup extends group {
 }
 @Component
 export class glRow extends glGroup {
-	get childConfig() { return {
+	getChildConfig() { return {
 		isClosable: this.closable,
 		type: 'row',
 		...this.config
@@ -16,7 +16,7 @@ export class glRow extends glGroup {
 }
 @Component
 export class glCol extends glGroup {
-	get childConfig() { return {
+	getChildConfig() { return {
 		isClosable: this.closable,
 		type: 'column',
 		...this.config
@@ -32,7 +32,7 @@ export class glStack extends glGroup {
 			if((<goldenChild>child).tabId === tabId)
 				(<any>this).glObject.setActiveContentItem((<any>child).container.parent);
 	}
-	get childConfig() {
+	getChildConfig() {
 		(<any>this).onGlInitialise(()=> {
 			this.$watch(()=> {
 				var ci : any = (<any>this).glObject;

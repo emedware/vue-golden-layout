@@ -14,65 +14,65 @@ const RouteComponentName = '$router-route';
 goldenLayout.registerGlobalComponent(RouteComponentName, gl=> function(container, state) {
 	gl.onGlInitialise(()=> {
 		var comp: Vue|any = gl.$router.getMatchedComponents(state.path)[0],
-            route = gl.$router.resolve(state.path).route,
-            component;
+			route = gl.$router.resolve(state.path).route,
+			component;
 		//TODO: comp can be a string too
 		if('object'=== typeof comp)
 			comp = Vue.extend(comp);
 		var div, template, parent = container.parent.parent;
 		while(!parent.vueObject || !parent.vueObject._isVue) parent = parent.parent;
-        parent = parent.vueObject;
-        if(parent.isRouter)
-            template = parent.$scopedSlots.route ?
-                parent.$scopedSlots.route(route) :
-                parent.$slots.route;
-        // template is <VNode?>
-        var create = template ? new Vue({
-            render(ce) {
-                return template instanceof Array ?
-                    ce('div', {}, template) :
-                    template;
-            },
-            mounted() {
-                this.cachedComp = new comp({el: component.$el.querySelector('main'), parent: component});
-            },
-            parent
-        }) : new comp({parent});
-        if(!(create instanceof Promise)) create = Promise.resolve(create);
-        create.then(c=> {
-            component = c instanceof Vue ? c : new Vue({parent, ...c});
-            //Simulate a _routerRoot object so that all children have a $route object set to this route object
-            component._routerRoot = Object.create(component._routerRoot);
-            Object.defineProperty(component._routerRoot, '_route', {
-                value: route,
-                writable: false
-            });
-            Object.defineProperty(component._routerRoot, '_router', {
-                value: Object.create(component._routerRoot._router),
-                writable: false
-            });
-            Object.defineProperty(component._routerRoot._router, 'history', {
-                value: Object.create(component._routerRoot._router.history),
-                writable: false
-            });
-            Object.defineProperty(component._routerRoot._router.history, 'current', {
-                value: route,
-                writable: false
-            });
+		parent = parent.vueObject;
+		if(parent.isRouter)
+			template = parent.$scopedSlots.route ?
+				parent.$scopedSlots.route(route) :
+				parent.$slots.route;
+		// template is <VNode?>
+		var create = template ? new Vue({
+			render(ce) {
+				return template instanceof Array ?
+					ce('div', {}, template) :
+					template;
+			},
+			mounted() {
+				this.cachedComp = new comp({el: component.$el.querySelector('main'), parent: component});
+			},
+			parent
+		}) : new comp({parent});
+		if(!(create instanceof Promise)) create = Promise.resolve(create);
+		create.then(c=> {
+			component = c instanceof Vue ? c : new Vue({parent, ...c});
+			//Simulate a _routerRoot object so that all children have a $route object set to this route object
+			component._routerRoot = Object.create(component._routerRoot);
+			Object.defineProperty(component._routerRoot, '_route', {
+				value: route,
+				writable: false
+			});
+			Object.defineProperty(component._routerRoot, '_router', {
+				value: Object.create(component._routerRoot._router),
+				writable: false
+			});
+			Object.defineProperty(component._routerRoot._router, 'history', {
+				value: Object.create(component._routerRoot._router.history),
+				writable: false
+			});
+			Object.defineProperty(component._routerRoot._router.history, 'current', {
+				value: route,
+				writable: false
+			});
 			var el = document.createElement('div');
 			container.getElement().append(el);
-            component.$mount(el);
-        });
+			component.$mount(el);
+		});
 	});
 });
 
 @Component
 export default class glRouter extends glDstack {
-    $router
-    $route
+	$router
+	$route
 	@Prop({default: defaultTitle}) titler : (route: any)=> string
 	@Prop({default: '/'}) emptyRoute: string
-    @Prop({default: 'router'}) dstackId: string
+	@Prop({default: 'router'}) dstackId: string
 
 	@Watch('stack')
 	@Watch('stack.config.activeItemIndex')
@@ -101,8 +101,8 @@ export default class glRouter extends glDstack {
 						type: 'component',
 						componentName: RouteComponentName,
 						componentState: {
-                            path: route.fullPath
-                        },
+							path: route.fullPath
+						},
 						title: this.titler(route)
 					});
 				}

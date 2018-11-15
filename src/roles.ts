@@ -12,7 +12,7 @@ export class goldenContainer extends goldenItem {
 	}
 	registerComponent(component/*: Vue|()=>any*/, name?: string): string { throw 'unimplemented'; }
 	childPath(comp: Vue): string {
-        var childMe = <goldenChild><any>this;
+		var childMe = <goldenChild><any>this;
 		var rv = childMe.nodePath?`${childMe.nodePath()}.`:'';
 		var ndx = this.$children.indexOf(comp);
 		console.assert(!!~ndx, 'Children exists');
@@ -25,8 +25,8 @@ export class goldenContainer extends goldenItem {
 		console.assert(next, "Vue structure correspond to loaded GL configuration");
 		return nrs.length ? next.getChild(nrs.join('.')) : next;
 	}
-    //In order to be overriden
-    get glChildrenTarget() { return this.glObject; }
+	//In order to be overriden
+	get glChildrenTarget() { return this.glObject; }
 	addGlChild(child, comp) {
 		if(comp && 'component'=== child.type) {
 			if(!child.componentName)
@@ -68,7 +68,7 @@ export class goldenChild extends goldenItem {
 	
 	@Prop() tabId: string
 
-	get childConfig() { return null; }
+	getChildConfig() { return null; }
 	get glParent() { return this.glObject.parent.vueObject; }
 	container = null;
 
@@ -100,7 +100,7 @@ export class goldenChild extends goldenItem {
 		if(undefined!== this.height) dimensions.height = this.height;
 		this.$parent.addGlChild({
 			...dimensions,
-			...this.childConfig,
+			...this.getChildConfig(),
 			vue: this.nodePath()
 		}, this);
 	}

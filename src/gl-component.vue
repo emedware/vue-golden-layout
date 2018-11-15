@@ -1,7 +1,7 @@
 <template>
-    <div class="glComponent">
-        <slot />
-    </div>
+	<div class="glComponent">
+		<slot />
+	</div>
 </template>
 <style>
 .glComponent {
@@ -27,8 +27,8 @@ export default class glComponent extends goldenChild {
 	toggleMaximise() {
 		this.container && this.container.toggleMaximise();
 	}
-    
-	get childConfig() {
+	
+	getChildConfig() {
 		return {
 			type: 'component',
 			title: this.title,

@@ -1,9 +1,9 @@
 var webpack = require("webpack"),
 	path = require("path"),
 	HtmlWebpackPlugin = require('html-webpack-plugin'),
-    VueLoader = require('vue-loader');
+	VueLoader = require('vue-loader');
 module.exports = {
-    mode: 'development',
+	mode: 'development',
 	devtool: 'eval',
 	entry: {
 		app: [path.resolve(__dirname, './index.ts'), 'webpack-dev-server-status-bar']
@@ -16,10 +16,10 @@ module.exports = {
 	plugins: [
 		new HtmlWebpackPlugin({
 			template: path.resolve(__dirname, './index.ejs'),
-            favicon: path.resolve(__dirname, './favicon.ico'),
+			favicon: path.resolve(__dirname, './favicon.ico'),
 			title: 'vue-golden-layout'
 		}),
-        new VueLoader.VueLoaderPlugin()
+		new VueLoader.VueLoaderPlugin()
 	],
 	module: {
 		rules: [{
@@ -48,20 +48,20 @@ module.exports = {
 		}]
 	},
 	resolve: {
-        alias: {
+		alias: {
 			vue: 'vue/dist/vue.esm.js', //route are only given a template and need to be compiled client-side
-            'vue-golden-layout': path.resolve(__dirname, '../src/index.ts')
-        },
+			'vue-golden-layout': path.resolve(__dirname, '../src/index.ts')
+		},
 		extensions: [".tsx", ".ts", ".js", '.html', '.vue']
 	},
-    devServer: {
-        contentBase: path.join(__dirname, 'dist'),
-        compress: true,
-        port: 9000,
-        overlay: true,
-        historyApiFallback: true,
-        stats: {
-            colors: true
-        }
-    }
+	devServer: {
+		contentBase: path.join(__dirname, 'dist'),
+		compress: true,
+		port: 9000,
+		overlay: true,
+		historyApiFallback: true,
+		stats: {
+			colors: true
+		}
+	}
 };
