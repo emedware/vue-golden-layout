@@ -78,7 +78,7 @@ export default class goldenLayout extends goldenContainer {
 			};
 		if(this.gl) {
 			this.gl.registerComponent(name, tplData);
-			/*if DEBUG*/ console.warn('Dynamic golden-layout components should be named templates instead.');
+			console.warn('Dynamic golden-layout components should be named templates instead.');
 		} else this.tplPreload[name] = tplData;
 		return name;
 	}
@@ -171,10 +171,10 @@ export default class goldenLayout extends goldenContainer {
 			delete this.initialisedCB;
 		});
 		gl.on('itemCreated', (itm) => {
-			itm.vueObject = itm === gl.root ? this :
+			Vue.set(itm, 'vueObject', itm === gl.root ? this :
 				itm.config.vue ? this.getChild(itm.config.vue) :
-				{};
-			itm.vueObject.glObject = itm;
+				{});
+			Vue.set(itm.vueObject, 'glObject', itm);
 			if(itm.config.vue) {
 				itm.config.__defineGetter__('vue', ()=> itm.vueObject.nodePath());
 			}

@@ -33,6 +33,7 @@ export default class glComponent extends goldenChild {
 			type: 'component',
 			title: this.title,
 			isClosable: this.closable,
+			reorderEnabled: this.reorderEnabled,
 			componentName: this.template,
 			componentState: this.state
 		};

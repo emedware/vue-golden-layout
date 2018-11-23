@@ -83,6 +83,7 @@ export class goldenChild extends goldenItem {
 	}
 
 	@Prop({default: true}) closable: boolean
+	@Prop({default: true}) reorderEnabled: boolean
 	close() {
 		this.container && this.container.close();
 	}

@@ -6,16 +6,16 @@ var webpack = require("webpack"),
 
 module.exports = {
 	mode: 'development',	//This is meant to be bundled afterward anyway
+	context: path.resolve(__dirname, 'src'),
 	entry: {
-		'vue-golden-layout': [path.resolve(__dirname, 'src/index.ts')],
+		'vue-golden-layout': './index.ts',
 	},
 	output: {
 		filename: '[name].js',
 		path: path.resolve(__dirname, "dist"),
 		libraryTarget: 'umd',
 		library: 'vue-golden-layout',
-		umdNamedDefine: true,
-		libraryExport: 'default'
+		umdNamedDefine: true
 	},
 	plugins: [
 		new DtsBundlePlugin({

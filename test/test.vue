@@ -10,12 +10,12 @@
 			Bottom
 		</template>
 		<gl-col :closable="false">
-			<gl-router>
+			<!--gl-router>
 				<template slot="route" slot-scope="{ meta }">
 					<p-head :title="meta.title" />
 					<main />
 				</template>
-			</gl-router>
+			</gl-router-->
 			<gl-row :closable="false">
 				<gl-component title="compA" class="test-component">
 					<h1>CompA</h1>
@@ -28,7 +28,7 @@
 					</p>
 				</gl-component>
 				<gl-dstack ref="myStack" dstack-id="dynamics">
-					<gl-component title="Dstack demonstration">
+					<gl-component title="Dstack demonstration" :closable="false" :reorder-enabled="false">
 						This element is just present to test the ability of the d-stack if this stack happens to be popped out.
 					</gl-component>
 					<gl-component v-for="stackSub in stackSubs" :key="stackSub"
