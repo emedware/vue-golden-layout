@@ -19,13 +19,13 @@ export default class glDstack extends glRow {
 		}];
 		return config;
 	}
-	cachedStack: any
+  	cachedStack: any
 	get stack() {
 		var ci = this.glObject, rv;
 		if(!ci) return null;
 		if(this.cachedStack && this.cachedStack.vueObject.glObject)
 			return this.cachedStack;
-		rv = ci.contentItems.find(x => 'stack'=== x.type && x.config.dstackId === this.dstackId);
+		rv = ci.contentItems.find(x => x.isStack && x.config.dstackId === this.dstackId);
 		if(!rv) {
 			ci.addChild({
 				type: 'stack',

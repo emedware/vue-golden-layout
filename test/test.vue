@@ -10,12 +10,12 @@
 			Bottom
 		</template>
 		<gl-col :closable="false">
-			<!--gl-router>
+			<gl-router>
 				<template slot="route" slot-scope="{ meta }">
 					<p-head :title="meta.title" />
 					<main />
 				</template>
-			</gl-router-->
+			</gl-router>
 			<gl-row :closable="false">
 				<gl-component title="compA" class="test-component">
 					<h1>CompA</h1>

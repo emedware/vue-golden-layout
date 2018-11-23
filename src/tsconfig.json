@@ -1,23 +1,23 @@
 {
-  "compilerOptions": {
-	"outDir": "../dist",
-	"sourceMap": true,
-	"declaration": true,
-	"noImplicitAny": false,
-	"module": "commonjs",
-	"moduleResolution": "node",
-	"experimentalDecorators": true,
-	"emitDecoratorMetadata": true,
-	"target": "es5",
-	"lib": [
-	  "dom",
-	  "es5",
-	  "es6"
-	],
-	"allowSyntheticDefaultImports": true,
-	"typeRoots": ["node_modules/@types"],
-	"baseUrl": "./"
-  },
+	"compilerOptions": {
+		"outDir": "../dist",
+		"sourceMap": true,
+		"declaration": true,
+		"noImplicitAny": false,
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"target": "es5",
+		"lib": [
+		"dom",
+		"es5",
+		"es6"
+		],
+		"allowSyntheticDefaultImports": true,
+		"typeRoots": ["node_modules/@types"],
+		"baseUrl": "./"
+	},
 	"exclude": [
 		"**/*.spec.ts"
 	]

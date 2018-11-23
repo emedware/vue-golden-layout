@@ -182,7 +182,7 @@ export default class goldenLayout extends goldenContainer {
 		gl.on('itemDestroyed', (itm) => {
 			itm.vueObject.glObject = null;
 			//Bugfix: when destroying a tab before itm, stack' activeItemIndex is not updated and become invalid
-			if('stack'=== itm.parent.type && itm.parent.contentItems.indexOf(itm) < itm.parent.config.activeItemIndex)
+			if(itm.parent.isStack && itm.parent.contentItems.indexOf(itm) < itm.parent.config.activeItemIndex)
 				setTimeout(()=> {
 					--itm.parent.config.activeItemIndex;
 				});
