@@ -87,111 +87,116 @@ export default class goldenLayout extends goldenContainer {
 		if(this.glObject) cb(this.gl);
 		else (this.initialisedCB || (this.initialisedCB=[])).push(cb);
 	}
+	@Emit() subWindow(is: boolean) {}
 	mounted() {
-		var me = this, layoutRoot = this.$refs.layoutRoot, gl;
-		if(this.state) {
-			this.config = this.state.content ?
-				this.state :
-				GoldenLayout.unminifyConfig(this.state);
-		} else {
-			this.config.settings = {
-				hasHeaders: this.hasHeaders,
-				reorderEnabled: this.reorderEnabled,
-				selectionEnabled: this.selectionEnabled,
-				popoutWholeStack: this.popoutWholeStack,
-				blockedPopoutsThrowError: this.blockedPopoutsThrowError,
-				closePopoutsOnUnload: this.closePopoutsOnUnload,
-				showPopoutIcon: this.showPopoutIcon,
-				showMaximiseIcon: this.showMaximiseIcon,
-				showCloseIcon: this.showCloseIcon
-			};
-			this.config.dimensions = {
-				borderWidth: this.borderWidth,
-				minItemHeight: this.minItemHeight,
-				minItemWidth: this.minItemWidth,
-				headerHeight: this.headerHeight,
-				dragProxyWidth: this.dragProxyWidth,
-				dragProxyHeight: this.dragProxyHeight
-			};
-		}
-		this.gl = gl = new GoldenLayout(this.config, <Element>layoutRoot);
-		
-		for(var tpl in this.tplPreload)
-			gl.registerComponent(tpl, this.tplPreload[tpl]);
-		delete this.tplPreload;
-		function appendVNodes(container, vNodes) {
-			var el = document.createElement('div');
-			container.getElement().append(el);
-			renderVNodes(me, el, vNodes, {
-				class: 'glComponent'
-			});
-		}
-		//#region Register gl-components
-		// Components registered with this.registerComponent(...)
-		for(var tpl in this.tplPreload)
-			gl.registerComponent(tpl, this.tplPreload[tpl]);
-		delete this.tplPreload;
-		var slots = (<any>this).$slots;
-		// Register direct-children templates
-		for(var tpl in slots) if('default'!== tpl) ((tpl)=> {
-			gl.registerComponent(tpl, function(container) {
-				appendVNodes(container, slots[tpl]);
-			});
-		})(tpl);
-		var scopedSlots = (<any>this).$scopedSlots;
-		// Register direct-children templates with a scope
-		for(var tpl in scopedSlots) ((tpl)=> {
-			gl.registerComponent(tpl, function(container, state) {
-				appendVNodes(container, scopedSlots[tpl](state));
-			});
-		})(tpl);
-		// Register global components given by other vue-components
-		for(var tpl in globalComponents) ((tpl)=> {
-			gl.registerComponent(tpl, globalComponents[tpl](this));
-		})(tpl);
-		//#endregion
-
-		//#region Events
-		var raiseStateChanged = ()=> {
-			setTimeout(()=> {
-				try {
-					//gl.toConfig() raise exceptions when opening a popup
-					//it allso raise a 'stateChanged' event when closing a popup => inf call
-					var config = gl.toConfig();
-					this.gotState(GoldenLayout.minifyConfig(config), config);
-				}
-				catch(e) {
-					raiseStateChanged();
-				}
-			}, 500);
-		};
-		gl.on('stateChanged', raiseStateChanged);
-		gl.on('initialised', () => {
-			if(this.initialisedCB) for(let cb of this.initialisedCB) cb(gl);
-			delete this.initialisedCB;
-		});
-		gl.on('itemCreated', (itm) => {
-			Vue.set(itm, 'vueObject', itm === gl.root ? this :
-				itm.config.vue ? this.getChild(itm.config.vue) :
-				{});
-			Vue.set(itm.vueObject, 'glObject', itm);
-			if(itm.config.vue) {
-				itm.config.__defineGetter__('vue', ()=> itm.vueObject.nodePath());
+		var me = this, layoutRoot = this.$refs.layoutRoot, gl,
+			state = this.state instanceof Promise ?
+				this.state : Promise.resolve(this.state);
+		state.then(state=> {
+			if(this.state) {
+				this.config = this.state.content ?
+					this.state :
+					GoldenLayout.unminifyConfig(this.state);
+			} else {
+				this.config.settings = {
+					hasHeaders: this.hasHeaders,
+					reorderEnabled: this.reorderEnabled,
+					selectionEnabled: this.selectionEnabled,
+					popoutWholeStack: this.popoutWholeStack,
+					blockedPopoutsThrowError: this.blockedPopoutsThrowError,
+					closePopoutsOnUnload: this.closePopoutsOnUnload,
+					showPopoutIcon: this.showPopoutIcon,
+					showMaximiseIcon: this.showMaximiseIcon,
+					showCloseIcon: this.showCloseIcon
+				};
+				this.config.dimensions = {
+					borderWidth: this.borderWidth,
+					minItemHeight: this.minItemHeight,
+					minItemWidth: this.minItemWidth,
+					headerHeight: this.headerHeight,
+					dragProxyWidth: this.dragProxyWidth,
+					dragProxyHeight: this.dragProxyHeight
+				};
 			}
-		});
-		gl.on('itemDestroyed', (itm) => {
-			itm.vueObject.glObject = null;
-			//Bugfix: when destroying a tab before itm, stack' activeItemIndex is not updated and become invalid
-			if(itm.parent.isStack && itm.parent.contentItems.indexOf(itm) < itm.parent.config.activeItemIndex)
-				setTimeout(()=> {
-					--itm.parent.config.activeItemIndex;
+			this.gl = gl = new GoldenLayout(this.config, <Element>layoutRoot);
+			this.subWindow(gl.isSubWindow);
+			for(var tpl in this.tplPreload)
+				gl.registerComponent(tpl, this.tplPreload[tpl]);
+			delete this.tplPreload;
+			function appendVNodes(container, vNodes) {
+				var el = document.createElement('div');
+				container.getElement().append(el);
+				renderVNodes(me, el, vNodes, {
+					class: 'glComponent'
 				});
+			}
+			//#region Register gl-components
+			// Components registered with this.registerComponent(...)
+			for(var tpl in this.tplPreload)
+				gl.registerComponent(tpl, this.tplPreload[tpl]);
+			delete this.tplPreload;
+			var slots = (<any>this).$slots;
+			// Register direct-children templates
+			for(var tpl in slots) if('default'!== tpl) ((tpl)=> {
+				gl.registerComponent(tpl, function(container) {
+					appendVNodes(container, slots[tpl]);
+				});
+			})(tpl);
+			var scopedSlots = (<any>this).$scopedSlots;
+			// Register direct-children templates with a scope
+			for(var tpl in scopedSlots) ((tpl)=> {
+				gl.registerComponent(tpl, function(container, state) {
+					appendVNodes(container, scopedSlots[tpl](state));
+				});
+			})(tpl);
+			// Register global components given by other vue-components
+			for(var tpl in globalComponents) ((tpl)=> {
+				gl.registerComponent(tpl, globalComponents[tpl](this));
+			})(tpl);
+			//#endregion
+
+			//#region Events
+			var raiseStateChanged = ()=> {
+				setTimeout(()=> {
+					try {
+						//gl.toConfig() raise exceptions when opening a popup
+						//it allso raise a 'stateChanged' event when closing a popup => inf call
+						var config = gl.toConfig();
+						this.gotState(GoldenLayout.minifyConfig(config), config);
+					}
+					catch(e) {
+						raiseStateChanged();
+					}
+				}, 500);
+			};
+			gl.on('stateChanged', raiseStateChanged);
+			gl.on('initialised', () => {
+				if(this.initialisedCB) for(let cb of this.initialisedCB) cb(gl);
+				delete this.initialisedCB;
+			});
+			gl.on('itemCreated', (itm) => {
+				Vue.set(itm, 'vueObject', itm === gl.root ? this :
+					itm.config.vue && !gl.isSubWindow ? this.getChild(itm.config.vue) :
+					{});
+				Vue.set(itm.vueObject, 'glObject', itm);
+				if(itm.config.vue && itm.vueObject.nodePath) {
+					itm.config.__defineGetter__('vue', ()=> itm.vueObject.nodePath());
+				}
+			});
+			gl.on('itemDestroyed', (itm) => {
+				itm.vueObject.glObject = null;
+				//Bugfix: when destroying a tab before itm, stack' activeItemIndex is not updated and become invalid
+				if(itm.parent.isStack && itm.parent.contentItems.indexOf(itm) < itm.parent.config.activeItemIndex)
+					setTimeout(()=> {
+						--itm.parent.config.activeItemIndex;
+					});
+			});
+			forwardEvt(gl, this, ['itemCreated', 'stackCreated', 'rowCreated', 'tabCreated', 'columnCreated', 'componentCreated', 'selectionChanged',
+				'windowOpened', 'windowClosed', 'itemDestroyed', 'initialised',
+				'activeContentItemChanged']);
+			//#endregion
+			gl.init();
 		});
-		forwardEvt(gl, this, ['itemCreated', 'stackCreated', 'rowCreated', 'tabCreated', 'columnCreated', 'componentCreated', 'selectionChanged',
-			'windowOpened', 'windowClosed', 'itemDestroyed', 'initialised',
-			'activeContentItemChanged']);
-		//#endregion
-		gl.init();
 	}
 	onResize() { this.gl && this.gl.updateSize(); }
 }

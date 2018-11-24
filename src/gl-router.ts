@@ -119,6 +119,7 @@ export default class glRouter extends glDstack {
 
 @Component
 export class glRoute extends goldenChild {
+	$router: any
 	@Prop() path: string
 	@Prop() name: string
 	@Prop({default: false}) closable: boolean

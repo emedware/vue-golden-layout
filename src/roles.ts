@@ -79,11 +79,13 @@ export class goldenChild extends goldenItem {
 	@Watch('container')
 	@Watch('hidden')
 	setContainer(c) {
-    var parent = this.glObject.parent;
-    this.container && (
-			!parent.isStack ||
-			parent.contentItems[parent.config.activeItemIndex] === this.glObject
-      	) && this.container[this.hidden ? "hide" : "show"]();
+		if(this.glObject) {
+			var parent = this.glObject.parent;
+			this.container && (
+					!parent.isStack ||
+					parent.contentItems[parent.config.activeItemIndex] === this.glObject
+				) && this.container[this.hidden ? "hide" : "show"]();
+		}
 	}
 
 	@Prop({default: true}) closable: boolean

@@ -1,7 +1,7 @@
 <template>
 <div>
 	<button class="reset" @click="reset">Reset localStorage</button>
-	<golden-layout class="hscreen" v-model="state">
+	<golden-layout class="hscreen" v-model="state" @sub-window="subWindow">
 		<div slot="stackCtr" slot-scope="{ stackSub }" class="test-template">
 			Added item (id: {{stackSub}})
 			<button @click="remStack(stackSub)">Remove</button>
@@ -78,6 +78,9 @@ export default class App extends Vue {
 	@Persist() state: any = null
 	letters = letters
 
+	subWindow(is) {
+		Persist.persisting = !is;
+	}
 	reset() {
 		delete localStorage.browserGL;
 		location.reload();

@@ -100,6 +100,7 @@ hidden: boolean
 The `golden-layout` has a *property* and an *event* named `state`.
 - The event is triggered when the state has changed (even deeply, like a deep watch).
 - The property is used [**at mount**](https://github.com/eddow/vue-golden-layout/issues/20#issuecomment-433828678) to initialise the configuration. After that, any change will have no effect.
+- The `state` property can be a `Promise`, then the golden-layout will be rendered only when the `Promise` has been resolved.
 
 Notes:
 - The property `state` can be given minified or not
@@ -153,6 +154,7 @@ itemDestroyed
 initialised
 activeContentItemChanged
 ```
+Also, the event `sub-window` is emitted on mount with a `is: boolean` argument that is `true` iif this instance of golden-layout is loaded as a pop-up window.
 #### Contained objects
 
 The event `destroy` is provided for all components beside the golden-layout object. It occurs on user's closure **or pop-out**.
