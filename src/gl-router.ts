@@ -1,7 +1,8 @@
-import { Watch, Component, Prop, Emit } from 'vue-property-decorator'
+import { Watch, Component, Prop, Emit, Provide, Inject } from 'vue-property-decorator'
 import glDstack from './gl-dstack'
 import Vue from 'vue'
 import goldenLayout, {renderVNodes} from './golden.vue'
+import { goldenChild } from './roles'
 
 //TODO: there might be a type for route
 function defaultTitle(route: any): string {
@@ -9,11 +10,11 @@ function defaultTitle(route: any): string {
 	return (route.meta && route.meta.title) || 'set $route.meta.title';
 }
 
-const RouteComponentName = '$router-route';
+export const RouteComponentName = '$router-route';
 
 goldenLayout.registerGlobalComponent(RouteComponentName, gl=> function(container, state) {
 	gl.onGlInitialise(()=> {
-		var comp: Vue|any = gl.$router.getMatchedComponents(state.path)[0],
+		var comp: Vue|any = gl.$router.getMatchedComponents(state)[0],
 			route = gl.$router.resolve(state.path).route,
 			component;
 		//TODO: comp can be a string too
@@ -70,7 +71,8 @@ goldenLayout.registerGlobalComponent(RouteComponentName, gl=> function(container
 export default class glRouter extends glDstack {
 	$router
 	$route
-	@Prop({default: defaultTitle}) titler : (route: any)=> string
+	@Prop({default: defaultTitle})
+	@Provide() titler: (route: any)=> string
 	@Prop({default: '/'}) emptyRoute: string
 	@Prop({default: 'router'}) dstackId: string
 
@@ -113,4 +115,42 @@ export default class glRouter extends glDstack {
 		//With immediate: true, the watch is called before $refs are initialised
 		this.change(this.$route);
 	}
+}
+
+@Component
+export class glRoute extends goldenChild {
+	@Prop() path: string
+	@Prop() name: string
+	@Prop({default: false}) closable: boolean
+	@Prop({default: false}) reorderEnabled: boolean
+	@Inject() titler: (route: any)=> string
+	@Prop() title: string
+	get compTitle() {
+		return this.title || 
+			(this.titler.bind(this)||defaultTitle)(this.$router.resolve(this.routeSpec).route);
+	}
+	
+	get routeSpec() {
+		console.assert(!!this.name || !!this.path, 'At least one route specification - `name` or `path` is given.');
+		var rv: any = {};
+		if(this.name) rv.name = this.name;
+		if(this.path) rv.path = this.path;
+		return rv;
+	}
+
+	@Watch('compTitle') setTitle(title) {
+		if(this.container) this.container.setTitle(title);
+	}
+
+	getChildConfig() {
+		return {
+			type: 'component',
+			title: this.compTitle,
+			isClosable: this.closable,
+			reorderEnabled: this.reorderEnabled,
+			componentName: RouteComponentName,
+			componentState: this.routeSpec
+		};
+	}
+	render(v) {}
 }

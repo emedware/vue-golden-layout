@@ -91,6 +91,7 @@ title: string
 width: number
 height: number
 closable: boolean
+reorder-enabled: boolean
 hidden: boolean
 ```
 
@@ -103,6 +104,7 @@ The `golden-layout` has a *property* and an *event* named `state`.
 Notes:
 - The property `state` can be given minified or not
 - The event `state` gives indeed the minified version of the config, and the expanded version as a second argument.
+- It is also the `v-model` of the `golden-layout`
 
 ## Low-level functionalities
 
@@ -155,12 +157,19 @@ activeContentItemChanged
 
 The event `destroy` is provided for all components beside the golden-layout object. It occurs on user's closure **or pop-out**.
 
+# gl-dstack
+
+*Duplicatable stacks* are stacks that should always remain in the main window as their content is modified programatically. These stacks, when poped-out, *remain* in the main screen while their content is poped-out.
+Defineing in it components that are not `closable` nor `reorder-enabled` will *stay* in the stack in the main window.
+
 # gl-router
 
 The router is a `glContainer` that aims to sublimate the `<router-view />`
 It let people manage their routes in tabs, open them in a split screen or even popped-out in another browser window on another physical display.
 
 The main usage is `<gl-router />`. Any options of `router-view` still has to be implemented.
+
+Note: `gl-router` is a `gl-stack`.
 
 ## Slots
 
@@ -178,3 +187,11 @@ If none is specified, the default is to take `$route.meta.title` - this means th
 ### `empty-route`
 
 Specify the URL to use when the user closes all the tabs (`"/"` by default)
+
+# gl-route
+
+`gl-route`s are components displaying a route. They are meant to be used in a gl-router but only have to be used in a golden-layout container.
+
+They can take a `name` and/or a `path`, and their `closable` and `reorder-enabled` properties are false by defaule. They can be forced a `title` but their container' `titler` will be used if not.
+
+Note: all the elements inside them rendered from route' component will have a `this.$route` pointing to the given route, not the actual one.

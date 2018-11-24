@@ -4,6 +4,7 @@ const routes = [];
 for(let l of letters) {
 	let L = l.toUpperCase();
 	routes.push({
+		name: `r-${l}`,
 		path: `/${l}`,
 		component: {template: `<p>test-${L}</p>`},
 		meta: {title: `${L}-test`}

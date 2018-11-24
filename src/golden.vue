@@ -30,7 +30,7 @@ export default class goldenLayout extends goldenContainer {
 	@Prop({default: true}) showPopoutIcon: boolean
 	@Prop({default: true}) showMaximiseIcon: boolean
 	@Prop({default: true}) showCloseIcon: boolean
-	@Prop({default: null}) state: any
+	@Model('state', {default: null}) state: any
 	
 	@Watch('hasHeaders') @Watch('reorderEnabled') @Watch('selectionEnabled') @Watch('popoutWholeStack')
 	@Watch('blockedPopoutsThrowError') @Watch('closePopoutsOnUnload') @Watch('showPopoutIcon')

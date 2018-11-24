@@ -1,7 +1,7 @@
 <template>
 <div>
 	<button class="reset" @click="reset">Reset localStorage</button>
-	<golden-layout class="hscreen" @state="changedState" :state="state">
+	<golden-layout class="hscreen" v-model="state">
 		<div slot="stackCtr" slot-scope="{ stackSub }" class="test-template">
 			Added item (id: {{stackSub}})
 			<button @click="remStack(stackSub)">Remove</button>
@@ -11,6 +11,7 @@
 		</template>
 		<gl-col :closable="false">
 			<gl-router>
+				<gl-route name="r-a" />
 				<template slot="route" slot-scope="{ meta }">
 					<p-head :title="meta.title" />
 					<main />
@@ -66,32 +67,17 @@ import Vue from 'vue'
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 import {letters} from './router'
 import PHead from './p-head.vue'
+import {Persistance} from 'vue-storage-decorator'
 
-var stored = localStorage.browserGL;
-stored = stored ? JSON.parse(stored) : {
-	state: null,
-	stackSubs: [1],
-	ssId: 1,
-	bottomSheet: false
-};
-
+const Persist = Persistance('browserGL');
 @Component({components: {PHead}})
 export default class App extends Vue {
-	bottomSheet = stored.bottomSheet
-	stackSubs: number[] = stored.stackSubs
-	ssId: number = stored.ssId
-	devWarned = false
-	state = stored.state
+	@Persist() bottomSheet: boolean = false
+	@Persist() stackSubs: number[] = [1]
+	@Persist() ssId: number = 1
+	@Persist() state: any = null
 	letters = letters
 
-	changedState(state) {
-		localStorage.browserGL = JSON.stringify({
-			state,
-			stackSubs: this.stackSubs,
-			ssId: this.ssId,
-			bottomSheet: this.bottomSheet
-		});
-	}
 	reset() {
 		delete localStorage.browserGL;
 		location.reload();
