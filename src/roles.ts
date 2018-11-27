@@ -10,7 +10,7 @@ export class goldenContainer extends goldenItem {
 	config: any = {
 		content: []
 	}
-	registerComponent(component/*: Vue|()=>any*/, name?: string): string { throw 'unimplemented'; }
+	registerComponent(component : any/*: Vue|()=>any*/, name?: string): string { throw 'unimplemented'; }
 	childPath(comp: Vue): string {
 		var childMe = <goldenChild><any>this;
 		var rv = childMe.nodePath?`${childMe.nodePath()}.`:'';
@@ -18,16 +18,23 @@ export class goldenContainer extends goldenItem {
 		console.assert(!!~ndx, 'Children exists');
 		return rv+ndx;
 	}
-	getChild(path: string) {
+	getChild(path: string) :goldenContainer{
 		var nrs = path.split('.');
-		var ndx = nrs.shift();
-		var next = this.$children[ndx];
-		console.assert(next, "Vue structure correspond to loaded GL configuration");
+		var ndx_string : string | undefined  = nrs.shift();
+
+		if ( ndx_string === undefined)
+		{
+			throw "Invalid operation";
+		}
+		let ndx= parseInt(ndx_string);
+		var next = this.$children[ndx] as goldenContainer;
+		console.assert(next !== undefined && next !== null, "Vue structure correspond to loaded GL configuration");
 		return nrs.length ? next.getChild(nrs.join('.')) : next;
 	}
 	//In order to be overriden
 	get glChildrenTarget() { return this.glObject; }
-	addGlChild(child, comp) {
+
+	addGlChild(child : any, comp : any) {
 		if(comp && 'component'=== child.type) {
 			if(!child.componentName)
 				child.componentName = this.registerComponent(comp);
@@ -53,9 +60,9 @@ export class goldenContainer extends goldenItem {
 		}
 	}
 	get glChildren() {
-		return this.glObject.contentItems.map(x=> x.vueObject);
+		return this.glObject.contentItems.map((x : any)=> x.vueObject);
 	}
-	onGlInitialise(cb: (any?)=> void): void { throw 'Not implemented'; }
+	onGlInitialise(cb: (_:any)=> void): void { throw 'Not implemented'; }
 	events: string[] = ['open', 'resize', 'destroy', 'close', 'tab', 'hide', 'show']
 }
 
@@ -63,14 +70,14 @@ export class goldenContainer extends goldenItem {
 export class goldenChild extends goldenItem {
 	@Prop() width: number
 	@Prop() height: number
-	@Watch('width') reWidth(w) { this.container && this.container.setSize(w, false); }
-	@Watch('height') reHeight(h) { this.container && this.container.setSize(false, h); }
+	@Watch('width') reWidth(w:number) { this.container && this.container.setSize(w, false); }
+	@Watch('height') reHeight(h:number) { this.container && this.container.setSize(false, h); }
 	
 	@Prop() tabId: string
 
 	getChildConfig() { return null; }
 	get glParent() { return this.glObject.parent.vueObject; }
-	container = null;
+	container:any = null;
 
 	hide() { this.container && this.container.hide(); }
 	show() { this.container && this.container.show(); }
@@ -78,7 +85,7 @@ export class goldenChild extends goldenItem {
 
 	@Watch('container')
 	@Watch('hidden')
-	setContainer(c) {
+	setContainer() {
 		if(this.glObject) {
 			var parent = this.glObject.parent;
 			this.container && (
@@ -105,9 +112,10 @@ export class goldenChild extends goldenItem {
 		var dimensions:any = {};
 		if(undefined!== this.width) dimensions.width = this.width;
 		if(undefined!== this.height) dimensions.height = this.height;
+		let childConfig : any = this.getChildConfig();
 		this.$parent.addGlChild({
 			...dimensions,
-			...this.getChildConfig(),
+			...childConfig,
 			vue: this.nodePath()
 		}, this);
 	}
@@ -117,7 +125,7 @@ export class goldenChild extends goldenItem {
 			this.glObject.parent.removeChild(this.glObject);
 		}
 	}
-	@Watch('glObject') @Emit() destroy(v) { return !v; }
+	@Watch('glObject') @Emit() destroy(v:boolean) { return !v; }
 
 	events: string[] = ['stateChanged', 'titleChanged', 'activeContentItemChanged', 'itemDestroyed', 'itemCreated',
 		'componentCreated', 'rowCreated', 'columnCreated', 'stackCreated', 'destroy', 'destroyed']
