@@ -42,8 +42,7 @@ export class glStack extends glGroup {
 					this.tabChange((<goldenChild>this.glChildren[v]).tabId);
 			});
 		});
-		return {
-			//TODO: don't use $children but gl-tree instead
+		return {	//we can use $children as it is on-load : when the user still didn't interract w/ the layout
 			activeItemIndex: Math.max(0, (<any>this.$children).findIndex(c => c.tabId === this.activeTab)),
 			isClosable: this.closable,
 			type: 'stack',
