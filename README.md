@@ -14,7 +14,7 @@ npm i -S vue-golden-layout
 > npm install
 > npm test
 > ```
-> You can now browse `http://localhost:9000`
+> You can now browse http://localhost:9000
 
 ## Don't forget in order to make it work
   - Include a golden-layout theme CSS.
@@ -24,8 +24,6 @@ import 'golden-layout/src/css/goldenlayout-light-theme.css'
 Available themes are `light`, `dark`, `soda`, `translucent`.
 
 `goldenlayout-base.css` is already integrated to the library.
-
-  - `vue-golden-layout` *has* to be bundled with an `esm` version of `Vue`.
 
 ## Usage
 ```javascript
