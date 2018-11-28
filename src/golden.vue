@@ -12,6 +12,17 @@ import * as resize from 'vue-resize-directive'
 
 var globalComponents: {[name: string] : (gl: goldenLayout)=> (container: any, state: any)=> void} = {};
 
+function correctArrays(config) {	//Solve a bug where content is not an array
+	// state.openPopouts[0].content looks like an array, even in the debugger, but `instance of Array` returns false
+	if(!config || 'object'!== typeof config)
+		return config;
+	if(config.map && config.concat)
+		return [].concat(config.map(correctArrays));
+	var rv = {};
+	for(let i in config) rv[i] = correctArrays(config[i]);
+	return rv;
+}
+
 @Component({directives: {resize}})
 export default class goldenLayout extends goldenContainer {
 	$router
@@ -93,10 +104,10 @@ export default class goldenLayout extends goldenContainer {
 			state = this.state instanceof Promise ?
 				this.state : Promise.resolve(this.state);
 		state.then(state=> {
-			if(this.state) {
-				this.config = this.state.content ?
-					this.state :
-					GoldenLayout.unminifyConfig(this.state);
+			if(state) {
+				this.config = state.content ?
+					state :
+					GoldenLayout.unminifyConfig(state);
 			} else {
 				this.config.settings = {
 					hasHeaders: this.hasHeaders,
@@ -154,18 +165,26 @@ export default class goldenLayout extends goldenContainer {
 				gl.registerComponent(tpl, globalComponents[tpl](this));
 			})(tpl);
 			//#endregion
-
+			const maxRetries = 5;
 			//#region Events
-			var raiseStateChanged = ()=> {
+			var raiseStateChanged = (retry)=> {
+				if('number'!== typeof retry) retry = 0;
 				setTimeout(()=> {
+					var config;
 					try {
 						//gl.toConfig() raise exceptions when opening a popup
 						//it allso raise a 'stateChanged' event when closing a popup => inf call
-						var config = gl.toConfig();
-						this.gotState(GoldenLayout.minifyConfig(config), config);
+						config = gl.toConfig();
 					}
 					catch(e) {
-						raiseStateChanged();
+						if(retry < maxRetries)
+							raiseStateChanged(++retry);
+						else
+							throw e;
+					}
+					if(config) {
+						config = correctArrays(config);
+						this.gotState(GoldenLayout.minifyConfig(config), config);
 					}
 				}, 500);
 			};
@@ -195,7 +214,13 @@ export default class goldenLayout extends goldenContainer {
 				'windowOpened', 'windowClosed', 'itemDestroyed', 'initialised',
 				'activeContentItemChanged']);
 			//#endregion
-			gl.init();
+			try{
+				gl.init();
+			} catch( e ) {
+				if( e.type === 'popoutBlocked' ) {
+					alert('The browser has blocked the pop-up you requested. Please allow pop-ups for this site.')
+				}
+			}
 		});
 	}
 	onResize() { this.gl && this.gl.updateSize(); }

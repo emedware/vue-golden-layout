@@ -43,7 +43,7 @@ export class glStack extends glGroup {
 			});
 		});
 		return {
-			//TODO: initialisation with an activeItemIndex different from 0 makes a bug (renders wrongly tab 0)
+			//TODO: don't use $children but gl-tree instead
 			activeItemIndex: Math.max(0, (<any>this.$children).findIndex(c => c.tabId === this.activeTab)),
 			isClosable: this.closable,
 			type: 'stack',

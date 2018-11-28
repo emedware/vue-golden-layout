@@ -1,25 +1,23 @@
 [![npm](https://img.shields.io/npm/v/vue-golden-layout.svg)](https://www.npmjs.com/package/vue-golden-layout)
 # vue-golden-layout
 Integration of the golden-layout to Vue
-## Annoucement 30-oct-18
-Today, the library has become stable enough for us to take care to keep a stable master branch. Let's get this libray from "hobby" level to "serious" one.
 
 ## Installation
 
-```
+```sh
 npm i -S vue-golden-layout
 ```
 
 > For the ones who clone, in order to test, a static sample application can be compiled :
 > 
-> ```
+> ```sh
 > npm install
 > npm test
 > ```
 > You can now browse `http://localhost:9000`
 
 ## Don't forget in order to make it work
-- Include a golden-layout theme CSS.
+  - Include a golden-layout theme CSS.
 ```typescript
 import 'golden-layout/src/css/goldenlayout-light-theme.css'
 ```
@@ -27,7 +25,7 @@ Available themes are `light`, `dark`, `soda`, `translucent`.
 
 `goldenlayout-base.css` is already integrated to the library.
 
- - `vue-golden-layout` *has* to be bundled with an `esm` version of `Vue`.
+  - `vue-golden-layout` *has* to be bundled with an `esm` version of `Vue`.
 
 ## Usage
 ```javascript
@@ -42,7 +40,7 @@ The sources entry point is in `vue-golden-layout/src/index.ts`
 import vgl from 'vue-golden-layout/src'
 Vue.use(vgl);
 ```
-# What happens inside of `<golden-layout>`?
+
 ## Structure
 
 Elements like `<gl-row>`, `<gl-col>` and `<gl-stack>` can be represented in a tree - they respectively stand for a golden-layout row, column and stack.
@@ -91,7 +89,7 @@ title: string
 width: number
 height: number
 closable: boolean
-reorder-enabled: boolean
+reorderEnabled: boolean
 hidden: boolean
 ```
 
@@ -158,13 +156,13 @@ Also, the event `sub-window` is emitted on mount with a `is: boolean` argument t
 #### Contained objects
 
 The event `destroy` is provided for all components beside the golden-layout object. It occurs on user's closure **or pop-out**.
-
-# gl-dstack
+## Specific components
+### gl-dstack
 
 *Duplicatable stacks* are stacks that should always remain in the main window as their content is modified programatically. These stacks, when poped-out, *remain* in the main screen while their content is poped-out.
 Defineing in it components that are not `closable` nor `reorder-enabled` will *stay* in the stack in the main window.
 
-# gl-router
+### gl-router
 
 The router is a `glContainer` that aims to sublimate the `<router-view />`
 It let people manage their routes in tabs, open them in a split screen or even popped-out in another browser window on another physical display.
@@ -173,24 +171,24 @@ The main usage is `<gl-router />`. Any options of `router-view` still has to be 
 
 Note: `gl-router` is a `gl-stack`.
 
-## Slots
+#### Slots
 
 A default content to render all routes can be provided as the `route` slot template - with or without scope : if a scope is queried, it will be the route object.
 If this content is provided, it should contain a `<main />` tag that will be filled with the loaded route component.
 
 Note: the provided template will be ignored when maximised/popped-out.
 
-## Properties
-### `titler`
+#### Properties
+##### `titler`
 
 Allows to specify a function that takes a route object in parameter and gives the string that will be used as tab title.
 If none is specified, the default is to take `$route.meta.title` - this means that routes have to be defined with a title in their meta-data.
 
-### `empty-route`
+##### `empty-route`
 
 Specify the URL to use when the user closes all the tabs (`"/"` by default)
 
-# gl-route
+### gl-route
 
 `gl-route`s are components displaying a route. They are meant to be used in a gl-router but only have to be used in a golden-layout container.
 
