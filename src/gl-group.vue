@@ -14,10 +14,10 @@ export default class glGroup extends goldenContainer {
 	$parent: goldenContainer
 	@Prop({default: false}) closable: boolean
 	/// Only the layout object centralise the components
-	registerComponent(component/*: Vue|()=>any*/, name?: string): string {
+	registerComponent(component : any/*: Vue|()=>any*/, name?: string): string {
 		return this.$parent.registerComponent(component, name);
 	}
-	onGlInitialise(cb: (any?)=> void) {
+	onGlInitialise(cb: (_:any)=> void) {
 		this.$parent.onGlInitialise(cb);
 	}
 }

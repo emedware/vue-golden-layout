@@ -11,7 +11,7 @@ export default class glDstack extends glRow {
 	content: any[]
 	getChildConfig() {
 		var config = (<any>glRow).extendOptions.methods.getChildConfig.apply(this);  //super is a @Component
-		this.content = config.content.filter(x => !x.isClosable && !x.reorderEnabled);
+		this.content = config.content.filter((x:any) => !x.isClosable && !x.reorderEnabled);
 		config.content = [{
 			type: 'stack',
 			content: config.content.slice(0),
@@ -21,11 +21,11 @@ export default class glDstack extends glRow {
 	}
   	cachedStack: any
 	get stack() {
-		var ci = this.glObject, rv;
+		var ci = this.glObject , rv:any;
 		if(!ci) return null;
 		if(this.cachedStack && this.cachedStack.vueObject.glObject)
 			return this.cachedStack;
-		rv = ci.contentItems.find(x => x.isStack && x.config.dstackId === this.dstackId);
+		rv = ci.contentItems.find((x:any) => x.isStack && x.config.dstackId === this.dstackId);
 		if(!rv) {
 			ci.addChild({
 				type: 'stack',
@@ -38,7 +38,7 @@ export default class glDstack extends glRow {
 	}
 	
 	@Watch('stack.vueObject.glObject')
-	observe(obj) {
+	observe(obj:any) {
 		//stacks created by the users are created without an activeItemIndex
 		//set `activeItemIndex` observed
 		if(obj) {
@@ -55,11 +55,11 @@ export default class glDstack extends glRow {
 				if(onlyStack.config.dstackId === this.dstackId) {
 					(<any>window).dstackId = this.dstackId;
 					onlyStack.contentItems
-						.filter(x=> !x.config.isClosable && !x.reorderEnabled)
-						.map(comp=> comp.close());
+						.filter((x:any)=> !x.config.isClosable && !x.reorderEnabled)
+						.map((comp:any)=> comp.close());
 				}
 			} else
-				gl.on('windowOpened', (popup)=> {
+				gl.on('windowOpened', (popup:any)=> {
 					if(popup._popoutWindow.dstackId === this.dstackId) {
 						this.stack;
 					}

@@ -12,20 +12,20 @@ import * as resize from 'vue-resize-directive'
 
 var globalComponents: {[name: string] : (gl: goldenLayout)=> (container: any, state: any)=> void} = {};
 
-function correctArrays(config) {	//Solve a bug where content is not an array
+function correctArrays(config:any) {	//Solve a bug where content is not an array
 	// state.openPopouts[0].content looks like an array, even in the debugger, but `instance of Array` returns false
 	if(!config || 'object'!== typeof config)
 		return config;
 	if(config.map && config.concat)
 		return [].concat(config.map(correctArrays));
-	var rv = {};
+	var rv : any = {};
 	for(let i in config) rv[i] = correctArrays(config[i]);
 	return rv;
 }
 
 @Component({directives: {resize}})
 export default class goldenLayout extends goldenContainer {
-	$router
+	$router : any
 	static registerGlobalComponent(name: string, comp: (gl: goldenLayout)=> (container: any, state: any)=> void) {
 		console.assert(!globalComponents[name], `Component name "${name}" unused`);
 		globalComponents[name] = comp;
@@ -65,7 +65,7 @@ export default class goldenLayout extends goldenContainer {
 	}
 
 	@Emit('state')
-	gotState(state, expanded) {}
+	gotState(state : any, expanded: any) {}
 /*
 	labels: {
 		close: 'close',
@@ -76,13 +76,13 @@ export default class goldenLayout extends goldenContainer {
 
 	gl: any
 	tplCount = 0
-	tplPreload = {}
+	tplPreload : any= {}
 	
-	registerComponent(component/*: Vue|()=>any*/, name?: string): string {
+	registerComponent(component: any/*: Vue|()=>any*/, name?: string): string {
 		if(!name) name = 'tpl'+(++this.tplCount);
 		var tplData = 'function'=== typeof component ?
 			component :
-			function(container, state) {
+			function(container: any, state: any) {
 				container.getElement().append(component.$el);
 				forwardEvt(container, component, component.events);
 				component.container = container;
@@ -93,14 +93,14 @@ export default class goldenLayout extends goldenContainer {
 		} else this.tplPreload[name] = tplData;
 		return name;
 	}
-	initialisedCB: ((any?)=> void)[]
-	onGlInitialise(cb: (any?)=> void) {
+	initialisedCB: ((_:any)=> void)[]
+	onGlInitialise(cb: (_:any)=> void) {
 		if(this.glObject) cb(this.gl);
 		else (this.initialisedCB || (this.initialisedCB=[])).push(cb);
 	}
 	@Emit() subWindow(is: boolean) {}
 	mounted() {
-		var me = this, layoutRoot = this.$refs.layoutRoot, gl,
+		var me = this, layoutRoot = this.$refs.layoutRoot, gl:any,
 			state = this.state instanceof Promise ?
 				this.state : Promise.resolve(this.state);
 		state.then(state=> {
@@ -134,7 +134,7 @@ export default class goldenLayout extends goldenContainer {
 			for(var tpl in this.tplPreload)
 				gl.registerComponent(tpl, this.tplPreload[tpl]);
 			delete this.tplPreload;
-			function appendVNodes(container, vNodes) {
+			function appendVNodes(container:any, vNodes:any) {
 				var el = document.createElement('div');
 				container.getElement().append(el);
 				renderVNodes(me, el, vNodes, {
@@ -149,14 +149,14 @@ export default class goldenLayout extends goldenContainer {
 			var slots = (<any>this).$slots;
 			// Register direct-children templates
 			for(var tpl in slots) if('default'!== tpl) ((tpl)=> {
-				gl.registerComponent(tpl, function(container) {
+				gl.registerComponent(tpl, function(container:any) {
 					appendVNodes(container, slots[tpl]);
 				});
 			})(tpl);
 			var scopedSlots = (<any>this).$scopedSlots;
 			// Register direct-children templates with a scope
 			for(var tpl in scopedSlots) ((tpl)=> {
-				gl.registerComponent(tpl, function(container, state) {
+				gl.registerComponent(tpl, function(container:any, state:any) {
 					appendVNodes(container, scopedSlots[tpl](state));
 				});
 			})(tpl);
@@ -167,7 +167,7 @@ export default class goldenLayout extends goldenContainer {
 			//#endregion
 			const maxRetries = 5;
 			//#region Events
-			var raiseStateChanged = (retry)=> {
+			var raiseStateChanged = (retry:any)=> {
 				if('number'!== typeof retry) retry = 0;
 				setTimeout(()=> {
 					var config;
@@ -193,7 +193,7 @@ export default class goldenLayout extends goldenContainer {
 				if(this.initialisedCB) for(let cb of this.initialisedCB) cb(gl);
 				delete this.initialisedCB;
 			});
-			gl.on('itemCreated', (itm) => {
+			gl.on('itemCreated', (itm:any) => {
 				Vue.set(itm, 'vueObject', itm === gl.root ? this :
 					itm.config.vue && !gl.isSubWindow ? this.getChild(itm.config.vue) :
 					{});
@@ -202,7 +202,7 @@ export default class goldenLayout extends goldenContainer {
 					itm.config.__defineGetter__('vue', ()=> itm.vueObject.nodePath());
 				}
 			});
-			gl.on('itemDestroyed', (itm) => {
+			gl.on('itemDestroyed', (itm:any) => {
 				itm.vueObject.glObject = null;
 				//Bugfix: when destroying a tab before itm, stack' activeItemIndex is not updated and become invalid
 				if(itm.parent.isStack && itm.parent.contentItems.indexOf(itm) < itm.parent.config.activeItemIndex)
@@ -226,7 +226,7 @@ export default class goldenLayout extends goldenContainer {
 	onResize() { this.gl && this.gl.updateSize(); }
 }
 
-export function renderVNodes(parent, el, vNodes, options?) {
+export function renderVNodes(parent:any, el:any, vNodes:any, options?:any) {
 	return new Vue({
 		render: function(ce) {
 			return ce('div', options, vNodes instanceof Array ? vNodes : [vNodes]);
@@ -235,9 +235,9 @@ export function renderVNodes(parent, el, vNodes, options?) {
 		el
 	});
 }
-function forwardEvt(from, toward, events) {
+function forwardEvt(from:any, toward:any, events:any) {
 	for(let event of events)
-		from.on(event, (...args) =>
+		from.on(event, (...args : any[] ) =>
 			'object'=== typeof event?
 				toward.$emit(event.type, event):
 				toward.$emit(event, ...args));
