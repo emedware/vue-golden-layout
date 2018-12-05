@@ -7,9 +7,9 @@ import glRouter, { glRoute } from './gl-router'
 
 export {goldenLayout, glComponent, glRow, glCol, glStack, glRouter, glRoute, glDstack}
 
-var components = {layoutGolden: goldenLayout, goldenLayout, glComponent, glRow, glCol, glStack, glRouter, glRoute, glDstack}
+var components : any = {layoutGolden: goldenLayout, goldenLayout, glComponent, glRow, glCol, glStack, glRouter, glRoute, glDstack}
 export default {
-	install(Vue, options) {
+	install(Vue : any, options : any) {
 		for(let i in components)
 			Vue.component(i, components[i]);
 	}
