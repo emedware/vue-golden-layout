@@ -12,7 +12,7 @@ function defaultTitle(route: any): string {
 
 export const RouteComponentName = '$router-route';
 
-goldenLayout.registerGlobalComponent(RouteComponentName, gl=> function(container, state) {
+goldenLayout.registerGlobalComponent(RouteComponentName, (gl:any)=> function(container:any, state:any) {
 	gl.onGlInitialise(()=> {
 		var comp: Vue|any = gl.$router.getMatchedComponents(state)[0],
 			route = gl.$router.resolve(state.path).route,
@@ -35,7 +35,8 @@ goldenLayout.registerGlobalComponent(RouteComponentName, gl=> function(container
 					template;
 			},
 			mounted() {
-				this.cachedComp = new comp({el: component.$el.querySelector('main'), parent: component});
+				// commenting this out as it is not used.
+				// this.cachedComp = new comp({el: component.$el.querySelector('main'), parent: component});
 			},
 			parent
 		}) : new comp({parent});
