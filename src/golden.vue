@@ -23,13 +23,14 @@ function correctArrays(config:any) {	//Solve a bug where content is not an array
 	return rv;
 }
 
+export function registerGlobalComponent(name: string, comp: (gl: goldenLayout)=> (container: any, state: any)=> void) {
+	console.assert(!globalComponents[name], `Component name "${name}" unused`);
+	globalComponents[name] = comp;
+}
+
 @Component({directives: {resize}})
 export default class goldenLayout extends goldenContainer {
 	$router : any
-	static registerGlobalComponent(name: string, comp: (gl: goldenLayout)=> (container: any, state: any)=> void) {
-		console.assert(!globalComponents[name], `Component name "${name}" unused`);
-		globalComponents[name] = comp;
-	}
 
 	//Settings
 	@Prop({default: true}) hasHeaders: boolean

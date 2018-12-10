@@ -1,7 +1,7 @@
 import { Watch, Component, Prop, Emit, Provide, Inject } from 'vue-property-decorator'
 import glDstack from './gl-dstack'
 import Vue from 'vue'
-import goldenLayout, {renderVNodes} from './golden.vue'
+import goldenLayout, {renderVNodes, registerGlobalComponent} from './golden.vue'
 import { goldenChild } from './roles'
 
 //TODO: there might be a type for route
@@ -12,7 +12,7 @@ function defaultTitle(route: any): string {
 
 export const RouteComponentName = '$router-route';
 
-goldenLayout.registerGlobalComponent(RouteComponentName, (gl:any)=> function(container:any, state:any) {
+registerGlobalComponent(RouteComponentName, (gl:any)=> function(container:any, state:any) {
 	gl.onGlInitialise(()=> {
 		var comp: Vue|any = gl.$router.getMatchedComponents(state)[0],
 			route = gl.$router.resolve(state.path).route,
