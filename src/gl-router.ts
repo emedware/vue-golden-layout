@@ -7,7 +7,7 @@ import { goldenChild } from './roles'
 //TODO: there might be a type for route
 function defaultTitle(route: any): string {
 	//The last case is to warn the programmer who would have forgotten that detail
-	return (route.meta && route.meta.title) || 'set $route.meta.title';
+	return route ? ((route.meta && route.meta.title) || 'set $route.meta.title') : '';
 }
 
 export const RouteComponentName = '$router-route';

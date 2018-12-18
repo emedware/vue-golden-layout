@@ -78,6 +78,9 @@ It also (useful for `v-for`s) has a `state` property that will be used as the `s
 	template="template-name" :state="sth.state" />
 ```
 
+### Attention
+For now, templates don't have access to the `VueComponent`' data. If there are datas to be shared between the component defining a template and the template, the slot-scope should be used.
+
 ## Properties
 
 ### Contained objects

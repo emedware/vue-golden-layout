@@ -1,6 +1,6 @@
 {
 	"name": "vue-golden-layout",
-	"version": "1.5.10",
+	"version": "1.5.11",
 	"description": "Integration of the golden-layout to Vue",
 	"main": "dist/vue-golden-layout.js",
 	"ts:main": "src/index.ts",
@@ -42,12 +42,12 @@
 		"tslint": "^5.11.0",
 		"typescript": "^2.5.3",
 		"upgrade": "^1.1.0",
-		"vue": "^2.5.17",
+		"vue": "^2.5.20",
 		"vue-loader": "^15.4.2",
 		"vue-property-decorator": "^6.0.0",
 		"vue-router": "^3.0.1",
 		"vue-storage-decorator": "^1.0.2",
-		"vue-template-compiler": "^2.5.17",
+		"vue-template-compiler": "^2.5.21",
 		"vue-template-es2015-compiler": "^1.5.3",
 		"webpack": "^4.23.1",
 		"webpack-cli": "^3.1.2",
@@ -64,7 +64,8 @@
 		"jquery": "^3.2.1",
 		"vue": "^2.5.17",
 		"vue-property-decorator": "^6.0.0",
-		"vue-router": "^3.0.1"
+		"vue-router": "^3.0.1",
+		"vue-template-compiler": "^2.5.21"
 	},
 	"bugs": {
 		"url": "https://github.com/eddow/vue-golden-layout/issues"
