@@ -5,7 +5,7 @@ import goldenLayout, {renderVNodes, registerGlobalComponent} from './golden.vue'
 import { goldenChild } from './roles'
 
 //TODO: there might be a type for route
-function defaultTitle(route: any): string {
+function defaultTitler(route: any): string {
 	//The last case is to warn the programmer who would have forgotten that detail
 	return route ? ((route.meta && route.meta.title) || 'set $route.meta.title') : '';
 }
@@ -35,8 +35,7 @@ registerGlobalComponent(RouteComponentName, (gl:any)=> function(container:any, s
 					template;
 			},
 			mounted() {
-				// commenting this out as it is not used.
-				// this.cachedComp = new comp({el: component.$el.querySelector('main'), parent: component});
+				/*this.cachedComp =*/ new comp({el: component.$el.querySelector('main'), parent: component});
 			},
 			parent
 		}) : new comp({parent});
@@ -72,7 +71,10 @@ registerGlobalComponent(RouteComponentName, (gl:any)=> function(container:any, s
 export default class glRouter extends glDstack {
 	$router : any
 	$route : any
-	@Prop({default: defaultTitle})
+	@Prop({
+		default: defaultTitler,
+		type: Function
+	})
 	@Provide() titler: (route: any)=> string
 	@Prop({default: '/'}) emptyRoute: string
 	@Prop({default: 'router'}) dstackId: string
@@ -129,7 +131,7 @@ export class glRoute extends goldenChild {
 	@Prop() title: string
 	get compTitle() {
 		return this.title || 
-			(this.titler.bind(this)||defaultTitle)(this.$router.resolve(this.routeSpec).route);
+			(this.titler.bind(this)||defaultTitler)(this.$router.resolve(this.routeSpec).route);
 	}
 	
 	get routeSpec() {

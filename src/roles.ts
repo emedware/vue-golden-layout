@@ -125,7 +125,9 @@ export class goldenChild extends goldenItem {
 			this.glObject.parent.removeChild(this.glObject);
 		}
 	}
-	@Watch('glObject') @Emit() destroy(v:boolean) { return !v; }
+	@Watch('glObject') destroy(v:boolean) {
+		if(!v) this.$emit('destroy');
+	}
 
 	events: string[] = ['stateChanged', 'titleChanged', 'activeContentItemChanged', 'itemDestroyed', 'itemCreated',
 		'componentCreated', 'rowCreated', 'columnCreated', 'stackCreated', 'destroy', 'destroyed']
