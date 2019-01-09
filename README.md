@@ -171,7 +171,7 @@ It let people manage their routes in tabs, open them in a split screen or even p
 
 The main usage is `<gl-router />`. Any options of `router-view` still has to be implemented.
 
-Note: `gl-router` is a `gl-stack`.
+Note: `gl-router` is a `gl-dstack`.
 
 #### Slots
 
@@ -194,6 +194,6 @@ Specify the URL to use when the user closes all the tabs (`"/"` by default)
 
 `gl-route`s are components displaying a route. They are meant to be used in a gl-router but only have to be used in a golden-layout container.
 
-They can take a `name` and/or a `path`, and their `closable` and `reorder-enabled` properties are false by defaule. They can be forced a `title` but their container' `titler` will be used if not.
+They can take a `name` and/or a `path`, and their `closable` and `reorder-enabled` properties are false by default. They can be forced a `title` but their container' `titler` will be used if not.
 
 Note: all the elements inside them rendered from route' component will have a `this.$route` pointing to the given route, not the actual one.
