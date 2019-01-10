@@ -197,3 +197,34 @@ Specify the URL to use when the user closes all the tabs (`"/"` by default)
 They can take a `name` and/or a `path`, and their `closable` and `reorder-enabled` properties are false by defaule. They can be forced a `title` but their container' `titler` will be used if not.
 
 Note: all the elements inside them rendered from route' component will have a `this.$route` pointing to the given route, not the actual one.
+
+## `<golden-layout ...>`
+### Properties
+#### Properties directly forwarded to the config
+```typescript
+@Prop({default: true}) hasHeaders: boolean
+@Prop({default: true}) reorderEnabled: boolean
+@Prop({default: false}) selectionEnabled: boolean
+@Prop({default: true}) popoutWholeStack: boolean
+@Prop({default: true}) blockedPopoutsThrowError: boolean
+@Prop({default: true}) closePopoutsOnUnload: boolean
+@Prop({default: true}) showPopoutIcon: boolean
+@Prop({default: true}) showMaximiseIcon: boolean
+@Prop({default: true}) showCloseIcon: boolean
+@Prop({default: 5}) borderWidth: number
+@Prop({default: 10}) minItemHeight: number
+@Prop({default: 10}) minItemWidth: number
+@Prop({default: 20}) headerHeight: number
+@Prop({default: 300}) dragProxyWidth: number
+@Prop({default: 200}) dragProxyHeight: number
+```
+#### `popupTimeout`
+(default: 5 = 5 seconds)
+
+When the state change, an event is fired and provides the new state. Unfortunately, when something is poped-out, querying the state will raise an exception is the pop-out' golden-layout is not loaded. Hence, the first call to `GoldenLayout.toConfig()` will for sure raise an exception.
+
+The policy chosen here is to then wait a bit and try again. In order to avoid infinite exception+try-again, a time-out is still specified.
+
+Therefore:
+- Changing this value to higher will not postpone the event fireing, it will just allow more time for the popup to load before raising an exception
+- This can be useful to increase in applications where the main page has some long loading process before displaying the golden-layout

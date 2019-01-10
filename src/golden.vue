@@ -51,6 +51,7 @@ export default class goldenLayout extends goldenContainer {
 		//TODO: change settings in this.gl
 	}
 
+	@Prop({default: 5}) popupTimeout: number
 
 	@Prop({default: 5}) borderWidth: number
 	@Prop({default: 10}) minItemHeight: number
@@ -166,29 +167,46 @@ export default class goldenLayout extends goldenContainer {
 				gl.registerComponent(tpl, globalComponents[tpl](this));
 			})(tpl);
 			//#endregion
-			const maxRetries = 5;
 			//#region Events
-			var raiseStateChanged = (retry:any)=> {
-				if('number'!== typeof retry) retry = 0;
-				setTimeout(()=> {
+			var raiseStateChanged: (arg?: number)=> void;
+			if(this.popupTimeout) {
+				const maxRetries = 10 * this.popupTimeout;
+				raiseStateChanged = (retry?: number)=> {
+					if('number'!== typeof retry) retry = 0;
+					setTimeout(()=> {
+						var config;
+						try {
+							//gl.toConfig() raise exceptions when opening a popup
+							//it allso raise a 'stateChanged' event when closing a popup => inf call
+							config = gl.toConfig();
+						}
+						catch(e) {
+							if(<number>retry < maxRetries)
+								raiseStateChanged(++(<number>retry));
+							else
+								throw e;
+						}
+						if(config) {
+							config = correctArrays(config);
+							this.gotState(GoldenLayout.minifyConfig(config), config);
+						}
+					}, 100);
+				};
+			} else {
+				raiseStateChanged = ()=> {
 					var config;
 					try {
 						//gl.toConfig() raise exceptions when opening a popup
 						//it allso raise a 'stateChanged' event when closing a popup => inf call
 						config = gl.toConfig();
 					}
-					catch(e) {
-						if(retry < maxRetries)
-							raiseStateChanged(++retry);
-						else
-							throw e;
-					}
+					catch(e) {}
 					if(config) {
 						config = correctArrays(config);
 						this.gotState(GoldenLayout.minifyConfig(config), config);
 					}
-				}, 500);
-			};
+				};
+			}
 			gl.on('stateChanged', raiseStateChanged);
 			gl.on('initialised', () => {
 				if(this.initialisedCB) for(let cb of this.initialisedCB) cb(gl);
