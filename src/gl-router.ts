@@ -31,11 +31,11 @@ registerGlobalComponent(RouteComponentName, (gl:any)=> function(container:any, s
 		var create = template ? new Vue({
 			render(ce) {
 				return template instanceof Array ?
-					ce('div', {}, template) :
+					ce('div', {class: 'glComponent'}, template) :
 					template;
 			},
 			mounted() {
-				/*this.cachedComp =*/ new comp({el: component.$el.querySelector('main'), parent: component});
+				new comp({el: component.$el.querySelector('main'), parent: component});
 			},
 			parent
 		}) : new comp({parent});
