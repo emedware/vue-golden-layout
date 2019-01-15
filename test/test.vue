@@ -67,7 +67,7 @@ import Vue from 'vue'
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
 import {letters} from './router'
 import PHead from './p-head.vue'
-import {Persistance} from 'vue-storage-decorator'
+import Persistance from 'vue-storage-decorator'
 
 const Persist = Persistance('browserGL');
 @Component({components: {PHead}})
