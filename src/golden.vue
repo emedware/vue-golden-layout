@@ -43,7 +43,8 @@ export default class goldenLayout extends goldenContainer {
 	@Prop({default: true}) showMaximiseIcon: boolean
 	@Prop({default: true}) showCloseIcon: boolean
 	@Model('state', {default: null}) state: any
-	
+	@Prop() interWindow: object
+
 	@Watch('hasHeaders') @Watch('reorderEnabled') @Watch('selectionEnabled') @Watch('popoutWholeStack')
 	@Watch('blockedPopoutsThrowError') @Watch('closePopoutsOnUnload') @Watch('showPopoutIcon')
 	@Watch('showMaximiseIcon') @Watch('showCloseIcon')
@@ -235,12 +236,33 @@ export default class goldenLayout extends goldenContainer {
 			//#endregion
 			try{
 				gl.init();
-			} catch( e ) {
-				if( e.type === 'popoutBlocked' ) {
+			} catch(e) {
+				if(e.type === 'popoutBlocked') {
 					alert('The browser has blocked the pop-up you requested. Please allow pop-ups for this site.')
 				}
 			}
+			if(this.interWindow) {
+				gl.eventHub.on('inter-window', value=> {
+					this.receivingInterWindow = true;
+					for(let key of Object.keys(this.interWindow))
+						delete this.interWindow[key];
+					Object.assign(this.interWindow, value);
+				});
+				if(gl.isSubWindow)
+					gl.eventHub.emit('query-inter-window');
+				else
+					gl.eventHub.on('query-inter-window', ()=> {
+						gl.eventHub.emit('inter-window', this.interWindow);
+					});
+			}
 		});
+	}
+	receivingInterWindow: boolean
+	@Watch('interWindow') interWindowChange(value) {
+		if(this.receivingInterWindow)
+			this.receivingInterWindow = false;
+		else
+			this.gl.eventHub.emit('inter-window', this.interWindow);
 	}
 	onResize() { this.gl && this.gl.updateSize(); }
 }
