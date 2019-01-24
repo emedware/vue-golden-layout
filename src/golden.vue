@@ -4,7 +4,7 @@
 	</div>
 </template>
 <script lang="ts">
-import Vue from 'vue'
+import Vue, {VNode} from 'vue'
 import {Component, Inject, Model, Prop, Watch, Emit} from 'vue-property-decorator'
 import * as GoldenLayout from 'golden-layout'
 import {goldenContainer} from './roles'
@@ -68,7 +68,7 @@ export default class goldenLayout extends goldenContainer {
 	}
 
 	@Emit('state')
-	gotState(state : any, expanded: any) {}
+	gotState(state: any, expanded: any) {}
 /*
 	labels: {
 		close: 'close',
@@ -106,8 +106,15 @@ export default class goldenLayout extends goldenContainer {
 		var me = this, layoutRoot = this.$refs.layoutRoot, gl:any,
 			state = this.state instanceof Promise ?
 				this.state : Promise.resolve(this.state);
-		state.then(state=> {
-			if(state) {
+		var sleep = (timeout, rv)=> new Promise(function(resolve,_) {
+			setTimeout(()=> resolve(rv), timeout);
+		});
+		state
+			//.then(s=> sleep(2000, s))
+			.then((state: any)=> {
+			const isSubWindow = /[?&]gl-window=/.test(window.location.search);
+			this.subWindow(isSubWindow);
+			if(state && !isSubWindow) {
 				this.config = state.content ?
 					state :
 					GoldenLayout.unminifyConfig(state);
@@ -133,16 +140,12 @@ export default class goldenLayout extends goldenContainer {
 				};
 			}
 			this.gl = gl = new GoldenLayout(this.config, <Element>layoutRoot);
-			this.subWindow(gl.isSubWindow);
-			for(var tpl in this.tplPreload)
-				gl.registerComponent(tpl, this.tplPreload[tpl]);
-			delete this.tplPreload;
-			function appendVNodes(container:any, vNodes:any) {
+			function appendVNodes(container:any, vNodes:any, state?: any) {
 				var el = document.createElement('div');
 				container.getElement().append(el);
 				renderVNodes(me, el, vNodes, {
 					class: 'glComponent'
-				});
+				}, state);
 			}
 			//#region Register gl-components
 			// Components registered with this.registerComponent(...)
@@ -160,7 +163,7 @@ export default class goldenLayout extends goldenContainer {
 			// Register direct-children templates with a scope
 			for(var tpl in scopedSlots) ((tpl)=> {
 				gl.registerComponent(tpl, function(container:any, state:any) {
-					appendVNodes(container, scopedSlots[tpl](state));
+					appendVNodes(container, scopedSlots[tpl], state);
 				});
 			})(tpl);
 			// Register global components given by other vue-components
@@ -215,7 +218,7 @@ export default class goldenLayout extends goldenContainer {
 			});
 			gl.on('itemCreated', (itm:any) => {
 				Vue.set(itm, 'vueObject', itm === gl.root ? this :
-					itm.config.vue && !gl.isSubWindow ? this.getChild(itm.config.vue) :
+					itm.config.vue && !isSubWindow ? this.getChild(itm.config.vue) :
 					{});
 				Vue.set(itm.vueObject, 'glObject', itm);
 				if(itm.config.vue && itm.vueObject.nodePath) {
@@ -241,24 +244,32 @@ export default class goldenLayout extends goldenContainer {
 					alert('The browser has blocked the pop-up you requested. Please allow pop-ups for this site.')
 				}
 			}
-			if(this.interWindow) {
-				gl.eventHub.on('inter-window', value=> {
-					this.receivingInterWindow = true;
-					for(let key of Object.keys(this.interWindow))
-						delete this.interWindow[key];
-					Object.assign(this.interWindow, value);
-				});
-				if(gl.isSubWindow)
-					gl.eventHub.emit('query-inter-window');
-				else
-					gl.eventHub.on('query-inter-window', ()=> {
-						gl.eventHub.emit('inter-window', this.interWindow);
+			/// For an unknown reason, gl.eventHub.emit will make gl vue-observable (this was caught debugging with a proxy)
+			/// + weird non-array array bug (cf `correctArrays`)
+			/// This is why th e inter-window mgt has to be done after initialisation
+			gl.on('initialised', () => {
+				if(this.interWindow) {
+					gl.eventHub.on('inter-window', value=> {
+						if(value !== this.interWindow) {	//This happens when this wondow raise the event
+							this.receivingInterWindow = true;
+							for(let key of Object.keys(this.interWindow))
+								Vue.delete(this.interWindow, key);
+							for(let key in value)
+								Vue.set(this.interWindow, key, value[key]);
+						}
 					});
-			}
+					if(isSubWindow)
+						gl.eventHub.emit('query-inter-window');
+					else
+						gl.eventHub.on('query-inter-window', ()=> {
+							gl.eventHub.emit('inter-window', this.interWindow);
+						});
+				}
+			});
 		});
 	}
 	receivingInterWindow: boolean
-	@Watch('interWindow') interWindowChange(value) {
+	@Watch('interWindow', {deep: true}) interWindowChange(value) {
 		if(this.receivingInterWindow)
 			this.receivingInterWindow = false;
 		else
@@ -267,10 +278,12 @@ export default class goldenLayout extends goldenContainer {
 	onResize() { this.gl && this.gl.updateSize(); }
 }
 
-export function renderVNodes(parent:any, el:any, vNodes:any, options?:any) {
+export function renderVNodes(parent:any, el:any, vNodes:any, options?:any, state?: any) {
 	return new Vue({
-		render: function(ce) {
-			return ce('div', options, vNodes instanceof Array ? vNodes : [vNodes]);
+		render: function(ce): VNode {
+			var vn = 'function'=== typeof vNodes ?
+				vNodes(state) : vNodes;
+			return ce('div', options, vn instanceof Array ? vn : [vn]);
 		},
 		parent,
 		el

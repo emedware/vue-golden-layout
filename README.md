@@ -78,9 +78,6 @@ It also (useful for `v-for`s) has a `state` property that will be used as the `s
 	template="template-name" :state="sth.state" />
 ```
 
-### Attention
-For now, templates don't have access to the `VueComponent`' data. If there are datas to be shared between the component defining a template and the template, the slot-scope should be used.
-
 ## Properties
 
 ### Contained objects
@@ -218,7 +215,7 @@ Note: all the elements inside them rendered from route' component will have a `t
 @Prop({default: 300}) dragProxyWidth: number
 @Prop({default: 200}) dragProxyHeight: number
 ```
-#### `popupTimeout`
+#### `popup-timeout`
 (default: 5 = 5 seconds)
 
 When the state change, an event is fired and provides the new state. Unfortunately, when something is poped-out, querying the state will raise an exception is the pop-out' golden-layout is not loaded. Hence, the first call to `GoldenLayout.toConfig()` will for sure raise an exception.
@@ -228,3 +225,6 @@ The policy chosen here is to then wait a bit and try again. In order to avoid in
 Therefore:
 - Changing this value to higher will not postpone the event fireing, it will just allow more time for the popup to load before raising an exception
 - This can be useful to increase in applications where the main page has some long loading process before displaying the golden-layout
+#### `inter-window`
+This [optional] is an object that will be shared among all the windows (the main one and the poped-out ones).
+The initial value will be set by the main window and ignored by the poped-out windows, though any change by any window will be propagated to all the others.

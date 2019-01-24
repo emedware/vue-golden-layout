@@ -1,10 +1,11 @@
 <template>
 <div>
 	<button class="reset" @click="reset">Reset localStorage</button>
-	<golden-layout class="hscreen" v-model="state" @sub-window="subWindow">
+	<golden-layout class="hscreen" v-model="state" @sub-window="subWindow" :inter-window="global">
 		<div slot="stackCtr" slot-scope="{ stackSub }" class="test-template">
 			Added item (id: {{stackSub}})
 			<button @click="remStack(stackSub)">Remove</button>
+			<p><input v-model="global.testText" /></p>
 		</div>
 		<template slot="bottom">
 			Bottom
@@ -22,6 +23,7 @@
 					<h1>CompA</h1>
 					<button @click="bottomSheet = !bottomSheet">Toggle</button>
 					<button @click="addStack">Add</button>
+					<p><input v-model="global.testText" /></p>
 					<p>
 						<span v-for="l in letters" :key="l">
 							<router-link :to="`/${l}`">test-{{l}}</router-link>&nbsp;
@@ -77,6 +79,9 @@ export default class App extends Vue {
 	@Persist() ssId: number = 1
 	@Persist() state: any = null
 	letters = letters
+	global: any = {
+		testText: "testing text."
+	}
 
 	subWindow(is) {
 		Persist.persisting = !is;
