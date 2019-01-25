@@ -2,7 +2,7 @@ const path = require("path"),
 	{FuseBox, CSSPlugin, VueComponentPlugin, HTMLPlugin} = require("fuse-box");
 const fuse = FuseBox.init({
 	homeDir: "..",
-	output: "test/dist/$name.js",
+	output: "dist/$name.js",
 	cache: true,
 	debug: true,
 	sourceMaps: true,
