@@ -17,7 +17,7 @@ export default class glGroup extends goldenContainer {
 	registerComponent(component : any/*: Vue|()=>any*/, name?: string): string {
 		return this.$parent.registerComponent(component, name);
 	}
-	onGlInitialise(cb: (_:any)=> void) {
+	onGlInitialise(cb: (_: any)=> void) {
 		this.$parent.onGlInitialise(cb);
 	}
 }

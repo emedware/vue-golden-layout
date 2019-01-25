@@ -21,7 +21,7 @@ export default class glComponent extends goldenChild {
 	@Prop() template: string
 	@Prop() state: any
 
-	@Watch('title') setTitle(title:any) {
+	@Watch('title') setTitle(title: any) {
 		if(this.container) this.container.setTitle(title);
 	}
 	toggleMaximise() {

@@ -62,7 +62,7 @@ export class goldenContainer extends goldenItem {
 	get glChildren() {
 		return this.glObject.contentItems.map((x : any)=> x.vueObject);
 	}
-	onGlInitialise(cb: (_:any)=> void): void { throw 'Not implemented'; }
+	onGlInitialise(cb: (_: any)=> void): void { throw 'Not implemented'; }
 	events: string[] = ['open', 'resize', 'destroy', 'close', 'tab', 'hide', 'show']
 }
 
@@ -77,7 +77,7 @@ export class goldenChild extends goldenItem {
 
 	getChildConfig() { return null; }
 	get glParent() { return this.glObject.parent.vueObject; }
-	container:any = null;
+	container: any = null;
 
 	hide() { this.container && this.container.hide(); }
 	show() { this.container && this.container.show(); }
@@ -109,7 +109,7 @@ export class goldenChild extends goldenItem {
 		return this.$parent.childPath(this);
 	}
 	mounted() {
-		var dimensions:any = {};
+		var dimensions: any = {};
 		if(undefined!== this.width) dimensions.width = this.width;
 		if(undefined!== this.height) dimensions.height = this.height;
 		let childConfig : any = this.getChildConfig();

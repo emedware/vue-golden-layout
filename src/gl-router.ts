@@ -12,7 +12,7 @@ function defaultTitler(route: any): string {
 
 export const RouteComponentName = '$router-route';
 
-registerGlobalComponent(RouteComponentName, (gl:any)=> function(container:any, state:any) {
+registerGlobalComponent(RouteComponentName, (gl: any)=> function(container: any, state: any) {
 	gl.onGlInitialise(()=> {
 		var comp: Vue|any = gl.$router.getMatchedComponents(state)[0],
 			route = gl.$router.resolve(state.path).route,
@@ -20,7 +20,7 @@ registerGlobalComponent(RouteComponentName, (gl:any)=> function(container:any, s
 		//TODO: comp can be a string too
 		if('object'=== typeof comp)
 			comp = Vue.extend(comp);
-		var div, template:any, parent = container.parent.parent;
+		var div, template: any, parent = container.parent.parent;
 		while(!parent.vueObject || !parent.vueObject._isVue) parent = parent.parent;
 		parent = parent.vueObject;
 		if(parent.isRouter)
@@ -40,7 +40,7 @@ registerGlobalComponent(RouteComponentName, (gl:any)=> function(container:any, s
 			parent
 		}) : new comp({parent});
 		if(!(create instanceof Promise)) create = Promise.resolve(create);
-		create.then((c:any)=> {
+		create.then((c: any)=> {
 			component = c instanceof Vue ? c : new Vue({parent, ...c});
 			//Simulate a _routerRoot object so that all children have a $route object set to this route object
 			component._routerRoot = Object.create(component._routerRoot);
@@ -81,7 +81,7 @@ export default class glRouter extends glDstack {
 
 	@Watch('stack')
 	@Watch('stack.config.activeItemIndex')
-	setPath(v:any) {
+	setPath(v: any) {
 		var path;
 		var aci = this.stack.getActiveContentItem();
 		if(aci && RouteComponentName=== aci.config.componentName) {
@@ -93,14 +93,14 @@ export default class glRouter extends glDstack {
 	}
 
 	@Watch('$route')
-	change(route:any) {
+	change(route: any) {
 		if(route && route.matched.length)
 			this.onGlInitialise(()=> {
 				var ci = this.glObject;
 				if(ci) {
 					var stack = this.stack;
 
-					var already = stack.contentItems.find((x:any)=> x.config.componentState.path == route.fullPath);
+					var already = stack.contentItems.find((x: any)=> x.config.componentState.path == route.fullPath);
 					if(already) stack.setActiveContentItem(already);
 					else stack.addChild({
 						type: 'component',
@@ -142,11 +142,11 @@ export class glRoute extends goldenChild {
 		return rv;
 	}
 
-	@Watch('compTitle') setTitle(title:any) {
+	@Watch('compTitle') setTitle(title: any) {
 		if(this.container) this.container.setTitle(title);
 	}
 
-	getChildConfig():any {
+	getChildConfig(): any {
 		return {
 			type: 'component',
 			title: this.compTitle,
