@@ -14,11 +14,11 @@
 		"integration"
 	],
 	"directories": {
-		"test": "test"
+		"demo": "demo"
 	},
 	"scripts": {
 		"prepack": "webpack",
-		"test": "webpack-dev-server --config test/webpack.config.js"
+		"demo": "node demo/fuse"
 	},
 	"repository": {
 		"type": "git",
