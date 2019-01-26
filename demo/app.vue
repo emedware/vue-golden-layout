@@ -8,7 +8,7 @@
 			<p><input v-model="global.testText" /></p>
 		</div>
 		<template slot="bottom">
-			Bottom!
+			Bottom
 		</template>
 		<gl-col :closable="false">
 			<gl-router>
