@@ -12,7 +12,7 @@ npm i -S vue-golden-layout
 > 
 > ```sh
 > npm install
-> npm test
+> npm run demo
 > ```
 > You can now browse http://localhost:9000
 

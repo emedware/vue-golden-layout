@@ -4,3 +4,4 @@ dist
 .yalc
 yalc.lock
 .vscode
+.fusebox

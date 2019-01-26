@@ -14,16 +14,14 @@
 		"integration"
 	],
 	"directories": {
-		"test": "test"
+		"example": "demo",
+		"lib": "dist"
 	},
 	"scripts": {
 		"prepack": "webpack",
-		"test": "webpack-dev-server --config test/webpack.config.js"
+		"demo": "node demo/fuse"
 	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/eddow/vue-golden-layout.git"
-	},
+	"repository": "github:eddow/vue-golden-layout.git",
 	"author": "fmdm",
 	"license": "ISC",
 	"devDependencies": {
@@ -62,10 +60,7 @@
 	},
 	"peerDependencies": {
 		"jquery": "^3.2.1",
-		"vue": "^2.5.17",
-		"vue-property-decorator": "^7.2.0",
-		"vue-router": "^3.0.1",
-		"vue-template-compiler": "^2.5.21"
+		"vue": "^2.5.17"
 	},
 	"bugs": {
 		"url": "https://github.com/eddow/vue-golden-layout/issues"

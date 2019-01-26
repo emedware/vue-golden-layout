@@ -1,14 +1,12 @@
 {
-	"compilerOptions": {
-		"outDir": "../dist",
+  	"compilerOptions": {
+		"outDir": "dist",
 		"sourceMap": true,
-		"declaration": true,
-		"strict": true,
-		"strictPropertyInitialization":false,
+		"inlineSources": true,
+		"noImplicitAny": false,
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"experimentalDecorators": true,
-		"emitDecoratorMetadata": true,
 		"target": "es5",
 		"lib": [
 			"dom",
@@ -18,7 +16,7 @@
 		"allowSyntheticDefaultImports": true,
 		"typeRoots": ["../node_modules/@types"],
 		"baseUrl": "./"
-	},
+  	},
 	"exclude": [
 		"**/*.spec.ts"
 	]
