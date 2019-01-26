@@ -1,27 +1,27 @@
 var webpack = require("webpack"),
 	path = require("path"),
-	externals = require('webpack-node-externals'),
-	{default: DtsBundlePlugin} = require('webpack-dts-bundle'),
-	VueLoader = require('vue-loader');
+	externals = require("webpack-node-externals"),
+	{default: DtsBundlePlugin} = require("webpack-dts-bundle"),
+	VueLoader = require("vue-loader");
 
 module.exports = {
-	mode: 'development',	//This is meant to be bundled afterward anyway
-	context: path.resolve(__dirname, 'src'),
+	mode: "development",	//This is meant to be bundled afterward anyway
+	context: path.resolve(__dirname, "src"),
 	entry: {
-		'vue-golden-layout': './index.ts',
+		"vue-golden-layout": "./index.ts",
 	},
 	output: {
-		filename: '[name].js',
+		filename: "[name].js",
 		path: path.resolve(__dirname, "dist"),
-		libraryTarget: 'umd',
-		library: 'vue-golden-layout',
+		libraryTarget: "umd",
+		library: "vue-golden-layout",
 		umdNamedDefine: true
 	},
 	plugins: [
 		new DtsBundlePlugin({
-			name: 'vue-golden-layout',
-			main: 'dist/index.d.ts',
-			out: 'vue-golden-layout.d.ts',
+			name: "vue-golden-layout",
+			main: "dist/index.d.ts",
+			out: "vue-golden-layout.d.ts",
 			removeSource: true
 		}),
 		new VueLoader.VueLoaderPlugin()
@@ -29,12 +29,12 @@ module.exports = {
 	externals: [
 		externals()
 	],
-	devtool: 'source-map',
+	devtool: "source-map",
 	module: {
 		rules: [{
 			test: /\.tsx?$/,
 			exclude: /node_modules/,
-			loader: 'ts-loader',
+			loader: "ts-loader",
 			options: {
 				appendTsSuffixTo: [/\.vue$/]
 			}
@@ -42,21 +42,21 @@ module.exports = {
 			test: /\.css$/,
 			loader: "style-loader!css-loader"
 		}, {
-			enforce: 'pre',
+			enforce: "pre",
 			test: /\.tsx?$/,
 			exclude: /node_modules/,
 			use: "source-map-loader"
 		}, {
 			test: /\.vue$/,
-			loader: 'vue-loader',
+			loader: "vue-loader",
 			options: {
 				loaders: {
-					ts: 'ts-loader'
+					ts: "ts-loader"
 				}
 			}
 		}]
 	},
 	resolve: {
-		extensions: [".tsx", ".ts", ".js", '.html', '.vue']
+		extensions: [".tsx", ".ts", ".js", ".html", ".vue"]
 	}
 };

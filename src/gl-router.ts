@@ -12,58 +12,56 @@ function defaultTitler(route: any): string {
 
 export const RouteComponentName = '$router-route';
 
-registerGlobalComponent(RouteComponentName, (gl: any)=> function(container: any, state: any) {
-	gl.onGlInitialise(()=> {
-		var comp: Vue|any = gl.$router.getMatchedComponents(state)[0],
-			route = gl.$router.resolve(state.path).route,
-			component : any;
-		//TODO: comp can be a string too
-		if('object'=== typeof comp)
-			comp = Vue.extend(comp);
-		var div, template: any, parent = container.parent.parent;
-		while(!parent.vueObject || !parent.vueObject._isVue) parent = parent.parent;
-		parent = parent.vueObject;
-		if(parent.isRouter)
-			template = parent.$scopedSlots.route ?
-				parent.$scopedSlots.route(route) :
-				parent.$slots.route;
-		// template is <VNode?>
-		var create = template ? new Vue({
-			render(ce) {
-				return template instanceof Array ?
-					ce('div', {class: 'glComponent'}, template) :
-					template;
-			},
-			mounted() {
-				new comp({el: component.$el.querySelector('main'), parent: component});
-			},
-			parent
-		}) : new comp({parent});
-		if(!(create instanceof Promise)) create = Promise.resolve(create);
-		create.then((c: any)=> {
-			component = c instanceof Vue ? c : new Vue({parent, ...c});
-			//Simulate a _routerRoot object so that all children have a $route object set to this route object
-			component._routerRoot = Object.create(component._routerRoot);
-			Object.defineProperty(component._routerRoot, '_route', {
-				value: route,
-				writable: false
-			});
-			Object.defineProperty(component._routerRoot, '_router', {
-				value: Object.create(component._routerRoot._router),
-				writable: false
-			});
-			Object.defineProperty(component._routerRoot._router, 'history', {
-				value: Object.create(component._routerRoot._router.history),
-				writable: false
-			});
-			Object.defineProperty(component._routerRoot._router.history, 'current', {
-				value: route,
-				writable: false
-			});
-			var el = document.createElement('div');
-			container.getElement().append(el);
-			component.$mount(el);
+function freezeValue(object: {[key: string]: any}, path: string, value?: any) {
+	const props = path.split('.'),
+		forced = props.pop()!;
+	for(let property of props)
+		Object.defineProperty(object, property, {
+			value: object = Object.create(object[property]),
+			writable: false
 		});
+	Object.defineProperty(object, forced, {
+		value,
+		writable: false
+	});
+}
+
+registerGlobalComponent(RouteComponentName, function(gl: goldenLayout, container: any, state: any) {
+	var comp: Vue|any = gl.$router.getMatchedComponents(state)[0],
+		route = gl.$router.resolve(state.path).route,
+		component : any;
+	//TODO: comp can be a string too => vue globally registered component (cf router API)
+	if('object'=== typeof comp)
+		comp = Vue.extend(comp);
+	var div, template: any, parent = container.parent.parent;
+	while(!parent.vueObject || !parent.vueObject._isVue) parent = parent.parent;
+	parent = parent.vueObject;
+	if(parent.isRouter)
+		template = parent.$scopedSlots.route ?
+			parent.$scopedSlots.route(route) :
+			parent.$slots.route;
+	// template is <VNode?>
+	var create = template ? new Vue({
+		render(ce) {
+			return template instanceof Array ?
+				ce('div', {class: 'glComponent'}, template) :
+				template;
+		},
+		mounted() {
+			new comp({el: component.$el.querySelector('main'), parent: component});
+		},
+		parent
+	}) : new comp({parent});
+	if(!(create instanceof Promise)) create = Promise.resolve(create);
+	create.then((c: any)=> {
+		component = c instanceof Vue ? c : new Vue({parent, ...c});
+		//Simulate a _routerRoot object so that all children have a $route object set to this route object
+		component._routerRoot = Object.create(component._routerRoot);
+		freezeValue(component._routerRoot, '_route', route);
+		freezeValue(component._routerRoot, '_router.history.current', route);
+		var el = document.createElement('div');
+		container.getElement().append(el);
+		component.$mount(el);
 	});
 });
 

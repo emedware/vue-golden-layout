@@ -1,10 +1,8 @@
 node_modules
 npm-debug.log
-test
 demo
-.yalc
+.*
 yalc.lock
-.vscode
 package-lock.*
 *.lock
-.gitignore
+webpack.*

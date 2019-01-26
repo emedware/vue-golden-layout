@@ -49,24 +49,24 @@ export default class glDstack extends glRow {
 	}
 
 	created() {
-		this.onGlInitialise(gl=> {
-			if(gl.isSubWindow) {
-				var onlyStack = gl.root.contentItems[0];
-				if(onlyStack.config.dstackId === this.dstackId) {
-					(<any>window).dstackId = this.dstackId;
-					onlyStack.contentItems
-						.filter((x: any)=> !x.config.isClosable && !x.reorderEnabled)
-						.map((comp: any)=> comp.close());
-				}
+		const that = this;
+		function onWindowPopout(popup: any) {
+			if(popup._popoutWindow.dstackId === that.dstackId) {
+				//re-create the stack object
+				that.cachedStack = null;
+				that.stack;
 			}
-			gl.on('windowOpened', (popup: any)=> {
-				if(popup._popoutWindow.dstackId === this.dstackId) {
-					//re-create the stack object
-					this.cachedStack = null;
-					this.stack;
-				}
-			});
-			this.stack;
+		}
+		this.onGlInitialise(function(gl) {
+			var root_child = gl.root.contentItems[0];
+			if(gl.isSubWindow && root_child.config.dstackId === that.dstackId) {
+				(<any>window).dstackId = that.dstackId;
+				root_child.contentItems
+					.filter((x: any)=> !x.config.isClosable && !x.reorderEnabled)
+					.map((comp: any)=> comp.close());
+			}
+			gl.on('windowOpened', onWindowPopout);
+			that.stack;
 		});
 	}
 }

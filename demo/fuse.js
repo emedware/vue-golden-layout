@@ -15,10 +15,10 @@ const fuse = FuseBox.init({
 	],
 	package: {
 		name: "app",
-		main: 'demo/index.ts'
+		main: "demo/index.ts"
 	},
 	globals: {
-		'app': '*'
+		"app": "*"
 	},
   	shim: {
 		jquery: {
@@ -27,14 +27,14 @@ const fuse = FuseBox.init({
 		}
   	},
 	alias: {
-		vue: 'vue/dist/vue.esm.js', //routes are only given a template and need to be compiled client-side
-		'vue-golden-layout': '../src'
+		vue: "vue/dist/vue.esm.js", //routes are only given a template and need to be compiled client-side
+		"vue-golden-layout": "../src"
 	}
 });
-fuse.bundle("app").target('browser')
-	.instructions('> demo/index.ts +fuse-box-css')
+fuse.bundle("app").target("browser")
+	.instructions("> demo/index.ts +fuse-box-css")
 	.hmr()
-	.watch(/*'.', path=> {
+	.watch(/*".", path=> {
 		return /^(src|demo\/(?!dist\/))\//.test(path);
 	}*/);
 fuse.dev({
@@ -43,7 +43,7 @@ fuse.dev({
 	fallback: "index.html",
 });
 fuse.run({
-	chokidarPaths: ['src', 'demo'],
+	chokidarPaths: ["src", "demo", "node_modules"],
 	chokidar: {
 		ignored: /dist\//
 	}

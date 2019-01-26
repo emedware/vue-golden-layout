@@ -10,14 +10,15 @@ import * as GoldenLayout from 'golden-layout'
 import {goldenContainer} from './roles'
 import * as resize from 'vue-resize-directive'
 
-var globalComponents: {[name: string] : (gl: goldenLayout)=> (container: any, state: any)=> void} = {};
+type globalComponent = (gl: goldenLayout, container: any, state: any)=> void;
+var globalComponents: {[name: string] : globalComponent} = {};
 
 //This is necessary as in poped-out windows, an observed config has arrays that return `instanceof Array` false
 //avoid the objects being observed
 (<any>GoldenLayout.prototype)._isVue = true;
 (<any>GoldenLayout).__lm.items.AbstractContentItem.prototype._isVue = true;
 
-export function registerGlobalComponent(name: string, comp: (gl: goldenLayout)=> (container: any, state: any)=> void) {
+export function registerGlobalComponent(name: string, comp: globalComponent) {
 	console.assert(!globalComponents[name], `Component name "${name}" unused`);
 	globalComponents[name] = comp;
 }
@@ -71,7 +72,7 @@ export default class goldenLayout extends goldenContainer {
 		popout: 'open in new window'
 	},*/
 
-	gl: any
+	gl: GoldenLayout
 	tplCount = 0
 	tplPreload : any= {}
 	
@@ -97,10 +98,29 @@ export default class goldenLayout extends goldenContainer {
 	}
 	@Emit() subWindow(is: boolean) {}
 	mounted() {
-		var me = this, layoutRoot = this.$refs.layoutRoot, gl: any,
+		var me = this, layoutRoot = this.$refs.layoutRoot, gl: GoldenLayout,
 			state = this.state instanceof Promise ?
 				this.state : Promise.resolve(this.state);
-		var sleep = (timeout, rv)=> new Promise(function(resolve,_) {
+
+		function appendVNodes(container: any, vNodes: any, state?: any) {
+			var el = document.createElement('div');
+			container.getElement().append(el);
+			renderVNodes(me, el, vNodes, {
+				class: 'glComponent'
+			}, state);
+		}
+		function slotComponentWrap(slot: any) {
+			return function(container: any, state: any) {
+				appendVNodes(container, slot, state);
+			};
+		}
+		function globalComponentWrap(globComponent: globalComponent) {
+			return function(container: any, state: any) {
+				me.onGlInitialise(()=> globComponent(me, container, state));
+			};
+		}
+		//Used to debug poped-up windows
+		var sleep = (timeout: number, rv: any)=> new Promise(function(resolve: (value: any)=> void, _: any) {
 			setTimeout(()=> resolve(rv), timeout);
 		});
 		const isSubWindow = /[?&]gl-window=/.test(window.location.search);
@@ -134,13 +154,6 @@ export default class goldenLayout extends goldenContainer {
 				};
 			}
 			this.gl = gl = new GoldenLayout(this.config, <Element>layoutRoot);
-			function appendVNodes(container: any, vNodes: any, state?: any) {
-				var el = document.createElement('div');
-				container.getElement().append(el);
-				renderVNodes(me, el, vNodes, {
-					class: 'glComponent'
-				}, state);
-			}
 			//#region Register gl-components
 			// Components registered with this.registerComponent(...)
 			for(var tpl in this.tplPreload)
@@ -148,25 +161,19 @@ export default class goldenLayout extends goldenContainer {
 			delete this.tplPreload;
 			var slots = (<any>this).$slots;
 			// Register direct-children templates
-			for(var tpl in slots) if('default'!== tpl) ((tpl)=> {
-				gl.registerComponent(tpl, function(container: any) {
-					appendVNodes(container, slots[tpl]);
-				});
-			})(tpl);
+			for(var tpl in slots) if('default'!== tpl)
+				gl.registerComponent(tpl, slotComponentWrap(slots[tpl]));
 			var scopedSlots = (<any>this).$scopedSlots;
 			// Register direct-children templates with a scope
-			for(var tpl in scopedSlots) ((tpl)=> {
-				gl.registerComponent(tpl, function(container: any, state: any) {
-					appendVNodes(container, scopedSlots[tpl], state);
-				});
-			})(tpl);
+			for(var tpl in scopedSlots)
+				gl.registerComponent(tpl, slotComponentWrap(scopedSlots[tpl]));
 			// Register global components given by other vue-components
-			for(var tpl in globalComponents) ((tpl)=> {
-				gl.registerComponent(tpl, globalComponents[tpl](this));
-			})(tpl);
+			for(var tpl in globalComponents)
+				gl.registerComponent(tpl, globalComponentWrap(globalComponents[tpl]));
 			//#endregion
 			//#region Events
 			var raiseStateChanged: (arg?: number)=> void;
+			//TODO: have only one raiseStateChanged function
 			if(this.popupTimeout) {
 				const maxRetries = 10 * this.popupTimeout;
 				raiseStateChanged = (retry?: number)=> {
@@ -225,9 +232,8 @@ export default class goldenLayout extends goldenContainer {
 						--itm.parent.config.activeItemIndex;
 					});
 			});
-			forwardEvt(gl, this, ['itemCreated', 'stackCreated', 'rowCreated', 'tabCreated', 'columnCreated', 'componentCreated', 'selectionChanged',
-				'windowOpened', 'windowClosed', 'itemDestroyed', 'initialised',
-				'activeContentItemChanged']);
+			forwardEvt(gl, this, ['itemCreated', 'stackCreated', 'rowCreated', 'tabCreated', 'columnCreated', 'componentCreated',
+				'selectionChanged', 'windowOpened', 'windowClosed', 'itemDestroyed', 'initialised', 'activeContentItemChanged']);
 			//#endregion
 			try{
 				gl.init();
@@ -237,7 +243,7 @@ export default class goldenLayout extends goldenContainer {
 				}
 			}
 			if(this.interWindow) {
-				gl.eventHub.on('inter-window', value=> {
+				gl.eventHub.on('inter-window', (value: {[key: string]: any})=> {
 					if(value !== this.interWindow) {	//This happens when this wondow raise the event
 						this.receivingInterWindow = true;
 						for(let key of Object.keys(this.interWindow))
@@ -256,7 +262,7 @@ export default class goldenLayout extends goldenContainer {
 		});
 	}
 	receivingInterWindow: boolean
-	@Watch('interWindow', {deep: true}) interWindowChange(value) {
+	@Watch('interWindow', {deep: true}) interWindowChange(value: {[key: string]: any}) {
 		if(this.receivingInterWindow)
 			this.receivingInterWindow = false;
 		else
