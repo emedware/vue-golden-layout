@@ -19,7 +19,7 @@
 	},
 	"scripts": {
 		"prepack": "webpack",
-		"demo": "node demo/fuse"
+		"demo": "webpack-dev-server --config demo/webpack.config.js"
 	},
 	"repository": "github:eddow/vue-golden-layout.git",
 	"author": "fmdm",
