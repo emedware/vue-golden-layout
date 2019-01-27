@@ -1,4 +1,7 @@
 [![npm](https://img.shields.io/npm/v/vue-golden-layout.svg)](https://www.npmjs.com/package/vue-golden-layout)
+[![NPM downloads](https://img.shields.io/npm/dm/vue-golden-layout.svg?style=flat)](https://npmjs.org/package/vue-golden-layout)
+[![Known Vulnerabilities](https://snyk.io/test/github/eddow/vue-golden-layout/badge.svg)](https://snyk.io/test/github/eddow/vue-golden-layout)
+[![codebeat badge](https://codebeat.co/badges/8fb41a11-58bd-4f6f-948b-5ac12ec59b5b)](https://codebeat.co/projects/github-com-eddow-vue-golden-layout-master)
 # vue-golden-layout
 Integration of the golden-layout to Vue
 
