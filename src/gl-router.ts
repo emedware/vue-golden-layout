@@ -91,25 +91,25 @@ export default class glRouter extends glDstack {
 	}
 
 	@Watch('$route')
-	change(route: any) {
-		if(route && route.matched.length)
-			this.onGlInitialise(()=> {
-				var ci = this.glObject;
-				if(ci) {
-					var stack = this.stack;
+	async change(route: any) {
+		if(route && route.matched.length) {
+			await this.layout.glo;
+			var ci = this.glObject;
+			if(ci) {
+				var stack = this.stack;
 
-					var already = stack.contentItems.find((x: any)=> x.config.componentState.path == route.fullPath);
-					if(already) stack.setActiveContentItem(already);
-					else stack.addChild({
-						type: 'component',
-						componentName: RouteComponentName,
-						componentState: {
-							path: route.fullPath
-						},
-						title: this.titler(route)
-					});
-				}
-			});
+				var already = stack.contentItems.find((x: any)=> x.config.componentState.path == route.fullPath);
+				if(already) stack.setActiveContentItem(already);
+				else stack.addChild({
+					type: 'component',
+					componentName: RouteComponentName,
+					componentState: {
+						path: route.fullPath
+					},
+					title: this.titler(route)
+				});
+			}
+		}
 	}
 	isRouter: boolean = true
 	mounted() {

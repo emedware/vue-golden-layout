@@ -3,6 +3,7 @@ import {Component, Prop, Watch, Emit} from 'vue-property-decorator'
 
 export class goldenItem extends Vue {
 	glObject: any = null
+	get layout(): any { throw "not implemented"; }
 }
 
 @Component
@@ -62,7 +63,6 @@ export class goldenContainer extends goldenItem {
 	get glChildren() {
 		return this.glObject.contentItems.map((x : any)=> x.vueObject);
 	}
-	onGlInitialise(cb: (_: any)=> void): void { throw 'Not implemented'; }
 	events: string[] = ['open', 'resize', 'destroy', 'close', 'tab', 'hide', 'show']
 }
 
@@ -128,7 +128,9 @@ export class goldenChild extends goldenItem {
 	@Watch('glObject') destroy(v:boolean) {
 		if(!v) this.$emit('destroy');
 	}
-
+	get layout(): any { 
+		return this.$parent.layout;
+	}
 	events: string[] = ['stateChanged', 'titleChanged', 'activeContentItemChanged', 'itemDestroyed', 'itemCreated',
 		'componentCreated', 'rowCreated', 'columnCreated', 'stackCreated', 'destroy', 'destroyed']
 }
