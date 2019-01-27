@@ -23,6 +23,10 @@ export function registerGlobalComponent(name: string, comp: globalComponent) {
 	globalComponents[name] = comp;
 }
 
+interface Semaphore<T> extends Promise<T> {
+	resolve: (arg?: T)=> void;
+	reject: (arg?: T)=> void;
+}
 @Component({directives: {resize}})
 export default class goldenLayout extends goldenContainer {
 	$router : any
@@ -91,11 +95,15 @@ export default class goldenLayout extends goldenContainer {
 		} else this.tplPreload[name] = tplData;
 		return name;
 	}
-	initialisedCB: ((_: any)=> void)[]
-	onGlInitialise(cb: (_: any)=> void) {
-		if(this.glObject) cb(this.gl);
-		else (this.initialisedCB || (this.initialisedCB=[])).push(cb);
+	//cached by Vue
+	get glo(): Semaphore<any> {
+		var access, rv = new Promise<any>(function(resolve, reject) {
+			access = {resolve, reject};
+		});
+		Object.assign(rv, access);
+		return <Semaphore<any>>rv;
 	}
+	get layout() { return this; }
 	@Emit() subWindow(is: boolean) {}
 	mounted() {
 		var me = this, layoutRoot = this.$refs.layoutRoot, gl: GoldenLayout,
@@ -115,8 +123,9 @@ export default class goldenLayout extends goldenContainer {
 			};
 		}
 		function globalComponentWrap(globComponent: globalComponent) {
-			return function(container: any, state: any) {
-				me.onGlInitialise(()=> globComponent(me, container, state));
+			return async function(container: any, state: any) {
+				await this.glo;
+				globComponent(me, container, state);
 			};
 		}
 		//Used to debug poped-up windows
@@ -212,8 +221,7 @@ export default class goldenLayout extends goldenContainer {
 			}
 			gl.on('stateChanged', raiseStateChanged);
 			gl.on('initialised', () => {
-				if(this.initialisedCB) for(let cb of this.initialisedCB) cb(gl);
-				delete this.initialisedCB;
+				this.glo.resolve(gl);
 			});
 			gl.on('itemCreated', (itm: any) => {
 				itm.vueObject = itm === gl.root ? this :
@@ -238,6 +246,7 @@ export default class goldenLayout extends goldenContainer {
 			try{
 				gl.init();
 			} catch(e) {
+				this.glo.reject(e);
 				if(e.type === 'popoutBlocked') {
 					alert('The browser has blocked the pop-up you requested. Please allow pop-ups for this site.')
 				}
