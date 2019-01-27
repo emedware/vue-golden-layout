@@ -112,7 +112,7 @@ Notes:
 Some golden-layout global component can be given before any instanciation (while declaring classes) by calling this function:
 ```typescript
 import {registerGlobalComponent} from 'vue-golden-layout'
-// registerGlobalComponent(name: string, comp: (gl: goldenLayout)=> (container: any, state: any)=> void)
+// registerGlobalComponent(name: string, comp: (gl: goldenLayout, container: any, state: any)=> void)
 ```
 `(container: any, state: any)=> void` is the signature of a gloden-layout component and they are created per golden-layout instances
 
