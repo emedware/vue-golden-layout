@@ -32,16 +32,18 @@ export class glStack extends glGroup {
 			if((<goldenChild>child).tabId === tabId)
 				(<any>this).glObject.setActiveContentItem((<any>child).container.parent);
 	}
-	getChildConfig() {
-		(<any>this).onGlInitialise(()=> {
-			this.$watch(()=> {
-				var ci : any = (<any>this).glObject;
-				return ci && ci.config.activeItemIndex;
-			}, (v: any)=> {
-				if('number'=== typeof v)
-					this.tabChange((<goldenChild>this.glChildren[v]).tabId);
-			});
+	async watchActiveIndex() {
+		await this.layout.glo;
+		this.$watch(()=> {
+			var ci : any = (<any>this).glObject;
+			return ci && ci.config.activeItemIndex;
+		}, (v: any)=> {
+			if('number'=== typeof v)
+				this.tabChange((<goldenChild>this.glChildren[v]).tabId);
 		});
+	}
+	getChildConfig() {
+		this.watchActiveIndex();
 		return {	//we can use $children as it is on-load : when the user still didn't interract w/ the layout
 			activeItemIndex: Math.max(0, (<any>this.$children).findIndex((c: any) => c.tabId === this.activeTab)),
 			isClosable: this.closable,
