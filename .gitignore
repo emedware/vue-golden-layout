@@ -1,7 +1,5 @@
 node_modules
 npm-debug.log
 dist
-.yalc
-yalc.lock
 .vscode
-.fusebox
+coverage
