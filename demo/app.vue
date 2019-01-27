@@ -83,14 +83,14 @@ export default class App extends Vue {
 		testText: "testing text."
 	}
 
-	subWindow(is) {
+	subWindow(is: boolean) {
 		Persist.persisting = !is;
 	}
 	reset() {
 		delete localStorage.browserGL;
 		location.reload();
 	}
-	closed(n) {
+	closed(n: number) {
 		var ndx = this.stackSubs.indexOf(n);
 		console.assert(!!~ndx, 'Element in state array');
 		this.stackSubs.splice(ndx, 1);
@@ -98,7 +98,7 @@ export default class App extends Vue {
 	addStack() {
 		this.stackSubs.push(++this.ssId);
 	}
-	remStack(id) {
+	remStack(id: number) {
 		var ndx = this.stackSubs.indexOf(id);
 		if(~ndx)
 			this.stackSubs.splice(ndx, 1);

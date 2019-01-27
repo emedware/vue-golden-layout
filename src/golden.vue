@@ -10,7 +10,7 @@ import * as GoldenLayout from 'golden-layout'
 import {goldenContainer} from './roles'
 import * as resize from 'vue-resize-directive'
 
-type globalComponent = (gl: goldenLayout, container: any, state: any)=> void;
+export type globalComponent = (gl: goldenLayout, container: any, state: any)=> void;
 var globalComponents: {[name: string] : globalComponent} = {};
 
 //This is necessary as in poped-out windows, an observed config has arrays that return `instanceof Array` false
@@ -23,7 +23,7 @@ export function registerGlobalComponent(name: string, comp: globalComponent) {
 	globalComponents[name] = comp;
 }
 
-interface Semaphore<T> extends Promise<T> {
+export interface Semaphore<T> extends Promise<T> {
 	resolve: (arg?: T)=> void;
 	reject: (arg?: T)=> void;
 }
@@ -124,7 +124,7 @@ export default class goldenLayout extends goldenContainer {
 		}
 		function globalComponentWrap(globComponent: globalComponent) {
 			return async function(container: any, state: any) {
-				await this.glo;
+				await me.glo;
 				globComponent(me, container, state);
 			};
 		}
