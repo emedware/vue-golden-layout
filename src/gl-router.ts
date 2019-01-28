@@ -1,18 +1,18 @@
 import { Watch, Component, Prop, Emit, Provide, Inject } from 'vue-property-decorator'
 import glDstack from './gl-dstack'
-import Vue from 'vue'
-import goldenLayout, {renderVNodes, registerGlobalComponent} from './golden.vue'
+import Vue, { ComponentOptions, Component as VueComponent, AsyncComponent, VueConstructor } from 'vue'
+import goldenLayout, { renderVNodes, registerGlobalComponent, Dictionary } from './golden.vue'
 import { goldenChild } from './roles'
+import { Route } from 'vue-router'
 
-//TODO: there might be a type for route
-function defaultTitler(route: any): string {
+function defaultTitler(route: Route): string {
 	//The last case is to warn the programmer who would have forgotten that detail
 	return route ? ((route.meta && route.meta.title) || 'set $route.meta.title') : '';
 }
 
 export const RouteComponentName = '$router-route';
 
-function freezeValue(object: {[key: string]: any}, path: string, value?: any) {
+function freezeValue(object: Dictionary, path: string, value?: any) {
 	const props = path.split('.'),
 		forced = props.pop()!;
 	for(let property of props)
@@ -26,43 +26,58 @@ function freezeValue(object: {[key: string]: any}, path: string, value?: any) {
 	});
 }
 
-registerGlobalComponent(RouteComponentName, function(gl: goldenLayout, container: any, state: any) {
-	var comp: Vue|any = gl.$router.getMatchedComponents(state)[0],
-		route = gl.$router.resolve(state.path).route,
-		component : any;
-	//TODO: comp can be a string too => vue globally registered component (cf router API)
-	if('object'=== typeof comp)
-		comp = Vue.extend(comp);
-	var div, template: any, parent = container.parent.parent;
+
+
+function routeParent(container: any, route: Route): any {
+	var  template: any, parent = container.parent.parent;
 	while(!parent.vueObject || !parent.vueObject._isVue) parent = parent.parent;
 	parent = parent.vueObject;
 	if(parent.isRouter)
 		template = parent.$scopedSlots.route ?
 			parent.$scopedSlots.route(route) :
 			parent.$slots.route;
-	// template is <VNode?>
-	var create = template ? new Vue({
-		render(ce) {
-			return template instanceof Array ?
-				ce('div', {class: 'glComponent'}, template) :
-				template;
-		},
-		mounted() {
-			new comp({el: component.$el.querySelector('main'), parent: component});
-		},
-		parent
-	}) : new comp({parent});
-	if(!(create instanceof Promise)) create = Promise.resolve(create);
-	create.then((c: any)=> {
-		component = c instanceof Vue ? c : new Vue({parent, ...c});
-		//Simulate a _routerRoot object so that all children have a $route object set to this route object
-		component._routerRoot = Object.create(component._routerRoot);
-		freezeValue(component._routerRoot, '_route', route);
-		freezeValue(component._routerRoot, '_router.history.current', route);
-		var el = document.createElement('div');
-		container.getElement().append(el);
-		component.$mount(el);
-	});
+	return {template, parent};
+}
+
+type ComponentSpec = VueComponent<any, any, any, any> | AsyncComponent<any, any, any, any>;
+
+async function vueComponent(comp: ComponentSpec|string, namedComponents: Dictionary<ComponentSpec>): Promise<VueConstructor> {
+	console.assert(comp, 'State resolves to a component');
+	var component: ComponentSpec = 'string'=== typeof comp?namedComponents[<string>comp]:<ComponentSpec>comp;
+	function componentIsVueConstructor() { return (<any>component).prototype instanceof Vue; }
+	console.assert(`Component registered : "${comp}".`);
+	if('function'=== typeof component && !componentIsVueConstructor)
+		//AsyncComponentFactory<any, any, any, any> | FunctionalComponentOptions<any, PropsDefinition<any>>
+		component = (<()=> ComponentSpec>component)();
+	if(component instanceof Promise)
+		component = await (<Promise<ComponentSpec>>component);
+	return componentIsVueConstructor() ?
+		<VueConstructor>component :
+		Vue.extend(<ComponentOptions<Vue>>component);
+}
+
+registerGlobalComponent(RouteComponentName, async function(gl: goldenLayout, container: any, state: any) {
+	var comp: VueConstructor = await vueComponent(gl.$router.getMatchedComponents(state)[0], gl.$options.components),
+		route = gl.$router.resolve(state).route,
+		{template, parent} = routeParent(container, route),
+		component = template ? new Vue({
+			render(ce) {
+				return template instanceof Array ?
+					ce('div', {class: 'glComponent'}, template) :
+					template;
+			},
+			mounted() {
+				new comp({el: component.$el.querySelector('main'), parent: component});
+			},
+			parent
+		}) : new comp({parent});
+	//Simulate a _routerRoot object so that all children have a $route object set to this route object
+	var routerRoot = (<any>component)._routerRoot = Object.create((<any>component)._routerRoot);
+	freezeValue(routerRoot, '_route', route);
+	freezeValue(routerRoot, '_router.history.current', route);
+	var el = document.createElement('div');
+	container.getElement().append(el);
+	component.$mount(el);
 });
 
 @Component
@@ -78,6 +93,7 @@ export default class glRouter extends glDstack {
 	@Prop({default: 'router'}) dstackId: string
 
 	@Watch('stack')
+	//TODO: like in glStack, use the glObject events : `stack.config.activeItemIndex` cannot be watched
 	@Watch('stack.config.activeItemIndex')
 	setPath(v: any) {
 		var path;

@@ -11,6 +11,7 @@ import {goldenContainer} from './roles'
 import * as resize from 'vue-resize-directive'
 
 export type globalComponent = (gl: goldenLayout, container: any, state: any)=> void;
+export type Dictionary<T = any> = {[key: string]: T}
 var globalComponents: {[name: string] : globalComponent} = {};
 
 //This is necessary as in poped-out windows, an observed config has arrays that return `instanceof Array` false
@@ -252,7 +253,7 @@ export default class goldenLayout extends goldenContainer {
 				}
 			}
 			if(this.interWindow) {
-				gl.eventHub.on('inter-window', (value: {[key: string]: any})=> {
+				gl.eventHub.on('inter-window', (value: Dictionary)=> {
 					if(value !== this.interWindow) {	//This happens when this wondow raise the event
 						this.receivingInterWindow = true;
 						for(let key of Object.keys(this.interWindow))
@@ -271,7 +272,7 @@ export default class goldenLayout extends goldenContainer {
 		});
 	}
 	receivingInterWindow: boolean
-	@Watch('interWindow', {deep: true}) interWindowChange(value: {[key: string]: any}) {
+	@Watch('interWindow', {deep: true}) interWindowChange(value: Dictionary) {
 		if(this.receivingInterWindow)
 			this.receivingInterWindow = false;
 		else
