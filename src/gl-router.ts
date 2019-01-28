@@ -56,11 +56,8 @@ async function vueComponent(comp: ComponentSpec|string, namedComponents: Diction
 		Vue.extend(<ComponentOptions<Vue>>component);
 }
 
-registerGlobalComponent(RouteComponentName, async function(gl: goldenLayout, container: any, state: any) {
-	var comp: VueConstructor = await vueComponent(gl.$router.getMatchedComponents(state)[0], gl.$options.components),
-		route = gl.$router.resolve(state).route,
-		{template, parent} = routeParent(container, route),
-		component = template ? new Vue({
+function createRouteComponent(comp: VueConstructor, parent: any, template: any) : Vue {
+	const component = template ? new Vue({
 			render(ce) {
 				return template instanceof Array ?
 					ce('div', {class: 'glComponent'}, template) :
@@ -71,6 +68,14 @@ registerGlobalComponent(RouteComponentName, async function(gl: goldenLayout, con
 			},
 			parent
 		}) : new comp({parent});
+	return component;
+}
+
+registerGlobalComponent(RouteComponentName, async function(gl: goldenLayout, container: any, state: any) {
+	var comp: VueConstructor = await vueComponent(gl.$router.getMatchedComponents(state)[0], gl.$options.components),
+		route = gl.$router.resolve(state).route,
+		{template, parent} = routeParent(container, route),
+		component = createRouteComponent(comp, parent, template);
 	//Simulate a _routerRoot object so that all children have a $route object set to this route object
 	var routerRoot = (<any>component)._routerRoot = Object.create((<any>component)._routerRoot);
 	freezeValue(routerRoot, '_route', route);
