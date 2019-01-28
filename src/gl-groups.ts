@@ -34,10 +34,9 @@ export class glStack extends glGroup {
 	}
 	async watchActiveIndex() {
 		await this.layout.glo;
-		this.$watch(()=> {
-			var ci : any = (<any>this).glObject;
-			return ci && ci.config.activeItemIndex;
-		}, (v: any)=> {
+		
+		this.glObject.on('activeContentItemChanged', (comp)=> {
+			var v = this.glObject.config.activeItemIndex;
 			if('number'=== typeof v)
 				this.tabChange((<goldenChild>this.glChildren[v]).tabId);
 		});

@@ -156,8 +156,15 @@ activeContentItemChanged
 ```
 Also, the event `sub-window` is emitted on mount with a `is: boolean` argument that is `true` iif this instance of golden-layout is loaded as a pop-up window.
 #### Contained objects
-
-The event `destroy` is provided for all components beside the golden-layout object. It occurs on user's closure **or pop-out**.
+Straight forwards from golden-layout, refer to their doc
+```javascript
+stateChanged
+titleChanged
+activeContentItemChanged
+beforeItemDestroyed
+itemDestroyed
+itemCreated
+```
 ## Specific components
 ### gl-dstack
 

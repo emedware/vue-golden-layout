@@ -11,7 +11,6 @@ export class goldenContainer extends goldenItem {
 	config: any = {
 		content: []
 	}
-	registerComponent(component : any/*: Vue|()=>any*/, name?: string): string { throw 'unimplemented'; }
 	childPath(comp: Vue): string {
 		var childMe = <goldenChild><any>this;
 		var rv = childMe.nodePath?`${childMe.nodePath()}.`:'';
@@ -38,7 +37,7 @@ export class goldenContainer extends goldenItem {
 	addGlChild(child : any, comp : any) {
 		if(comp && 'component'=== child.type) {
 			if(!child.componentName)
-				child.componentName = this.registerComponent(comp);
+				child.componentName = this.layout.registerComponent(comp);
 			if(!child.componentState)
 				child.componentState = {};
 		}
@@ -131,6 +130,5 @@ export class goldenChild extends goldenItem {
 	get layout(): any { 
 		return this.$parent.layout;
 	}
-	events: string[] = ['stateChanged', 'titleChanged', 'activeContentItemChanged', 'itemDestroyed', 'itemCreated',
-		'componentCreated', 'rowCreated', 'columnCreated', 'stackCreated', 'destroy', 'destroyed']
+	events: string[] = ['stateChanged', 'titleChanged', 'activeContentItemChanged', 'beforeItemDestroyed', 'itemDestroyed', 'itemCreated']
 }

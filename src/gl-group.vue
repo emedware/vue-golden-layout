@@ -13,9 +13,5 @@ export default class glGroup extends goldenContainer {
 	//child properties
 	$parent: goldenContainer
 	@Prop({default: false}) closable: boolean
-	/// Only the layout object centralise the components
-	registerComponent(component : any/*: Vue|()=>any*/, name?: string): string {
-		return this.$parent.registerComponent(component, name);
-	}
 }
 </script>
