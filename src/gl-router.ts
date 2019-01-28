@@ -80,14 +80,19 @@ function createRouteComponent(comp: VueConstructor, routerSpec: RouterSpec) : Vu
 	return component;
 }
 
-registerGlobalComponent(RouteComponentName, async function(gl: goldenLayout, container: any, state: any) {
-	var comp: VueConstructor = await vueComponent(gl.$router.getMatchedComponents(state)[0], gl.$options.components),
-		route = gl.$router.resolve(state).route,
-		component = createRouteComponent(comp, routeParent(container, route));
-	freezeRoute(component, route);
+function renderInContainer(container: any, component: Vue) {
 	var el = document.createElement('div');
 	container.getElement().append(el);
 	component.$mount(el);
+}
+
+registerGlobalComponent(RouteComponentName, async function(gl: goldenLayout, container: any, state: any) {
+	var route = gl.$router.resolve(state).route,
+		component = createRouteComponent(
+			await vueComponent(gl.$router.getMatchedComponents(state)[0], gl.$options.components),
+			routeParent(container, route));
+	freezeRoute(component, route);
+	renderInContainer(container, component)
 });
 
 @Component
