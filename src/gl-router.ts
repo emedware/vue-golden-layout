@@ -26,9 +26,17 @@ function freezeValue(object: Dictionary, path: string, value?: any) {
 	});
 }
 
-
-
-function routeParent(container: any, route: Route): any {
+function freezeRoute(component: Vue, route: Route) {
+	//Simulate a _routerRoot object so that all children have a $route object set to this route object
+	var routerRoot = (<any>component)._routerRoot = Object.create((<any>component)._routerRoot);
+	freezeValue(routerRoot, '_route', route);
+	freezeValue(routerRoot, '_router.history.current', route);
+}
+interface RouterSpec {
+	template: any
+	parent: any
+}
+function routeParent(container: any, route: Route): RouterSpec {
 	var  template: any, parent = container.parent.parent;
 	while(!parent.vueObject || !parent.vueObject._isVue) parent = parent.parent;
 	parent = parent.vueObject;
@@ -56,8 +64,9 @@ async function vueComponent(comp: ComponentSpec|string, namedComponents: Diction
 		Vue.extend(<ComponentOptions<Vue>>component);
 }
 
-function createRouteComponent(comp: VueConstructor, parent: any, template: any) : Vue {
-	const component = template ? new Vue({
+function createRouteComponent(comp: VueConstructor, routerSpec: RouterSpec) : Vue {
+	const {parent, template} = routerSpec,
+		component = template ? new Vue({
 			render(ce) {
 				return template instanceof Array ?
 					ce('div', {class: 'glComponent'}, template) :
@@ -74,12 +83,8 @@ function createRouteComponent(comp: VueConstructor, parent: any, template: any) 
 registerGlobalComponent(RouteComponentName, async function(gl: goldenLayout, container: any, state: any) {
 	var comp: VueConstructor = await vueComponent(gl.$router.getMatchedComponents(state)[0], gl.$options.components),
 		route = gl.$router.resolve(state).route,
-		{template, parent} = routeParent(container, route),
-		component = createRouteComponent(comp, parent, template);
-	//Simulate a _routerRoot object so that all children have a $route object set to this route object
-	var routerRoot = (<any>component)._routerRoot = Object.create((<any>component)._routerRoot);
-	freezeValue(routerRoot, '_route', route);
-	freezeValue(routerRoot, '_router.history.current', route);
+		component = createRouteComponent(comp, routeParent(container, route));
+	freezeRoute(component, route);
 	var el = document.createElement('div');
 	container.getElement().append(el);
 	component.$mount(el);
