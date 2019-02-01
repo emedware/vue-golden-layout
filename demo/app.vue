@@ -25,6 +25,7 @@
 					<button @click="addStack">Add</button>
 					<p><input v-model="global.testText" /></p>
 					<p>
+						<router-link to="/lr">Layout-route</router-link>&nbsp;
 						<span v-for="l in letters" :key="l">
 							<router-link :to="`/${l}`">test-{{l}}</router-link>&nbsp;
 						</span>

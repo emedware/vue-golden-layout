@@ -1,6 +1,13 @@
 import Vue from 'vue';
+import { RouteConfig } from 'vue-router';
 export const letters = 'abcdef';
-const routes = [];
+import layoutRoute from './layout-route.vue';
+const routes: RouteConfig[] = [{
+		name: 'spec-lr',
+		path: '/lr',
+		component: layoutRoute,
+		meta: {title: 'Layout route'}
+}];
 for(let l of letters) {
 	let L = l.toUpperCase();
 	routes.push({
