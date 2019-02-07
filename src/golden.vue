@@ -5,7 +5,7 @@
 </template>
 <script lang="ts">
 import Vue, {VNode} from 'vue'
-import {Component, Inject, Model, Prop, Watch, Emit} from 'vue-property-decorator'
+import {Component, Inject, Model, Prop, Watch, Emit, Provide} from 'vue-property-decorator'
 import * as GoldenLayout from 'golden-layout'
 import {goldenContainer} from './roles'
 import * as resize from 'vue-resize-directive'
@@ -104,7 +104,7 @@ export default class goldenLayout extends goldenContainer {
 		Object.assign(rv, access);
 		return <Semaphore<any>>rv;
 	}
-	get layout() { return this; }
+	@Provide() get layout() { return this; }
 	@Emit() subWindow(is: boolean) {}
 	mounted() {
 		var me = this, layoutRoot = this.$refs.layoutRoot, gl: GoldenLayout,
@@ -183,7 +183,7 @@ export default class goldenLayout extends goldenContainer {
 			//#endregion
 			//#region Events
 			var raiseStateChanged: (arg?: number)=> void;
-			//TODO: have only one raiseStateChanged function
+			//TODO: have only one raiseStateChanged function ?
 			if(this.popupTimeout) {
 				const maxRetries = 10 * this.popupTimeout;
 				raiseStateChanged = (retry?: number)=> {

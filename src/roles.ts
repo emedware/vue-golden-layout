@@ -1,9 +1,8 @@
 import Vue from 'vue'
-import {Component, Prop, Watch, Emit} from 'vue-property-decorator'
+import {Component, Prop, Watch, Emit, Inject} from 'vue-property-decorator'
 
 export class goldenItem extends Vue {
 	glObject: any = null
-	get layout(): any { throw "not implemented"; }
 }
 
 @Component
@@ -11,6 +10,7 @@ export class goldenContainer extends goldenItem {
 	config: any = {
 		content: []
 	}
+	layout: any
 	childPath(comp: Vue): string {
 		var childMe = <goldenChild><any>this;
 		var rv = childMe.nodePath?`${childMe.nodePath()}.`:'';
@@ -71,10 +71,17 @@ export class goldenChild extends goldenItem {
 	@Prop() height: number
 	@Watch('width') reWidth(w:number) { this.container && this.container.setSize(w, false); }
 	@Watch('height') reHeight(h:number) { this.container && this.container.setSize(false, h); }
+
+	@Prop() title: string
+	@Watch('title') setTitle(title: any) {
+		if(this.container) this.container.setTitle(title);
+	}
 	
 	@Prop() tabId: string
 
-	getChildConfig() { return null; }
+	getChildConfig() { return {
+		
+	}; }
 	get glParent() { return this.glObject.parent.vueObject; }
 	container: any = null;
 
@@ -127,8 +134,6 @@ export class goldenChild extends goldenItem {
 	@Watch('glObject') destroy(v:boolean) {
 		if(!v) this.$emit('destroy');
 	}
-	get layout(): any { 
-		return this.$parent.layout;
-	}
+	@Inject() layout: any
 	events: string[] = ['stateChanged', 'titleChanged', 'activeContentItemChanged', 'beforeItemDestroyed', 'itemDestroyed', 'itemCreated']
 }
