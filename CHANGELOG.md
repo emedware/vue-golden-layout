@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `inter-window` property
 ### Fixed
   - Templates now can access to the `VueComponent`' data
-  - `golden-layout` and gl-`items` are not observed anymore
+  - `golden-layout` and `gl-items` are not observed anymore
+  - Security vulnerability fix
 
 ## [1.5.13] - 2019-01-15
 ### Fixed
