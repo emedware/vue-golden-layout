@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { RouteConfig } from 'vue-router';
+import VueRouter, { RouteConfig } from 'vue-router';
 export const letters = 'abcdef';
 import layoutRoute from './layout-route.vue';
 const routes: RouteConfig[] = [{
@@ -17,8 +17,6 @@ for(let l of letters) {
 		meta: {title: `${L}-test`}
 	});
 }
-
-import VueRouter from 'vue-router'
 
 export default new VueRouter({
 	mode: 'history',

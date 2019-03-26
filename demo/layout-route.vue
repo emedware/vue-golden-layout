@@ -1,5 +1,5 @@
 <template>
-	<gl-col>
+	<gl-col id="lr-col">
 		<gl-component title="Master">
 			Master: <input type="checkbox" v-model="checked" />
 		</gl-component>

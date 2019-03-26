@@ -1,7 +1,9 @@
-import {Component, Model, Watch, Emit} from 'vue-property-decorator'
-import {goldenChild} from './roles'
+import { Component, Model, Watch, Emit } from 'vue-property-decorator'
+import { goldenChild, UsingSlots } from './roles'
 import group from './gl-group.vue'
+
 //We have to re-define : ts is lost with Vue files
+@UsingSlots('default')
 export class glGroup extends group {
 	closable: boolean
 	config: any
@@ -35,7 +37,7 @@ export class glStack extends glGroup {
 	async watchActiveIndex() {
 		await this.layout.glo;
 		
-		this.glObject.on('activeContentItemChanged', (comp)=> {
+		this.glObject.on('activeContentItemChanged', (comp: any)=> {
 			var v = this.glObject.config.activeItemIndex;
 			if('number'=== typeof v)
 				this.tabChange((<goldenChild>this.glChildren[v]).tabId);

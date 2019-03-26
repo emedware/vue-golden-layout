@@ -1,13 +1,25 @@
 import 'golden-layout/src/css/goldenlayout-base.css'
-import goldenLayout, {registerGlobalComponent} from './golden.vue'
+import goldenLayout from './golden.vue'
+export { registerGlobalComponent } from './golden.vue'
 import glComponent from './gl-component.vue'
-import {glRow, glCol, glStack} from './gl-groups'
+import { glRow, glCol, glStack } from './gl-groups'
 import glDstack from './gl-dstack'
-import glRouter, { glRoute } from './gl-router'
+import glRouter from './router/gl-router'
+import glRoute from './router/gl-route'
+export { glCustomContainer } from './roles'
 
-export {goldenLayout, registerGlobalComponent, glComponent, glRow, glCol, glStack, glRouter, glRoute, glDstack}
+var components : any = {
+	goldenLayout, glComponent,
+	glRow, glCol, glStack, glDstack,
+	glRouter, glRoute
+};
 
-var components : any = {layoutGolden: goldenLayout, goldenLayout, glComponent, glRow, glCol, glStack, glRouter, glRoute, glDstack}
+export {
+	goldenLayout, glComponent,
+	glRow, glCol, glStack, glDstack,
+	glRouter, glRoute
+}
+
 export default {
 	install(Vue : any, options : any) {
 		for(let i in components)

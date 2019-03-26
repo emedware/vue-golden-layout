@@ -1,12 +1,7 @@
 <template>
 <div>
 	<button class="reset" @click="reset">Reset localStorage</button>
-	<golden-layout class="hscreen" v-model="state" @sub-window="subWindow" :inter-window="global">
-		<div slot="stackCtr" slot-scope="{ stackSub }" class="test-template">
-			Added item (id: {{stackSub}})
-			<button @click="remStack(stackSub)">Remove</button>
-			<p><input v-model="global.testText" /></p>
-		</div>
+	<golden-layout class="hscreen" v-model="state" @sub-window="subWindow">
 		<template slot="bottom">
 			Bottom
 		</template>
@@ -18,29 +13,7 @@
 					<main />
 				</template>
 			</gl-router>
-			<gl-row :closable="false">
-				<gl-component title="compA" class="test-component">
-					<h1>CompA</h1>
-					<button @click="bottomSheet = !bottomSheet">Toggle</button>
-					<button @click="addStack">Add</button>
-					<p><input v-model="global.testText" /></p>
-					<p>
-						<router-link to="/lr">Layout-route</router-link>&nbsp;
-						<span v-for="l in letters" :key="l">
-							<router-link :to="`/${l}`">test-{{l}}</router-link>&nbsp;
-						</span>
-					</p>
-				</gl-component>
-				<gl-dstack ref="myStack" dstack-id="dynamics">
-					<gl-component title="Dstack demonstration" :closable="false" :reorder-enabled="false">
-						This element is just present to test the ability of the d-stack if this stack happens to be popped out.
-					</gl-component>
-					<gl-component v-for="stackSub in stackSubs" :key="stackSub"
-						:title="'dynamic'+stackSub"
-						@destroy="closed(stackSub)"
-						template="stackCtr" :state="{stackSub}" />
-				</gl-dstack>
-			</gl-row>
+			<d-stack v-model="bottomSheet" />
 			<gl-component v-if="bottomSheet" template="bottom" @destroy="bottomSheet = false" />
 		</gl-col>
 	</golden-layout>
@@ -67,42 +40,24 @@ body {
 </style>
 <script lang="ts">
 import Vue from 'vue'
-import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
-import {letters} from './router'
+import { Component, Inject, Model, Prop, Watch } from 'vue-property-decorator'
+import { letters } from './router'
 import PHead from './p-head.vue'
-import Persistance from 'vue-storage-decorator'
+import dStack from './d-stack.vue'
+//import Persistance from 'vue-storage-decorator'
 
-const Persist = Persistance('browserGL');
-@Component({components: {PHead}})
+//const Persist = Persistance('browserGL');
+@Component({components: {PHead, dStack}})
 export default class App extends Vue {
-	@Persist() bottomSheet: boolean = false
-	@Persist() stackSubs: number[] = [1]
-	@Persist() ssId: number = 1
-	@Persist() state: any = null
+	/*@Persist()*/ state: any = null
 	letters = letters
-	global: any = {
-		testText: "testing text."
-	}
 
 	subWindow(is: boolean) {
-		Persist.persisting = !is;
+		//Persist.persisting = false;//!is;
 	}
 	reset() {
 		delete localStorage.browserGL;
 		location.reload();
-	}
-	closed(n: number) {
-		var ndx = this.stackSubs.indexOf(n);
-		console.assert(!!~ndx, 'Element in state array');
-		this.stackSubs.splice(ndx, 1);
-	}
-	addStack() {
-		this.stackSubs.push(++this.ssId);
-	}
-	remStack(id: number) {
-		var ndx = this.stackSubs.indexOf(id);
-		if(~ndx)
-			this.stackSubs.splice(ndx, 1);
 	}
 }
 </script>
