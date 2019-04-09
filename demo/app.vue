@@ -13,8 +13,8 @@
 					<main />
 				</template>
 			</gl-router>
-			<d-stack v-model="bottomSheet" />
-			<gl-component v-if="bottomSheet" template="bottom" @destroy="bottomSheet = false" />
+			<d-stack v-model="dstackState" />
+			<gl-component v-if="dstackState.bottomSheet" template="bottom" @destroy="dstackState.bottomSheet = false" />
 		</gl-col>
 	</golden-layout>
 </div>
@@ -44,16 +44,21 @@ import { Component, Inject, Model, Prop, Watch } from 'vue-property-decorator'
 import { letters } from './router'
 import PHead from './p-head.vue'
 import dStack from './d-stack.vue'
-//import Persistance from 'vue-storage-decorator'
+import Persistance from 'vue-storage-decorator'
 
-//const Persist = Persistance('browserGL');
+const Persist = Persistance('browserGL');
 @Component({components: {PHead, dStack}})
 export default class App extends Vue {
-	/*@Persist()*/ state: any = null
+	@Persist() state: any = null
+	@Persist() dstackState = {
+		bottomSheet: false,
+		stackSubs: [1],
+		ssId: 1
+	}
 	letters = letters
 
 	subWindow(is: boolean) {
-		//Persist.persisting = false;//!is;
+		Persist.persisting = !is;
 	}
 	reset() {
 		delete localStorage.browserGL;

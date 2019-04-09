@@ -1,6 +1,7 @@
 <template>
 	<gl-col id="lr-col">
 		<gl-component title="Master">
+			<p-head :title="title" />
 			Master: <input type="checkbox" v-model="checked" />
 		</gl-component>
 		<gl-stack>
@@ -16,9 +17,14 @@
 <script lang="ts">
 import Vue from 'vue'
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
+import { glCustomContainer } from 'vue-golden-layout'
+import PHead from './p-head.vue'
 
-@Component
-export default class LayoutRoute extends Vue {
+@Component({
+	components: {PHead},
+	mixins: []
+})
+export default class LayoutRoute extends glCustomContainer {
 	checked: boolean = false
 }
 </script>

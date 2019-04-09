@@ -69,10 +69,18 @@ function createRouteComponent(comp: VueConstructor, routerSpec: RouterSpec) : Vu
 					template;
 			},
 			mounted() {
-				new comp({el: component.$el.querySelector('main') || undefined, parent: component});
+				new comp({
+					el: component.$el.querySelector('main') || undefined,
+					parent: component,
+					data: {glInfrastructure: true}
+				});
 			},
-			parent
-		}) : new comp({parent});
+			parent,
+			data: {glInfrastructure: true}
+		}) : new comp({
+			parent,
+			data: {glInfrastructure: true}
+		});
 	return component;
 }
 

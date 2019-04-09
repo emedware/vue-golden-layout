@@ -19,6 +19,7 @@
 	},
 	"scripts": {
 		"prepack": "webpack",
+		"build": "webpack --config demo/webpack.config.js",
 		"demo": "webpack-dev-server --config demo/webpack.config.js"
 	},
 	"repository": "github:eddow/vue-golden-layout.git",
@@ -43,7 +44,6 @@
 		"vue-loader": "^15.4.2",
 		"vue-property-decorator": "^8.1.0",
 		"vue-router": "^3.0.1",
-		"vue-storage-decorator": "^1.0.3",
 		"vue-template-compiler": "^2.5.20",
 		"vue-template-es2015-compiler": "^1.5.3",
 		"webpack": "^4.23.1",
@@ -55,7 +55,9 @@
 	},
 	"dependencies": {
 		"golden-layout": "^1.5.9",
-		"vue-resize-directive": "^1.1.4"
+		"vue-class-component": "^6.3.2",
+		"vue-resize-directive": "^1.1.4",
+		"vue-storage-decorator": "^1.0.6"
 	},
 	"peerDependencies": {
 		"jquery": "^3.2.1",

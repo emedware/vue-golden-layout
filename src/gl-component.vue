@@ -12,16 +12,18 @@
 </style>
 <script lang="ts">
 import Vue from 'vue'
-import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
+import { Component, Inject, Model, Prop, Watch, Emit } from 'vue-property-decorator'
 import {goldenContainer, goldenChild} from './roles'
+import { Dictionary } from './golden.vue'
 
 @Component
 export default class glComponent extends goldenChild {
 	@Prop() template: string
-	@Prop() state: any
+	@Model('state') state: Dictionary
 	toggleMaximise() {
 		this.container && this.container.toggleMaximise();
 	}
+	@Emit('state') initialState(state: Dictionary) {}
 	
 	getChildConfig() : any {
 		return {

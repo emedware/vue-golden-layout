@@ -1,15 +1,15 @@
 import Vue from 'vue'
-import {Component, Prop, Watch, Emit, Inject} from 'vue-property-decorator'
-
-export class goldenItem extends Vue {
-	glObject: any = null
-}
+import { Component, Prop, Watch, Emit, Inject } from 'vue-property-decorator'
 
 export function UsingSlots(...slots: string[]) {
 	return function(target: any) {
 		target.prototype.usedSlots = target.prototype.usedSlots ?
 			slots.concat(target.prototype.usedSlots) : slots;
 	}
+}
+
+export class goldenItem extends Vue {
+	glObject: any = null
 }
 
 @Component
@@ -71,7 +71,7 @@ export class goldenContainer extends goldenItem {
 	}
 	vueChild(child: number|Vue): goldenChild {
 		var rv = 'number'=== typeof child ? this.$children[child] : <Vue>child;
-		while(rv instanceof glCustomContainer)
+		while((<any>rv).glInfrastructure)
 			rv = rv.$children[0];
 		return <goldenChild>rv;
 	}
@@ -79,7 +79,7 @@ export class goldenContainer extends goldenItem {
 	  * Get the list of Vue children and not their definition abstract component
 	  */ 
 	vueChildren(): goldenChild[] {
-		return this.$children.map(this.vueChild.bind(this));
+		return <goldenChild[]>this.$children.map(this.vueChild.bind(this)).filter(x=> x instanceof goldenItem);
 	}
 	events: string[] = ['open', 'resize', 'destroy', 'close', 'tab', 'hide', 'show']
 	mounted() {
@@ -110,7 +110,7 @@ export class goldenChild extends goldenItem {
 	  */ 
 	get vueParent(): goldenContainer {
 		var rv = this.$parent;
-		while(rv instanceof glCustomContainer)
+		while((<any>rv).glInfrastructure)
 			rv = rv.$parent;
 		return <goldenContainer>rv;
 	}
@@ -141,7 +141,7 @@ export class goldenChild extends goldenItem {
 	
 	created() {
 		if(!(this.vueParent instanceof goldenContainer))
-			throw new Error('gl-component can only appear directly in a golden-layout container');
+			throw new Error('gl-child can only appear directly in a golden-layout container');
 	}
 	nodePath() {
 		return this.vueParent.childPath(this);
@@ -171,9 +171,9 @@ export class goldenChild extends goldenItem {
 	events: string[] = ['stateChanged', 'titleChanged', 'activeContentItemChanged', 'beforeItemDestroyed', 'itemDestroyed', 'itemCreated']
 }
 
-
 @Component({mixins: [goldenChild]})
 export class glCustomContainer extends goldenContainer {
+	glInfrastructure: boolean = true
 	nodePath() {
 		return (<any>this).vueParent.childPath(this.$children[0]);
 	}

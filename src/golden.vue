@@ -12,7 +12,7 @@ import * as resize from 'vue-resize-directive'
 
 export type globalComponent = (gl: goldenLayout, container: any, state: any)=> void;
 export type Dictionary<T = any> = {[key: string]: T}
-var globalComponents: {[name: string] : globalComponent} = {};
+var globalComponents: Dictionary<globalComponent> = {};
 
 //This is necessary as in poped-out windows, an observed config has arrays that return `instanceof Array` false
 //avoid the objects being observed
@@ -122,7 +122,8 @@ export default class goldenLayout extends goldenContainer {
 	}
 
 	//#endregion
-	slotTemplates: {[name: string]: slotComponent} = {}
+	
+	slotTemplates: Dictionary<slotComponent> = {}
 	registerSlotTemplates(name: string, customVueComponent: VueConstructor, content: any) {
 		var already = this.slotTemplates[name];
 		if(already) {
@@ -263,6 +264,8 @@ export default class goldenLayout extends goldenContainer {
 				if(itm.config.vue && itm.vueObject.nodePath) {
 					itm.config.__defineGetter__('vue', ()=> itm.vueObject.nodePath());
 				}
+				if(itm.vueObject.initialState)
+					itm.vueObject.initialState(itm.config.componentState);
 			});
 			gl.on('itemDestroyed', (itm: any) => {
 				itm.vueObject.glObject = null;
