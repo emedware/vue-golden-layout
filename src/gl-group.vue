@@ -1,5 +1,5 @@
 <template>
-	<div style="display: none;">
+	<div style="display: none;" ref="hiddenContainer">
 		<slot />
 	</div>
 </template>

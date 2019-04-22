@@ -10,6 +10,7 @@ export default class glRoute extends goldenChild {
 	@Prop({default: false}) closable: boolean
 	@Prop({default: false}) reorderEnabled: boolean
 	@Inject() titler: (route: any)=> string
+	@Inject() _glRouter: any
 	@Prop() title: string
 	get compTitle() {
 		return this.title || 

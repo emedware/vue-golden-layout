@@ -6,8 +6,7 @@
 			Bottom
 		</template>
 		<gl-col :closable="false">
-			<gl-router>
-				<gl-route name="r-a" />
+			<gl-router empty-route="/a" :routes="routes">
 				<template slot="route" slot-scope="{ meta }">
 					<p-head :title="meta.title" />
 					<main />
@@ -55,6 +54,7 @@ export default class App extends Vue {
 		stackSubs: [1],
 		ssId: 1
 	}
+	@Persist() routes = []
 	letters = letters
 
 	subWindow(is: boolean) {

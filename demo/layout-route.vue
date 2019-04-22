@@ -17,14 +17,11 @@
 <script lang="ts">
 import Vue from 'vue'
 import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
-import { glCustomContainer } from 'vue-golden-layout'
+import { glContainerRoute, glCustomContainer } from 'vue-golden-layout'
 import PHead from './p-head.vue'
 
-@Component({
-	components: {PHead},
-	mixins: []
-})
-export default class LayoutRoute extends glCustomContainer {
+@Component({components: {PHead}})
+export default class LayoutRoute extends glContainerRoute {
 	checked: boolean = false
 }
 </script>

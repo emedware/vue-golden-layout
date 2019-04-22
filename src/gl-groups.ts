@@ -10,7 +10,7 @@ export class glGroup extends group {
 }
 @Component
 export class glRow extends glGroup {
-	getChildConfig() { return {
+	getChildConfig(): any { return {
 		isClosable: this.closable,
 		type: 'row',
 		...this.config
@@ -18,7 +18,7 @@ export class glRow extends glGroup {
 }
 @Component
 export class glCol extends glGroup {
-	getChildConfig() { return {
+	getChildConfig(): any { return {
 		isClosable: this.closable,
 		type: 'column',
 		...this.config
@@ -43,7 +43,7 @@ export class glStack extends glGroup {
 				this.tabChange((<goldenChild>this.glChildren[v]).tabId);
 		});
 	}
-	getChildConfig() {
+	getChildConfig(): any {
 		this.watchActiveIndex();
 		return {	//we can use $children as it is on-load : when the user still didn't interract w/ the layout
 			activeItemIndex: Math.max(0, (<any>this.$children).findIndex((c: any) => c.tabId === this.activeTab)),

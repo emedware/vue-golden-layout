@@ -10,6 +10,7 @@ export function UsingSlots(...slots: string[]) {
 
 export class goldenItem extends Vue {
 	glObject: any = null
+	get childMe() { return <goldenChild><unknown>this; }
 }
 
 @Component
@@ -23,7 +24,7 @@ export class goldenContainer extends goldenItem {
 		var childMe = <goldenChild><any>this;
 		var rv = childMe.nodePath?`${childMe.nodePath()}.`:'';
 		var ndx = this.vueChildren().indexOf(comp);
-		console.assert(!!~ndx, 'Children exists');
+		console.assert(!!~ndx, 'Child exists');
 		return rv+ndx;
 	}
 	getChild(path: string): goldenChild {
@@ -71,9 +72,12 @@ export class goldenContainer extends goldenItem {
 	}
 	vueChild(child: number|Vue): goldenChild {
 		var rv = 'number'=== typeof child ? this.$children[child] : <Vue>child;
-		while((<any>rv).glInfrastructure)
+		while(rv instanceof glCustomContainer)
 			rv = rv.$children[0];
 		return <goldenChild>rv;
+	}
+	get childMe() {
+		return this.vueChild(this);
 	}
 	/**
 	  * Get the list of Vue children and not their definition abstract component
@@ -101,7 +105,7 @@ export class goldenChild extends goldenItem {
 	
 	@Prop() tabId: string
 
-	getChildConfig() { return {
+	getChildConfig(): any { return {
 		
 	}; }
 	get glParent() { return this.glObject.parent.vueObject; }
@@ -110,7 +114,7 @@ export class goldenChild extends goldenItem {
 	  */ 
 	get vueParent(): goldenContainer {
 		var rv = this.$parent;
-		while((<any>rv).glInfrastructure)
+		while(rv instanceof glCustomContainer)
 			rv = rv.$parent;
 		return <goldenContainer>rv;
 	}
@@ -144,13 +148,13 @@ export class goldenChild extends goldenItem {
 			throw new Error('gl-child can only appear directly in a golden-layout container');
 	}
 	nodePath() {
-		return this.vueParent.childPath(this);
+		return this.vueParent.childPath(this.childMe);
 	}
 	mounted() {
 		var dimensions: any = {};
 		if(undefined!== this.width) dimensions.width = this.width;
 		if(undefined!== this.height) dimensions.height = this.height;
-		let childConfig : any = this.getChildConfig();
+		let childConfig: any = this.getChildConfig();
 		if(childConfig)	//glCustomContainer shouldn't mount as their child is already mounted in the vueParent
 			this.vueParent.addGlChild({
 				...dimensions,
@@ -173,9 +177,8 @@ export class goldenChild extends goldenItem {
 
 @Component({mixins: [goldenChild]})
 export class glCustomContainer extends goldenContainer {
-	glInfrastructure: boolean = true
 	nodePath() {
 		return (<any>this).vueParent.childPath(this.$children[0]);
 	}
-	getChildConfig() { return null; }
+	getChildConfig(): any { return null; }
 }

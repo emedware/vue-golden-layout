@@ -1,5 +1,7 @@
 import { Route } from 'vue-router'
 import goldenLayout, { renderVNodes, registerGlobalComponent, Dictionary } from '../golden.vue'
+import { goldenItem } from '../roles'
+import glRoute from './gl-route'
 import Vue, { ComponentOptions, Component, AsyncComponent, VueConstructor } from 'vue'
 
 export function defaultTitler(route: Route): string {
@@ -33,11 +35,9 @@ interface RouterSpec {
 	template: any
 	parent: any
 }
-function routeParent(container: any, route: Route): RouterSpec {
-	var  template: any, parent = container.parent.parent;
-	while(!parent.vueObject || !parent.vueObject._isVue) parent = parent.parent;
-	parent = parent.vueObject;
-	if(parent.isRouter)
+function routeParent(parent: any, route: Route): RouterSpec {
+	var template: any;
+	if(parent._glRouter)
 		template = parent.$scopedSlots.route ?
 			parent.$scopedSlots.route(route) :
 			parent.$slots.route;
@@ -60,9 +60,17 @@ async function vueComponent(comp: ComponentSpec|string, namedComponents: Diction
 		Vue.extend(<ComponentOptions<Vue>>component);
 }
 
-function createRouteComponent(comp: VueConstructor, routerSpec: RouterSpec) : Vue {
-	const {parent, template} = routerSpec,
-		component = template ? new Vue({
+function createRouteComponent(comp: VueConstructor, routerSpec: RouterSpec, route: Route) : Vue {
+	const {parent, template} = routerSpec;
+	var browser;
+	for(browser = comp; browser && browser != goldenItem; browser = (<any>browser).super);
+	if(browser) {
+		return new comp({
+			parent,
+			propsData: route
+		});
+	}
+	const component = template ? new Vue({
 			render(ce) {
 				return template instanceof Array ?
 					ce('div', {class: 'glComponent'}, template) :
@@ -71,36 +79,43 @@ function createRouteComponent(comp: VueConstructor, routerSpec: RouterSpec) : Vu
 			mounted() {
 				new comp({
 					el: component.$el.querySelector('main') || undefined,
-					parent: component,
-					data: {glInfrastructure: true}
+					parent: component
 				});
 			},
-			parent,
-			data: {glInfrastructure: true}
-		}) : new comp({
-			parent,
-			data: {glInfrastructure: true}
-		});
+			parent
+		}) : new comp({parent});
 	return component;
 }
 
 function renderInContainer(container: any, component: Vue) {
+	//TODO: document why we don't use simply component.$mount(container.getElement());
 	var el = document.createElement('div');
 	container.getElement().append(el);
 	component.$mount(el);
 }
 
-async function renderRoute(gl: goldenLayout, container: any, state: any) {
-	var route = gl.$router.resolve(state).route,
-		compSpec = gl.$router.getMatchedComponents(state)[0],
+export async function getRouteComponent(gl: goldenLayout, router: any, path: string) {
+	var route = gl.$router.resolve({path}).route,
+		compSpec = gl.$router.getMatchedComponents({path})[0],
 		component: Vue;
 	
-	console.assert(compSpec, `State resolves to a component: ${state}`);
+	console.assert(compSpec, `Path resolves to a component: ${path}`);
 	component = createRouteComponent(
 			await vueComponent(compSpec!, gl.$options.components || {}),
-			routeParent(container, route));
+			routeParent(router, route), route);
 	freezeRoute(component, route);
-	renderInContainer(container, component)
+	return component;
+}
+
+async function renderRoute(gl: goldenLayout, container: any, state: any) {
+	var parent = container.parent, _glRouter = parent.vueObject._glRouter;
+	if(_glRouter) parent = _glRouter;
+	else {
+		while(!parent.vueObject || !parent.vueObject._isVue) parent = parent.parent;
+		parent = parent.vueObject;
+	}
+	renderInContainer(container,
+		await getRouteComponent(gl, parent, state.path));
 }
 
 export function UsingRoutes(target: any) {	//This function should be called once and only once if we are using the router
