@@ -169,7 +169,7 @@ export class goldenChild extends goldenItem {
 		}
 	}
 	@Watch('glObject') destroy(v:boolean) {
-		if(!v) this.$emit('destroy');
+		if(!v) this.$emit('destroy', this);
 	}
 	@Inject() layout: any
 	events: string[] = ['stateChanged', 'titleChanged', 'activeContentItemChanged', 'beforeItemDestroyed', 'itemDestroyed', 'itemCreated']

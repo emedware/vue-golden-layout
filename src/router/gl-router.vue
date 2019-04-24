@@ -3,7 +3,7 @@
 		<slot />
 		<gl-route v-for="route in routes" :key="route.path"
 			:path="route.path" :name="route.name"
-			:tab-id="route.path"
+			:tab-id="route.path" @destroy="destroyedRoute"
 			:closable="!isEmpty(route)" :reorder-enabled="!isEmpty(route)" />
 	</gl-dstack>
 </template>
@@ -16,6 +16,10 @@ import glRoute from './gl-route'
 import { defaultTitler, UsingRoutes } from './utils'
 import { UsingSlots } from '../roles'
 import VueRouter, { Location, Route } from 'vue-router'
+
+function opened(location: Location) {
+	return (l: Location)=> (l.path && l.path === location.path) || (l.name && l.name === location.name)
+}
 
 @Component({components: {glRoute, glDstack}})
 @UsingRoutes
@@ -32,15 +36,14 @@ export default class glRouter extends glCustomContainer {
 	@Provide() get _glRouter() { return this; }
 	@Prop({default: '/'}) emptyRoute: string
 	@Prop({default: 'router'}) dstackId: string
-	@Prop({default: ()=>[]})
+	@Prop({default: ()=> []})
 	routes: Location[]
 
-
-	mounted() {
+	async mounted() {
 		//With immediate: true, the watch is called before $refs are initialised
-		//this.change(this.$route);
+		await this.layout.glo;
+		this.change(this.$route);
 	}
-
 	isEmpty(route: Location) {
 		return route.path === this.emptyRoute;
 	}
@@ -48,21 +51,24 @@ export default class glRouter extends glCustomContainer {
 		if(path != this.$route.fullPath)
 			this.$router.replace(path);
 	}
-	@Watch('$route', {immediate: true})
+	@Watch('$route'/*, {immediate: true}*/)
 	async change(route: Route) {
 		if(route) {
-			var location: Location = route;
+			var location: Location = {path: route.fullPath};
 			if(!route.matched.length) {
 				if(route.path === '/') location = {path: this.emptyRoute};
 				else return;
 			}
-			var already = this.routes.find((l: Location)=> l.path === location.path || l.name === location.name);
-			if(already) {
-				this.activeRoute = location.path;
-			} else {
-				this.routes.push({path: location.path});
-			}
+			var already = this.routes.find(opened(location));
+			if(!already)
+				this.routes.push(location);
+			this.activeRoute = location.path;
 		}
+	}
+	destroyedRoute(route: glRoute) {
+		var ndx = this.routes.findIndex(opened(route.routeSpec))
+		console.assert(~ndx, 'Closed route is in the array');
+		this.routes.splice(ndx, 1);
 	}
 }
 </script>

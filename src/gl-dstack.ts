@@ -10,7 +10,8 @@ export default class glDstack extends glRow {
 	
 	@Model('tab-change') activeTab: string
 	@Emit() tabChange(tabId: any) { }
-	@Watch('activeTab') progTabChange(tabId: any) {
+	@Watch('activeTab', {immediate: true}) async progTabChange(tabId: any) {
+		await this.layout.glo;
 		var stack: any = this.stack
 		for(var child of stack.contentItems)
 			if(child.vueObject && child.vueObject.tabId === tabId)

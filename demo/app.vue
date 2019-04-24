@@ -54,7 +54,7 @@ export default class App extends Vue {
 		stackSubs: [1],
 		ssId: 1
 	}
-	@Persist() routes = []
+	@Persist() routes = [{path: '/a'}]
 	letters = letters
 
 	subWindow(is: boolean) {
