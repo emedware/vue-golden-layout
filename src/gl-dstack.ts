@@ -1,15 +1,26 @@
-import { Watch, Component, Prop, Emit } from 'vue-property-decorator'
+import { Watch, Component, Prop, Emit, Model } from 'vue-property-decorator'
 import { glRow } from './gl-groups'
 import Vue from 'vue'
 import goldenLayout, {renderVNodes} from './golden.vue'
+import { goldenChild } from './roles'
 
 @Component
 export default class glDstack extends glRow {
 	@Prop({required: true}) dstackId: string
+	
+	@Model('tab-change') activeTab: string
+	@Emit() tabChange(tabId: any) { }
+	@Watch('activeTab', {immediate: true}) async progTabChange(tabId: any) {
+		await this.layout.glo;
+		var stack: any = this.stack
+		for(var child of stack.contentItems)
+			if(child.vueObject && child.vueObject.givenTabId === tabId)
+				stack.setActiveContentItem((<any>child).container.parent);
+	}
 
 	get glChildrenTarget() { return this.stack; }
 	content: any[]
-	getChildConfig() {
+	getChildConfig(): any {
 		var config = (<any>glRow).extendOptions.methods.getChildConfig.apply(this);  //super is a @Component
 		this.content = config.content.filter((x: any) => !x.isClosable && !x.reorderEnabled);
 		config.content = [{
@@ -18,6 +29,19 @@ export default class glDstack extends glRow {
 			dstackId: this.dstackId
 		}];
 		return config;
+	}
+	initialState() {
+		this.stack.on('activeContentItemChanged', this.activeContentItemChanged);
+	}
+	get activeContentItemChanged() {
+		return (()=> {
+			var v = this.stack.config.activeItemIndex;
+			if('number'=== typeof v) {
+				var vueObject = this.stack.contentItems[v].vueObject;
+				if(vueObject)
+					this.tabChange(vueObject.givenTabId);
+			}
+		}).bind(this);
 	}
   	cachedStack: any = null
 	get stack() {
@@ -33,6 +57,8 @@ export default class glDstack extends glRow {
 				dstackId: this.dstackId
 			}, 0);
 			rv = ci.contentItems[0];
+			rv.on('activeContentItemChanged', this.activeContentItemChanged);
+			this.activeContentItemChanged();
 		}
 		return this.cachedStack = rv;
 	}
@@ -47,7 +73,6 @@ export default class glDstack extends glRow {
 			this.$set(config, 'activeItemIndex', aii);
 		}
 	}
-
 	async created() {
 		const that = this;
 		function onWindowPopout(popup: any) {

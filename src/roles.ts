@@ -1,35 +1,43 @@
 import Vue from 'vue'
-import {Component, Prop, Watch, Emit} from 'vue-property-decorator'
+import { Component, Prop, Watch, Emit, Inject } from 'vue-property-decorator'
+
+export function UsingSlots(...slots: string[]) {
+	return function(target: any) {
+		target.prototype.usedSlots = target.prototype.usedSlots ?
+			slots.concat(target.prototype.usedSlots) : slots;
+	}
+}
 
 export class goldenItem extends Vue {
 	glObject: any = null
-	get layout(): any { throw "not implemented"; }
+	get childMe() { return <goldenChild><unknown>this; }
 }
 
 @Component
+@UsingSlots('default')
 export class goldenContainer extends goldenItem {
 	config: any = {
 		content: []
 	}
-	childPath(comp: Vue): string {
+	layout: any
+	childPath(comp: goldenChild): string {
 		var childMe = <goldenChild><any>this;
 		var rv = childMe.nodePath?`${childMe.nodePath()}.`:'';
-		var ndx = this.$children.indexOf(comp);
-		console.assert(!!~ndx, 'Children exists');
+		var ndx = this.vueChildren().indexOf(comp);
+		console.assert(!!~ndx, 'Child exists');
 		return rv+ndx;
 	}
-	getChild(path: string) :goldenContainer{
+	getChild(path: string): goldenChild {
 		var nrs = path.split('.');
 		var ndx_string : string | undefined  = nrs.shift();
 
-		if ( ndx_string === undefined)
-		{
+		if ( ndx_string === undefined) {
 			throw "Invalid operation";
 		}
 		let ndx= parseInt(ndx_string);
-		var next = this.$children[ndx] as goldenContainer;
+		var next = this.vueChild(ndx);
 		console.assert(next !== undefined && next !== null, "Vue structure correspond to loaded GL configuration");
-		return nrs.length ? next.getChild(nrs.join('.')) : next;
+		return nrs.length ? (<goldenContainer><goldenItem>next).getChild(nrs.join('.')) : next;
 	}
 	//In order to be overriden
 	get glChildrenTarget() { return this.glObject; }
@@ -37,7 +45,7 @@ export class goldenContainer extends goldenItem {
 	addGlChild(child : any, comp : any) {
 		if(comp && 'component'=== child.type) {
 			if(!child.componentName)
-				child.componentName = this.layout.registerComponent(comp);
+				child.componentName = this.layout.registerComponent(comp, null, this.$parent.$options.name);
 			if(!child.componentState)
 				child.componentState = {};
 		}
@@ -59,10 +67,28 @@ export class goldenContainer extends goldenItem {
 				this.config.content[index].index = index;
 		}
 	}
-	get glChildren() {
+	get glChildren(): goldenChild[] {
 		return this.glObject.contentItems.map((x : any)=> x.vueObject);
 	}
+	vueChild(child: number|Vue): goldenChild {
+		var rv = 'number'=== typeof child ? this.$children[child] : <Vue>child;
+		while(rv instanceof glCustomContainer)
+			rv = rv.$children[0];
+		return <goldenChild>rv;
+	}
+	get childMe() {
+		return this.vueChild(this);
+	}
+	/**
+	  * Get the list of Vue children and not their definition abstract component
+	  */ 
+	vueChildren(): goldenChild[] {
+		return <goldenChild[]>this.$children.map(this.vueChild.bind(this)).filter(x=> x instanceof goldenItem);
+	}
 	events: string[] = ['open', 'resize', 'destroy', 'close', 'tab', 'hide', 'show']
+	mounted() {
+		this.layout.useSlotTemplates(this);
+	}
 }
 
 @Component
@@ -71,12 +97,34 @@ export class goldenChild extends goldenItem {
 	@Prop() height: number
 	@Watch('width') reWidth(w:number) { this.container && this.container.setSize(w, false); }
 	@Watch('height') reHeight(h:number) { this.container && this.container.setSize(false, h); }
+
+	getChildConfig(): any { return null; }
+	get glParent() { return this.glObject.parent.vueObject; }
+	/**
+	  * Gets the Vue container that is not a component definition and therefore actually contains this
+	  */ 
+	get vueParent(): goldenContainer {
+		var rv = this.$parent;
+		while(rv instanceof glCustomContainer)
+			rv = rv.$parent;
+		return <goldenContainer>rv;
+	}
+	
+	container: any = null;
 	
 	@Prop() tabId: string
+	get givenTabId() { return this.givenProp('tabId'); }
+	@Prop() title: string
+	@Watch('title') setTitle(title: any): void {
+		if(this.container) this.container.setTitle(title);
+	}
 
-	getChildConfig() { return null; }
-	get glParent() { return this.glObject.parent.vueObject; }
-	container: any = null;
+	givenProp(prop: string): any {
+		var itr: goldenItem = this;
+		while(!itr[prop] && itr.$parent instanceof glCustomContainer)
+			itr = itr.$parent;
+		return itr[prop];
+	}
 
 	hide() { this.container && this.container.hide(); }
 	show() { this.container && this.container.show(); }
@@ -99,36 +147,52 @@ export class goldenChild extends goldenItem {
 	close() {
 		this.container && this.container.close();
 	}
-	$parent: goldenContainer
+	
 	created() {
-		if(!(this.$parent instanceof goldenContainer))
-			throw new Error('gl-component can only appear directly in a golden-layout container');
+		if(!(this.vueParent instanceof goldenContainer))
+			throw new Error('gl-child can only appear directly in a golden-layout container');
 	}
 	nodePath() {
-		return this.$parent.childPath(this);
+		return this.vueParent.childPath(this.childMe);
 	}
 	mounted() {
 		var dimensions: any = {};
 		if(undefined!== this.width) dimensions.width = this.width;
 		if(undefined!== this.height) dimensions.height = this.height;
-		let childConfig : any = this.getChildConfig();
-		this.$parent.addGlChild({
-			...dimensions,
-			...childConfig,
-			vue: this.nodePath()
-		}, this);
+		let childConfig: any = this.getChildConfig();
+		if(childConfig)	//glCustomContainer shouldn't mount as their child is already mounted in the vueParent
+			this.vueParent.addGlChild({
+				...dimensions,
+				...childConfig,
+				title: childConfig.title||this.givenProp('title'),
+				vue: this.nodePath()
+			}, this);
 	}
 	beforeDestroy() {
-		if(this.glObject)   //It can be destroyed in reaction of the removal of the glObject too
-		{
+		if(this.glObject) 	//It can be destroyed in reaction of the removal of the glObject too
 			this.glObject.parent.removeChild(this.glObject);
-		}
 	}
 	@Watch('glObject') destroy(v:boolean) {
-		if(!v) this.$emit('destroy');
+		if(!v) this.$emit('destroy', this);
 	}
-	get layout(): any { 
-		return this.$parent.layout;
-	}
+	@Inject() layout: any
 	events: string[] = ['stateChanged', 'titleChanged', 'activeContentItemChanged', 'beforeItemDestroyed', 'itemDestroyed', 'itemCreated']
+}
+
+@Component({mixins: [goldenChild]})
+export class goldenLink extends goldenContainer {
+	// declaration of goldenChild properties
+	container: any
+	tabId: string
+	givenTabId: string
+	title: string
+	givenProp: (prop: string)=> any
+}
+
+@Component
+export class glCustomContainer extends goldenLink {
+	nodePath() {
+		return (<any>this).vueParent.childPath(this.$children[0]);
+	}
+	getChildConfig(): any { return null; }
 }

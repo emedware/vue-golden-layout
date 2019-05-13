@@ -4,15 +4,15 @@
 	</div>
 </template>
 <script lang="ts">
-import Vue, {VNode} from 'vue'
-import {Component, Inject, Model, Prop, Watch, Emit} from 'vue-property-decorator'
+import Vue, { VNode, VueConstructor } from 'vue'
+import {Component, Inject, Model, Prop, Watch, Emit, Provide} from 'vue-property-decorator'
 import * as GoldenLayout from 'golden-layout'
-import {goldenContainer} from './roles'
+import { goldenContainer } from './roles'
 import * as resize from 'vue-resize-directive'
 
 export type globalComponent = (gl: goldenLayout, container: any, state: any)=> void;
 export type Dictionary<T = any> = {[key: string]: T}
-var globalComponents: {[name: string] : globalComponent} = {};
+var globalComponents: Dictionary<globalComponent> = {};
 
 //This is necessary as in poped-out windows, an observed config has arrays that return `instanceof Array` false
 //avoid the objects being observed
@@ -24,10 +24,16 @@ export function registerGlobalComponent(name: string, comp: globalComponent) {
 	globalComponents[name] = comp;
 }
 
-export interface Semaphore<T> extends Promise<T> {
+interface Semaphore<T> extends Promise<T> {
 	resolve: (arg?: T)=> void;
 	reject: (arg?: T)=> void;
 }
+
+interface slotComponent {
+	customVueComponent: VueConstructor
+	content: any
+}
+
 @Component({directives: {resize}})
 export default class goldenLayout extends goldenContainer {
 	$router : any
@@ -78,11 +84,15 @@ export default class goldenLayout extends goldenContainer {
 	},*/
 
 	gl: GoldenLayout
-	tplCount = 0
-	tplPreload : any= {}
+	tplCount: Dictionary<number> = {}
+	tplPreload : Dictionary<any> = {}
 	
-	registerComponent(component: any/*: Vue|()=>any*/, name?: string): string {
-		if(!name) name = 'tpl'+(++this.tplCount);
+	registerComponent(component: any/*: Vue|()=>any*/, name?: string, prefix?: string): string {
+		if(!name) {
+			if(!prefix) prefix = '';
+			if(!this.tplCount[prefix]) this.tplCount[prefix] = 0;
+			name = `${prefix}.tpl`+(++this.tplCount[prefix]);
+		}
 		var tplData = 'function'=== typeof component ?
 			component :
 			function(container: any, state: any) {
@@ -96,6 +106,55 @@ export default class goldenLayout extends goldenContainer {
 		} else this.tplPreload[name] = tplData;
 		return name;
 	}
+	//#region vNode helpers
+	
+	appendVNodes(container: any, vNodes: any, state?: any) {
+		var el = document.createElement('div');
+		container.getElement().append(el);
+		renderVNodes(this, el, vNodes, {
+			class: 'glComponent'
+		}, state);
+	}
+	slotComponentWrap(slot: any) {
+		return (container: any, state: any) => this.appendVNodes(container, slot, state);
+	}
+	globalComponentWrap(globComponent: globalComponent) {
+		return async (container: any, state: any) => {
+			await this.glo;
+			globComponent(this, container, state);
+		};
+	}
+
+	//#endregion
+	
+	slotTemplates: Dictionary<slotComponent> = {}
+	registerSlotTemplates(name: string, customVueComponent: VueConstructor, content: any) {
+		var already = this.slotTemplates[name];
+		if(already) {
+			console.assert(
+				already.customVueComponent === customVueComponent,
+				`Custom gl-component registered by '${already.customVueComponent.name}' then '${customVueComponent.name}'`);
+		} else {
+			this.slotTemplates[name] = {customVueComponent, content};
+			if(this.gl)
+				this.gl.registerComponent(name, this.slotComponentWrap(content));
+		}
+	}
+	useSlotTemplates(customComponent: Vue) {
+		var ctr = <VueConstructor>customComponent.constructor,
+			hackyCC = <any>customComponent,
+			slots = hackyCC.$slots,
+			scopedSlots = hackyCC.$scopedSlots;
+			
+		// Register direct-children templates
+		for(var tpl in slots)
+			if(!~hackyCC.usedSlots.indexOf(tpl))
+				this.registerSlotTemplates(tpl, ctr, slots[tpl]);
+		// Register direct-children templates with a scope
+		for(var tpl in scopedSlots)
+			if(!~hackyCC.usedSlots.indexOf(tpl))
+				this.registerSlotTemplates(tpl, ctr, scopedSlots[tpl]);
+	}
 	//cached by Vue
 	get glo(): Semaphore<any> {
 		var access, rv = new Promise<any>(function(resolve, reject) {
@@ -104,31 +163,13 @@ export default class goldenLayout extends goldenContainer {
 		Object.assign(rv, access);
 		return <Semaphore<any>>rv;
 	}
-	get layout() { return this; }
+	@Provide() get layout() { return this; }
 	@Emit() subWindow(is: boolean) {}
 	mounted() {
 		var me = this, layoutRoot = this.$refs.layoutRoot, gl: GoldenLayout,
 			state = this.state instanceof Promise ?
 				this.state : Promise.resolve(this.state);
 
-		function appendVNodes(container: any, vNodes: any, state?: any) {
-			var el = document.createElement('div');
-			container.getElement().append(el);
-			renderVNodes(me, el, vNodes, {
-				class: 'glComponent'
-			}, state);
-		}
-		function slotComponentWrap(slot: any) {
-			return function(container: any, state: any) {
-				appendVNodes(container, slot, state);
-			};
-		}
-		function globalComponentWrap(globComponent: globalComponent) {
-			return async function(container: any, state: any) {
-				await me.glo;
-				globComponent(me, container, state);
-			};
-		}
 		//Used to debug poped-up windows
 		var sleep = (timeout: number, rv: any)=> new Promise(function(resolve: (value: any)=> void, _: any) {
 			setTimeout(()=> resolve(rv), timeout);
@@ -169,21 +210,16 @@ export default class goldenLayout extends goldenContainer {
 			for(var tpl in this.tplPreload)
 				gl.registerComponent(tpl, this.tplPreload[tpl]);
 			delete this.tplPreload;
-			var slots = (<any>this).$slots;
 			// Register direct-children templates
-			for(var tpl in slots) if('default'!== tpl)
-				gl.registerComponent(tpl, slotComponentWrap(slots[tpl]));
-			var scopedSlots = (<any>this).$scopedSlots;
-			// Register direct-children templates with a scope
-			for(var tpl in scopedSlots)
-				gl.registerComponent(tpl, slotComponentWrap(scopedSlots[tpl]));
+			for(var tpl in this.slotTemplates)
+				gl.registerComponent(tpl, this.slotComponentWrap(this.slotTemplates[tpl].content));
 			// Register global components given by other vue-components
 			for(var tpl in globalComponents)
-				gl.registerComponent(tpl, globalComponentWrap(globalComponents[tpl]));
+				gl.registerComponent(tpl, this.globalComponentWrap(globalComponents[tpl]));
 			//#endregion
 			//#region Events
 			var raiseStateChanged: (arg?: number)=> void;
-			//TODO: have only one raiseStateChanged function
+			//TODO: have only one raiseStateChanged function ?
 			if(this.popupTimeout) {
 				const maxRetries = 10 * this.popupTimeout;
 				raiseStateChanged = (retry?: number)=> {
@@ -232,6 +268,8 @@ export default class goldenLayout extends goldenContainer {
 				if(itm.config.vue && itm.vueObject.nodePath) {
 					itm.config.__defineGetter__('vue', ()=> itm.vueObject.nodePath());
 				}
+				if(itm.vueObject.initialState)
+					itm.vueObject.initialState(itm.config.componentState);
 			});
 			gl.on('itemDestroyed', (itm: any) => {
 				itm.vueObject.glObject = null;

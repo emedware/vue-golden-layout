@@ -12,26 +12,22 @@
 </style>
 <script lang="ts">
 import Vue from 'vue'
-import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
+import { Component, Inject, Model, Prop, Watch, Emit } from 'vue-property-decorator'
 import {goldenContainer, goldenChild} from './roles'
+import { Dictionary } from './golden.vue'
 
 @Component
 export default class glComponent extends goldenChild {
-	@Prop() title: string
 	@Prop() template: string
-	@Prop() state: any
-
-	@Watch('title') setTitle(title: any) {
-		if(this.container) this.container.setTitle(title);
-	}
+	@Model('state') state: Dictionary
 	toggleMaximise() {
 		this.container && this.container.toggleMaximise();
 	}
+	@Emit('state') initialState(state: Dictionary) {}
 	
 	getChildConfig() : any {
 		return {
 			type: 'component',
-			title: this.title,
 			isClosable: this.closable,
 			reorderEnabled: this.reorderEnabled,
 			componentName: this.template,
