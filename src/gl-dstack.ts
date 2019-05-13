@@ -15,7 +15,7 @@ export default class glDstack extends glRow {
 		var stack: any = this.stack
 		for(var child of stack.contentItems)
 			if(child.vueObject && child.vueObject.givenTabId === tabId)
-				stack.setActiveContentItem((<any>child).container.parent);
+				stack.setActiveContentItem(child.container?(<any>child).container.parent:child);
 	}
 
 	get glChildrenTarget() { return this.stack; }
