@@ -11,6 +11,22 @@ export function UsingSlots(...slots: string[]) {
 export class goldenItem extends Vue {
 	glObject: any = null
 	get childMe() { return <goldenChild><unknown>this; }
+	
+	container: any = null;
+	
+	@Prop() tabId: string
+	get givenTabId() { return this.givenProp('tabId'); }
+	@Prop() title: string
+	@Watch('title') setTitle(title: any) {
+		if(this.container) this.container.setTitle(title);
+	}
+
+	givenProp(prop: string): any {
+		var itr: goldenItem = this;
+		while(!itr[prop] && itr.$parent instanceof glCustomContainer)
+			itr = itr.$parent;
+		return itr[prop];
+	}
 }
 
 @Component
@@ -45,7 +61,7 @@ export class goldenContainer extends goldenItem {
 	addGlChild(child : any, comp : any) {
 		if(comp && 'component'=== child.type) {
 			if(!child.componentName)
-				child.componentName = this.layout.registerComponent(comp);
+				child.componentName = this.layout.registerComponent(comp, null, this.$parent.$options.name);
 			if(!child.componentState)
 				child.componentState = {};
 		}
@@ -98,13 +114,6 @@ export class goldenChild extends goldenItem {
 	@Watch('width') reWidth(w:number) { this.container && this.container.setSize(w, false); }
 	@Watch('height') reHeight(h:number) { this.container && this.container.setSize(false, h); }
 
-	@Prop() title: string
-	@Watch('title') setTitle(title: any) {
-		if(this.container) this.container.setTitle(title);
-	}
-	
-	@Prop() tabId: string
-
 	getChildConfig(): any { return null; }
 	get glParent() { return this.glObject.parent.vueObject; }
 	/**
@@ -116,8 +125,6 @@ export class goldenChild extends goldenItem {
 			rv = rv.$parent;
 		return <goldenContainer>rv;
 	}
-	
-	container: any = null;
 
 	hide() { this.container && this.container.hide(); }
 	show() { this.container && this.container.show(); }
@@ -157,14 +164,13 @@ export class goldenChild extends goldenItem {
 			this.vueParent.addGlChild({
 				...dimensions,
 				...childConfig,
+				title: childConfig.title||this.givenProp('title'),
 				vue: this.nodePath()
 			}, this);
 	}
 	beforeDestroy() {
-		if(this.glObject)   //It can be destroyed in reaction of the removal of the glObject too
-		{
+		if(this.glObject) 	//It can be destroyed in reaction of the removal of the glObject too
 			this.glObject.parent.removeChild(this.glObject);
-		}
 	}
 	@Watch('glObject') destroy(v:boolean) {
 		if(!v) this.$emit('destroy', this);
@@ -175,7 +181,7 @@ export class goldenChild extends goldenItem {
 
 @Component({mixins: [goldenChild]})
 export class goldenLink extends goldenContainer {
-	container: any;
+	// declaration of goldenChild properties
 }
 
 @Component

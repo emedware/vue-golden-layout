@@ -84,11 +84,15 @@ export default class goldenLayout extends goldenContainer {
 	},*/
 
 	gl: GoldenLayout
-	tplCount = 0
-	tplPreload : any= {}
+	tplCount: Dictionary<number> = {}
+	tplPreload : Dictionary<any> = {}
 	
-	registerComponent(component: any/*: Vue|()=>any*/, name?: string): string {
-		if(!name) name = 'tpl'+(++this.tplCount);
+	registerComponent(component: any/*: Vue|()=>any*/, name?: string, prefix?: string): string {
+		if(!name) {
+			if(!prefix) prefix = '';
+			if(!this.tplCount[prefix]) this.tplCount[prefix] = 0;
+			name = `${prefix}.tpl`+(++this.tplCount[prefix]);
+		}
 		var tplData = 'function'=== typeof component ?
 			component :
 			function(container: any, state: any) {

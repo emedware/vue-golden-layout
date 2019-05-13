@@ -14,7 +14,7 @@ export default class glDstack extends glRow {
 		await this.layout.glo;
 		var stack: any = this.stack
 		for(var child of stack.contentItems)
-			if(child.vueObject && child.vueObject.tabId === tabId)
+			if(child.vueObject && child.vueObject.givenTabId === tabId)
 				stack.setActiveContentItem((<any>child).container.parent);
 	}
 
@@ -39,7 +39,7 @@ export default class glDstack extends glRow {
 			if('number'=== typeof v) {
 				var vueObject = this.stack.contentItems[v].vueObject;
 				if(vueObject)
-					this.tabChange(vueObject.tabId);
+					this.tabChange(vueObject.givenTabId);
 			}
 		}).bind(this);
 	}

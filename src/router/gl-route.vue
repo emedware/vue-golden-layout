@@ -1,11 +1,11 @@
 <template>
 	<gl-component-route v-if="type === 'component'" :path="path" :name="name" :component="component"
-		:closable="closable" :reorder-enabled="reorderEnabled">
+		:closable="closable" :reorder-enabled="reorderEnabled" :tab-id="fullPath">
 		<slot />
 	</gl-component-route>
 	<gl-container-route v-else-if="type === 'container'" :component="component"
-		:closable="closable" :reorder-enabled="reorderEnabled" />
-	<gl-component v-else :title="compTitle">
+		:closable="closable" :reorder-enabled="reorderEnabled" :tab-id="fullPath" :title="compTitle" />
+	<gl-component v-else :title="compTitle" :tab-id="fullPath">
 		{{loading}}...
 	</gl-component>
 </template>
@@ -34,6 +34,7 @@ export default class glRoute extends glCustomContainer {
 	@Prop({default: 'Loading'}) loading: string
 	type: string = null
 	component: VueComponent
+	get fullPath() { return this.$route.fullPath; }
 	async created() {
 		var route = this.$router.resolve(this.location).route,
 			comp = this.$router.getMatchedComponents(route)[0];

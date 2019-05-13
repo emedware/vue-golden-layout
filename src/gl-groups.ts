@@ -31,7 +31,7 @@ export class glStack extends glGroup {
 	@Emit() tabChange(tabId: any) { }
 	@Watch('activeTab') progTabChange(tabId: any) {
 		for(var child of this.glChildren)
-			if((<goldenChild>child).tabId === tabId)
+			if(child.givenTabId === tabId)
 				(<any>this).glObject.setActiveContentItem((<any>child).container.parent);
 	}
 	async watchActiveIndex() {
@@ -40,13 +40,13 @@ export class glStack extends glGroup {
 		this.glObject.on('activeContentItemChanged', (comp: any)=> {
 			var v = this.glObject.config.activeItemIndex;
 			if('number'=== typeof v)
-				this.tabChange((<goldenChild>this.glChildren[v]).tabId);
+				this.tabChange(this.glChildren[v].givenTabId);
 		});
 	}
 	getChildConfig(): any {
 		this.watchActiveIndex();
 		return {	//we can use $children as it is on-load : when the user still didn't interract w/ the layout
-			activeItemIndex: Math.max(0, (<any>this.$children).findIndex((c: any) => c.tabId === this.activeTab)),
+			activeItemIndex: Math.max(0, (<any>this.$children).findIndex((c: any) => c.givenTabId === this.activeTab)),
 			isClosable: this.closable,
 			type: 'stack',
 			...this.config};

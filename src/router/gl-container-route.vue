@@ -10,12 +10,15 @@ import glRouteBase from './gl-route-base'
 @Component
 export default class glContainerRoute extends glCustomContainer {
 	@Prop() component
-	created() {
-		debugger;
-	}
 	mounted() {
-		debugger;
-		var dob = new this.component({parent: this, el: this.$el})
+		new this.component({
+			parent: this,
+			el: this.$el,
+			propsData: {
+				tabId: this.tabId,
+				title: this.title
+			}
+		});
 	}
 	render(v : any) {}
 }
