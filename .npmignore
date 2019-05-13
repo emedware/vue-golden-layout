@@ -8,3 +8,5 @@ package-lock.*
 *.lock
 webpack.*
 coverage
+doc
+.eslint*

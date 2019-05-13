@@ -1,15 +1,15 @@
 import { Watch, Component, Prop, Emit, Model } from 'vue-property-decorator'
 import { glRow } from './gl-groups'
-import Vue from 'vue'
-import goldenLayout, {renderVNodes} from './golden.vue'
-import { goldenChild } from './roles'
 
 @Component
 export default class glDstack extends glRow {
+	/**
+	 * Used to syncronise among different windows
+	 */
 	@Prop({required: true}) dstackId: string
 	
 	@Model('tab-change') activeTab: string
-	@Emit() tabChange(tabId: any) { }
+	@Emit() tabChange(tabId: string) { }
 	@Watch('activeTab', {immediate: true}) async progTabChange(tabId: any) {
 		await this.layout.glo;
 		var stack: any = this.stack
@@ -43,7 +43,7 @@ export default class glDstack extends glRow {
 			}
 		}).bind(this);
 	}
-  	cachedStack: any = null
+	cachedStack: any = null
 	get stack() {
 		var ci = this.glObject , rv: any;
 		if(!ci) return null;

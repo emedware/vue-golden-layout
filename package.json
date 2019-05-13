@@ -39,7 +39,6 @@
 		"source-map-loader": "^0.2.1",
 		"style-loader": "^0.18.2",
 		"ts-loader": "^5.2.2",
-		"tslint": "^5.11.0",
 		"typescript": "^3.2.2",
 		"vue": "^2.5.20",
 		"vue-loader": "^15.4.2",

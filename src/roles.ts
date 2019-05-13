@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { Component, Prop, Watch, Emit, Inject } from 'vue-property-decorator'
+import { Component, Prop, Watch, Inject } from 'vue-property-decorator'
 
 export function UsingSlots(...slots: string[]) {
 	return function(target: any) {

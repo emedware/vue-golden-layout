@@ -1,5 +1,4 @@
-var webpack = require("webpack"),
-	path = require("path"),
+var path = require("path"),
 	externals = require("webpack-node-externals"),
 	{default: DtsBundlePlugin} = require("webpack-dts-bundle"),
 	VueLoader = require("vue-loader");

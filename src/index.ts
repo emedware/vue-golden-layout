@@ -22,7 +22,7 @@ export {
 }
 
 export default {
-	install(Vue : any, options : any) {
+	install(Vue : any) {
 		for(let i in components)
 			Vue.component(i, components[i]);
 	}
