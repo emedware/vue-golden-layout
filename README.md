@@ -95,19 +95,6 @@ It also (useful for `v-for`s) has a `state` property that will be used as the `s
 <gl-component v-for="sth in swhr" :key="sth.else" template="template-name" :state="sth.state" />
 ```
 
-## Properties
-
-### Contained objects
-
-```typescript
-title: string
-width: number
-height: number
-closable: boolean
-reorderEnabled: boolean
-hidden: boolean
-```
-
 ## Saving/restoring states
 
 The `golden-layout` has a *property* and an *event* named `state`.
@@ -161,7 +148,7 @@ Though, the user might change the order of things and who contain what. To retri
 
 ### Events
 
-#### Layout
+#### Layout' events
 
 Straight forwards from golden-layout, refer to their doc
 
@@ -182,7 +169,7 @@ activeContentItemChanged
 
 Also, the event `sub-window` is emitted on mount with a `is: boolean` argument that is `true` iif this instance of golden-layout is loaded as a pop-up window.
 
-#### Contained objects
+#### Contained objects' events
 
 Straight forwards from golden-layout, refer to their doc
 
@@ -195,53 +182,9 @@ itemDestroyed
 itemCreated
 ```
 
-## Specific components
-
-### gl-dstack
-
-*Duplicatable stacks* are stacks that should always remain in the main window as their content is modified programatically. These stacks, when poped-out, *remain* in the main screen while their content is poped-out.
-Defineing in it components that are not `closable` nor `reorder-enabled` will *stay* in the stack in the main window.
-
-### gl-router
-
-The router is a `glContainer` that aims to sublimate the `<router-view />`
-It let people manage their routes in tabs, open them in a split screen or even popped-out in another browser window on another physical display.
-
-The main usage is `<gl-router />`. Any options of `router-view` still has to be implemented.
-
-Note: `gl-router` is a `gl-dstack`.
-
-#### Slots
-
-A default content to render all routes can be provided as the `route` slot template - with or without scope : if a scope is queried, it will be the route object.
-If this content is provided, it should contain a `<main />` tag that will be filled with the loaded route component.
-
-Note: the provided template will be ignored when maximised/popped-out.
-
-#### Properties
-
-##### `titler`
-
-Allows to specify a function that takes a route object in parameter and gives the string that will be used as tab title.
-If none is specified, the default is to take `$route.meta.title` - this means that routes have to be defined with a title in their meta-data.
-
-##### `empty-route`
-
-Specify the URL to use when the user closes all the tabs (`"/"` by default)
-
-### gl-route
-
-`gl-route`s are components displaying a route. They are meant to be used in a gl-router but only have to be used in a golden-layout container.
-
-They can take a `name` and/or a `path`, and their `closable` and `reorder-enabled` properties are false by default. They can be forced a `title` but their container' `titler` will be used if not.
-
-Note: all the elements inside them rendered from route' component will have a `this.$route` pointing to the given route, not the actual one.
-
-## `<golden-layout ...>`
-
 ### Properties
 
-#### Properties directly forwarded to the config
+#### Layout' properties
 
 ```typescript
 @Prop({default: true}) hasHeaders: boolean
@@ -261,7 +204,7 @@ Note: all the elements inside them rendered from route' component will have a `t
 @Prop({default: 200}) dragProxyHeight: number
 ```
 
-#### `popup-timeout`
+##### `popup-timeout`
 
 (default: 5 = 5 seconds)
 
@@ -274,7 +217,88 @@ Therefore:
 - Changing this value to higher will not postpone the event fireing, it will just allow more time for the popup to load before raising an exception
 - This can be useful to increase in applications where the main page has some long loading process before displaying the golden-layout
 
-#### `inter-window`
+##### `inter-window`
 
 This (optional) is an object that will be shared among all the windows (the main one and the poped-out ones).
 The initial value will be set by the main window and ignored by the poped-out windows, though any change by any window will be propagated to all the others.
+
+#### Contained objects' properties
+
+- `title: string`: Used for tab title
+- `tabId: string`: Used ad the `v-model` of a `gl-stack` or `gl-dstack` to determine/set the active tab
+- `width: number`
+- `height: number`
+- `closable: boolean`
+- `reorderEnabled: boolean`
+- `hidden: boolean`
+
+## Specific components
+
+### gl-dstack
+
+*Duplicatable stacks* are stacks that should always remain in the main window as their content is modified programatically. These stacks, when poped-out, *remain* in the main screen while their content is poped-out.
+Components defined in it that are not `closable` nor `reorder-enabled` will *stay* in the stack in the main window.
+
+### gl-router
+
+The router is a `glContainer` that aims to sublimate the `<router-view />`
+It let people manage their routes in tabs, open them in a split screen or even popped-out in another browser window on another physical display.
+
+The main usage is `<gl-router />`. Any options of `router-view` still has to be implemented.
+
+Note: `gl-router` is a `gl-dstack`.
+
+#### gl-router' slots
+
+A default content to render all routes can be provided as the `route` slot template - with or without scope : if a scope is queried, it will be the route object.
+If this content is provided, it should contain a `<main />` tag that will be filled with the loaded route component.
+
+Note: the provided template will be ignored when maximised/popped-out.
+
+All the components in the default slot will be added as tabs in the router.
+
+#### gl-router' properties
+
+##### `titler`
+
+Allows to specify a function that takes a route object in parameter and gives the string that will be used as tab title.
+If none is specified, the default is to take `$route.meta.title` - this means that routes have to be defined with a title in their meta-data.
+
+##### `empty-route`
+
+Specify the URL to use when the user closes all the tabs (`"/"` by default)
+
+### gl-route
+
+`gl-route`s are components displaying a route. They are meant to be used in a gl-router but only have to be used in a golden-layout container.
+
+They can take a `name` and/or a `path`, and their `closable` and `reorder-enabled` properties are false by default. They can be forced a `title` but their container' `titler` will be used if not.
+
+Note: all the elements inside them rendered from route' component will have a `this.$route` pointing to the given route, not the present one.
+
+## glCustomContainers
+
+Users can define components who describe a part of the layout. In order to do this, instead of extending `Vue`, the component has to extend `glCustomContainer`.
+
+```js
+var comp = Vue.extend({...});
+// becomes
+var vgl = require('vue-golden-layout')
+var comp = vgl.glCustomContainer.extend({...});
+```
+
+```ts
+@Component
+export class MyComp extends Vue {
+  ...
+}
+// becomes
+import { glCustomContainer } from 'vue-golden-layout'
+
+@Component
+export class MyComp extends glCustomContainer {
+  ...
+}
+```
+
+The template' root must therefore be a proper golden-layout child (row, col, stack, ...)
