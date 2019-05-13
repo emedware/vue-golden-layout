@@ -58,6 +58,7 @@ export default class glDstack extends glRow {
 			}, 0);
 			rv = ci.contentItems[0];
 			rv.on('activeContentItemChanged', this.activeContentItemChanged);
+			this.activeContentItemChanged();
 		}
 		return this.cachedStack = rv;
 	}
@@ -72,7 +73,6 @@ export default class glDstack extends glRow {
 			this.$set(config, 'activeItemIndex', aii);
 		}
 	}
-
 	async created() {
 		const that = this;
 		function onWindowPopout(popup: any) {

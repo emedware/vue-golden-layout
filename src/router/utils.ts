@@ -1,7 +1,6 @@
 import { Route } from 'vue-router'
-import goldenLayout, { renderVNodes, registerGlobalComponent, Dictionary } from '../golden.vue'
+import goldenLayout, { registerGlobalComponent, Dictionary } from '../golden.vue'
 import { goldenItem } from '../roles'
-import glRoute from './gl-route'
 import Vue, { ComponentOptions, Component, AsyncComponent, VueConstructor } from 'vue'
 
 export function defaultTitler(route: Route): string {
@@ -25,7 +24,7 @@ function freezeValue(object: Dictionary, path: string, value?: any) {
 	});
 }
 
-function freezeRoute(component: Vue, route: Route) {
+export function freezeRoute(component: Vue, route: Route) {
 	//Simulate a _routerRoot object so that all children have a $route object set to this route object
 	var routerRoot = (<any>component)._routerRoot = Object.create((<any>component)._routerRoot);
 	freezeValue(routerRoot, '_route', route);
@@ -62,28 +61,28 @@ async function vueComponent(comp: ComponentSpec|string, namedComponents: Diction
 
 function createRouteComponent(comp: VueConstructor, routerSpec: RouterSpec, route: Route) : Vue {
 	const {parent, template} = routerSpec;
-	var browser;
-	for(browser = comp; browser && browser != goldenItem; browser = (<any>browser).super);
-	if(browser) {
+	var itr;
+	for(itr = comp; itr && itr != goldenItem; itr = (<any>itr).super);
+	if(itr) {
 		return new comp({
 			parent,
 			propsData: route
 		});
 	}
 	const component = template ? new Vue({
-			render(ce) {
-				return template instanceof Array ?
-					ce('div', {class: 'glComponent'}, template) :
-					template;
-			},
-			mounted() {
-				new comp({
-					el: component.$el.querySelector('main') || undefined,
-					parent: component
-				});
-			},
-			parent
-		}) : new comp({parent});
+		render(ce) {
+			return template instanceof Array ?
+				ce('div', {class: 'glComponent'}, template) :
+				template;
+		},
+		mounted() {
+			new comp({
+				el: component.$el.querySelector('main') || undefined,
+				parent: component
+			});
+		},
+		parent
+	}) : new comp({parent});
 	return component;
 }
 
@@ -103,7 +102,7 @@ export async function getRouteComponent(gl: goldenLayout, router: any, path: str
 	component = createRouteComponent(
 			await vueComponent(compSpec!, gl.$options.components || {}),
 			routeParent(router, route), route);
-	freezeRoute(component, route);
+	//freezeRoute(component, route);
 	return component;
 }
 

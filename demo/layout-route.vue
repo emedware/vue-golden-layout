@@ -21,7 +21,7 @@ import { glContainerRoute, glCustomContainer } from 'vue-golden-layout'
 import PHead from './p-head.vue'
 
 @Component({components: {PHead}})
-export default class LayoutRoute extends glContainerRoute {
+export default class LayoutRoute extends glCustomContainer {
 	checked: boolean = false
 }
 </script>

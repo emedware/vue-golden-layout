@@ -105,9 +105,7 @@ export class goldenChild extends goldenItem {
 	
 	@Prop() tabId: string
 
-	getChildConfig(): any { return {
-		
-	}; }
+	getChildConfig(): any { return null; }
 	get glParent() { return this.glObject.parent.vueObject; }
 	/**
 	  * Gets the Vue container that is not a component definition and therefore actually contains this
@@ -176,7 +174,12 @@ export class goldenChild extends goldenItem {
 }
 
 @Component({mixins: [goldenChild]})
-export class glCustomContainer extends goldenContainer {
+export class goldenLink extends goldenContainer {
+	container: any;
+}
+
+@Component
+export class glCustomContainer extends goldenLink {
 	nodePath() {
 		return (<any>this).vueParent.childPath(this.$children[0]);
 	}

@@ -12,7 +12,7 @@ import Vue from 'vue'
 import { Component, Inject, Model, Prop, Watch, Emit, Provide } from 'vue-property-decorator'
 import { glCustomContainer } from '../roles'
 import glDstack from '../gl-dstack'
-import glRoute from './gl-route'
+import glRoute from './gl-route.vue'
 import { defaultTitler, UsingRoutes } from './utils'
 import { UsingSlots } from '../roles'
 import VueRouter, { Location, Route } from 'vue-router'
@@ -51,7 +51,7 @@ export default class glRouter extends glCustomContainer {
 		if(path != this.$route.fullPath)
 			this.$router.replace(path);
 	}
-	@Watch('$route'/*, {immediate: true}*/)
+	@Watch('$route')
 	async change(route: Route) {
 		if(route) {
 			var location: Location = {path: route.fullPath};
@@ -66,9 +66,11 @@ export default class glRouter extends glCustomContainer {
 		}
 	}
 	destroyedRoute(route: glRoute) {
-		var ndx = this.routes.findIndex(opened(route.routeSpec))
-		console.assert(~ndx, 'Closed route is in the array');
-		this.routes.splice(ndx, 1);
+		if(route.closable) {
+			var ndx = this.routes.findIndex(opened(route.location))
+			console.assert(~ndx, 'Closed route is in the array');
+			this.routes.splice(ndx, 1);
+		}
 	}
 }
 </script>

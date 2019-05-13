@@ -1,8 +1,11 @@
+
+# vue-golden-layout
+
 [![npm](https://img.shields.io/npm/v/vue-golden-layout.svg)](https://www.npmjs.com/package/vue-golden-layout)
 [![NPM downloads](https://img.shields.io/npm/dm/vue-golden-layout.svg?style=flat)](https://npmjs.org/package/vue-golden-layout)
 [![Known Vulnerabilities](https://snyk.io/test/github/eddow/vue-golden-layout/badge.svg)](https://snyk.io/test/github/eddow/vue-golden-layout)
 [![codebeat badge](https://codebeat.co/badges/8fb41a11-58bd-4f6f-948b-5ac12ec59b5b)](https://codebeat.co/projects/github-com-eddow-vue-golden-layout-master)
-# vue-golden-layout
+
 Integration of the golden-layout to Vue
 
 ## Installation
@@ -12,23 +15,28 @@ npm i -S vue-golden-layout
 ```
 
 > For the ones who clone, in order to test, a static sample application can be compiled :
-> 
+>
 > ```sh
 > npm install
 > npm run demo
 > ```
-> You can now browse http://localhost:9000
+>
+> You can now browse `http://localhost:9000`
 
 ## Don't forget in order to make it work
-  - Include a golden-layout theme CSS.
+
+- Include a golden-layout theme CSS.
+
 ```typescript
 import 'golden-layout/src/css/goldenlayout-light-theme.css'
 ```
+
 Available themes are `light`, `dark`, `soda`, `translucent`.
 
 `goldenlayout-base.css` is already integrated to the library.
 
 ## Usage
+
 ```javascript
 import vgl from 'vue-golden-layout'
 Vue.use(vgl);
@@ -49,10 +57,11 @@ Elements like `<gl-row>`, `<gl-col>` and `<gl-stack>` can be represented in a tr
 ## Inserting components
 
 Component can be described *by extension* - namely, by giving their content using the data from the defining component.
+
 ```html
 <gl-component>
-	<h1>Heydoo</h1>
-	Price: {{priceLess}}
+    <h1>Heydoo</h1>
+    Price: {{priceLess}}
 </gl-component>
 ```
 
@@ -60,25 +69,30 @@ Component can be described *by extension* - namely, by giving their content usin
 
 In order to use `v-if` and `v-for` to control the content, templates have to be defined and used with a name.
 If this rule is broken :
+
 - Popup will display blank
 - Loading a saved state will fail
 - This will be displayed in the console: "Dynamic golden-layout components should be named templates instead."
 
 ### Defining a template
+
 This is done through `slot`s in the `<golden-layout>` element (the square brackets stand for "optional")
+
 ```html
 <template slot="template-name"[ slot-scope="myState"]>
-	...
+    ...
 </template>
 ```
+
 The content of `myState` can of course be changed. This will be saved/loaded when the overall state is saved/loaded.
 
 ### Using a template
+
 `gl-component` has a `template` property. This is a string that target the `slot` defined.
 It also (useful for `v-for`s) has a `state` property that will be used as the `slot-scope`
+
 ```html
-<gl-component v-for="sth in swhr" :key="sth.else"
-	template="template-name" :state="sth.state" />
+<gl-component v-for="sth in swhr" :key="sth.else" template="template-name" :state="sth.state" />
 ```
 
 ## Properties
@@ -111,10 +125,11 @@ Notes:
 ## Low-level functionalities
 
 ### global components
+
 Some golden-layout global component can be given before any instanciation (while declaring classes) by calling this function:
 
 ```typescript
-import {registerGlobalComponent} from 'vue-golden-layout'
+import { registerGlobalComponent } from 'vue-golden-layout'
 // registerGlobalComponent(name: string, comp: (gl: goldenLayout, container: any, state: any)=> void)
 ```
 
@@ -146,7 +161,7 @@ Though, the user might change the order of things and who contain what. To retri
 
 ### Events
 
-#### Layout 
+#### Layout
 
 Straight forwards from golden-layout, refer to their doc
 
