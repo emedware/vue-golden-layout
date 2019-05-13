@@ -120,7 +120,7 @@ export class goldenChild extends goldenItem {
 	}
 
 	givenProp(prop: string): any {
-		var itr: goldenItem = this;
+		var itr: any = this;
 		while(!itr[prop] && itr.$parent instanceof glCustomContainer)
 			itr = itr.$parent;
 		return itr[prop];

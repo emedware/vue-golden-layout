@@ -5,7 +5,7 @@
 </template>
 <script lang="ts">
 import Vue, { VNode, VueConstructor } from 'vue'
-import {Component, Inject, Model, Prop, Watch, Emit, Provide} from 'vue-property-decorator'
+import { Component, Model, Prop, Watch, Emit, Provide } from 'vue-property-decorator'
 import * as GoldenLayout from 'golden-layout'
 import { goldenContainer } from './roles'
 import * as resize from 'vue-resize-directive'

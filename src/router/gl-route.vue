@@ -32,7 +32,7 @@ export default class glRoute extends glCustomContainer {
 	closable: boolean
 	location: Location
 	@Prop({default: 'Loading'}) loading: string
-	type: string = null
+	type: string|null = null
 	component: VueComponent
 	get fullPath() { return this.$route.fullPath; }
 	async created() {

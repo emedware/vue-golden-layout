@@ -3,7 +3,7 @@
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
+import { Component, Inject, Model, Prop, Watch } from 'vue-property-decorator'
 
 @Component
 export default class PHead extends Vue {

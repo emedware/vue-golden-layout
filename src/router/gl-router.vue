@@ -18,7 +18,7 @@ import { UsingSlots } from '../roles'
 import VueRouter, { Location, Route } from 'vue-router'
 
 function opened(location: Location) {
-	return (l: Location)=> (l.path && l.path === location.path) || (l.name && l.name === location.name)
+	return (l: Location)=> (!!l.path && l.path === location.path) || (!!l.name && l.name === location.name)
 }
 
 @Component({components: {glRoute, glDstack}})
@@ -27,7 +27,7 @@ function opened(location: Location) {
 export default class glRouter extends glCustomContainer {
 	$router : VueRouter
 	$route : Route
-	activeRoute: string = null
+	activeRoute?: string|null = null
 	@Prop({
 		default: defaultTitler,
 		type: Function

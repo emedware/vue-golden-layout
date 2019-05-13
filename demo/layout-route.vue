@@ -16,7 +16,7 @@
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import {Component, Inject, Model, Prop, Watch} from 'vue-property-decorator'
+import { Component, Inject, Model, Prop, Watch } from 'vue-property-decorator'
 import { glContainerRoute, glCustomContainer } from 'vue-golden-layout'
 import PHead from './p-head.vue'
 
