@@ -11,22 +11,6 @@ export function UsingSlots(...slots: string[]) {
 export class goldenItem extends Vue {
 	glObject: any = null
 	get childMe() { return <goldenChild><unknown>this; }
-	
-	container: any = null;
-	
-	@Prop() tabId: string
-	get givenTabId() { return this.givenProp('tabId'); }
-	@Prop() title: string
-	@Watch('title') setTitle(title: any) {
-		if(this.container) this.container.setTitle(title);
-	}
-
-	givenProp(prop: string): any {
-		var itr: goldenItem = this;
-		while(!itr[prop] && itr.$parent instanceof glCustomContainer)
-			itr = itr.$parent;
-		return itr[prop];
-	}
 }
 
 @Component
@@ -125,6 +109,22 @@ export class goldenChild extends goldenItem {
 			rv = rv.$parent;
 		return <goldenContainer>rv;
 	}
+	
+	container: any = null;
+	
+	@Prop() tabId: string
+	get givenTabId() { return this.givenProp('tabId'); }
+	@Prop() title: string
+	@Watch('title') setTitle(title: any): void {
+		if(this.container) this.container.setTitle(title);
+	}
+
+	givenProp(prop: string): any {
+		var itr: goldenItem = this;
+		while(!itr[prop] && itr.$parent instanceof glCustomContainer)
+			itr = itr.$parent;
+		return itr[prop];
+	}
 
 	hide() { this.container && this.container.hide(); }
 	show() { this.container && this.container.show(); }
@@ -182,6 +182,11 @@ export class goldenChild extends goldenItem {
 @Component({mixins: [goldenChild]})
 export class goldenLink extends goldenContainer {
 	// declaration of goldenChild properties
+	container: any
+	tabId: string
+	givenTabId: string
+	title: string
+	givenProp: (prop: string)=> any
 }
 
 @Component
