@@ -61,7 +61,7 @@
 		"vue-storage-decorator": "^1.0.6"
 	},
 	"peerDependencies": {
-		"jquery": "^3.2.1",
+		"jquery": "^3.4.1",
 		"vue": "^2.5.17"
 	},
 	"bugs": {
