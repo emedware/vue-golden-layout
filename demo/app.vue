@@ -12,8 +12,8 @@
 					<main />
 				</template>
 			</gl-router>
-			<d-stack v-model="dstackState" />
-			<gl-component v-if="dstackState.bottomSheet" template="bottom" @destroy="dstackState.bottomSheet = false" />
+			<demo-stack v-model="demoStackState" />
+			<gl-component v-if="demoStackState.bottomSheet" template="bottom" @destroy="demoStackState.bottomSheet = false" />
 		</gl-col>
 	</golden-layout>
 </div>
@@ -42,14 +42,14 @@ import Vue from 'vue'
 import { Component, Inject, Model, Prop, Watch } from 'vue-property-decorator'
 import { letters } from './router'
 import PHead from './p-head.vue'
-import dStack from './d-stack.vue'
+import demoStack from './demo-stack.vue'
 import Persistance from 'vue-storage-decorator'
 
 const Persist = Persistance('browserGL');
-@Component({components: {PHead, dStack}})
+@Component({components: {PHead, demoStack}})
 export default class App extends Vue {
 	@Persist() state: any = null
-	@Persist() dstackState = {
+	@Persist() demoStackState = {
 		bottomSheet: false,
 		stackSubs: [1],
 		ssId: 1

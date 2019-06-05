@@ -16,6 +16,7 @@ export class goldenItem extends Vue {
 @Component
 @UsingSlots('default')
 export class goldenContainer extends goldenItem {
+	definedVueComponent: goldenContainer
 	config: any = {
 		content: []
 	}
@@ -31,7 +32,7 @@ export class goldenContainer extends goldenItem {
 		var nrs = path.split('.');
 		var ndx_string : string | undefined  = nrs.shift();
 
-		if ( ndx_string === undefined) {
+		if (ndx_string === undefined) {
 			throw "Invalid operation";
 		}
 		let ndx= parseInt(ndx_string);
@@ -45,7 +46,7 @@ export class goldenContainer extends goldenItem {
 	addGlChild(child : any, comp : any) {
 		if(comp && 'component'=== child.type) {
 			if(!child.componentName)
-				child.componentName = this.layout.registerComponent(comp, null, this.$parent.$options.name);
+				child.componentName = this.layout.registerComponent(comp, null, this.definedVueComponent.$options.name);
 			if(!child.componentState)
 				child.componentState = {};
 		}
@@ -93,23 +94,27 @@ export class goldenContainer extends goldenItem {
 
 @Component
 export class goldenChild extends goldenItem {
+	@Inject() layout: any
 	@Prop() width: number
 	@Prop() height: number
 	@Watch('width') reWidth(w:number) { this.container && this.container.setSize(w, false); }
 	@Watch('height') reHeight(h:number) { this.container && this.container.setSize(false, h); }
-
+	$parent: goldenContainer
 	getChildConfig(): any { return null; }
 	get glParent() { return this.glObject.parent.vueObject; }
 	/**
 	  * Gets the Vue container that is not a component definition and therefore actually contains this
 	  */ 
 	get vueParent(): goldenContainer {
-		var rv = this.$parent;
+		var rv = <goldenContainer>this.$parent;
 		while(rv instanceof glCustomContainer)
-			rv = rv.$parent;
-		return <goldenContainer>rv;
+			rv = <goldenContainer>rv.$parent;
+		return rv;
 	}
 	
+	get definedVueComponent(): goldenContainer {
+		return this.$parent.definedVueComponent;
+	}
 	container: any = null;
 	
 	@Prop() tabId: string
@@ -175,7 +180,6 @@ export class goldenChild extends goldenItem {
 	@Watch('glObject') destroy(v:boolean) {
 		if(!v) this.$emit('destroy', this);
 	}
-	@Inject() layout: any
 	events: string[] = ['stateChanged', 'titleChanged', 'activeContentItemChanged', 'beforeItemDestroyed', 'itemDestroyed', 'itemCreated']
 }
 
@@ -191,6 +195,7 @@ export class goldenLink extends goldenContainer {
 
 @Component
 export class glCustomContainer extends goldenLink {
+	get definedVueComponent() { return this; }
 	nodePath() {
 		return (<any>this).vueParent.childPath(this.$children[0]);
 	}

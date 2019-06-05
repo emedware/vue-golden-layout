@@ -35,7 +35,7 @@ import { glCustomContainer } from 'vue-golden-layout'
 import { letters } from './router'
 
 @Component
-export default class dStack extends glCustomContainer {
+export default class demoStack extends glCustomContainer {
 	@Model('changeState') state: {
 		bottomSheet: boolean,
 		stackSubs: number[],
