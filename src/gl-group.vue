@@ -1,5 +1,5 @@
 <template>
-	<div style="display: none;" ref="hiddenContainer">
+	<div style="display: none;">
 		<slot />
 	</div>
 </template>
@@ -10,8 +10,6 @@ import { goldenLink, goldenContainer } from './roles'
 
 @Component
 export default class glGroup extends goldenLink {
-	//child properties
-	$parent: goldenContainer
 	@Prop({default: false}) closable: boolean
 }
 </script>

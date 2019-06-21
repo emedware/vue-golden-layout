@@ -190,6 +190,7 @@ export class goldenLink extends goldenContainer {
 	tabId: string
 	givenTabId: string
 	title: string
+	$parent: goldenContainer
 	givenProp: (prop: string)=> any
 }
 
