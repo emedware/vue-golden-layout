@@ -163,6 +163,7 @@ export default class goldenLayout extends goldenContainer {
 		Object.assign(rv, access);
 		return <Semaphore<any>>rv;
 	}
+	get definedVueComponent() { return this; }
 	@Provide() get layout() { return this; }
 	@Emit() subWindow(is: boolean) {}
 	mounted() {
