@@ -10,7 +10,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { Component, Inject, Model, Prop, Watch, Emit, Provide } from 'vue-property-decorator'
-import { glCustomContainer } from '../roles'
+import { glCustomContainer, goldenContainer } from '../roles'
 import glDstack from '../gl-dstack'
 import glRoute from './gl-route.vue'
 import { defaultTitler, UsingRoutes } from './utils'

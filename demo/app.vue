@@ -1,7 +1,7 @@
 <template>
 <div>
 	<button class="reset" @click="reset">Reset localStorage</button>
-	<golden-layout class="hscreen" v-model="state" @sub-window="subWindow">
+	<golden-layout class="hscreen" v-model="state">
 		<template slot="bottom">
 			Bottom
 		</template>
@@ -44,8 +44,11 @@ import { letters } from './router'
 import PHead from './p-head.vue'
 import demoStack from './demo-stack.vue'
 import Persistance from 'vue-storage-decorator'
+import { isSubWindow } from 'vue-golden-layout'
+
 
 const Persist = Persistance('browserGL');
+Persist.persisting = false; //!isSubWindow;
 @Component({components: {PHead, demoStack}})
 export default class App extends Vue {
 	@Persist() state: any = null
@@ -57,9 +60,6 @@ export default class App extends Vue {
 	@Persist() routes = [{path: '/a'}]
 	letters = letters
 
-	subWindow(is: boolean) {
-		Persist.persisting = !is;
-	}
 	reset() {
 		delete localStorage.browserGL;
 		location.reload();

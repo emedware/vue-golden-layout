@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import { Component, Prop, Watch, Inject } from 'vue-property-decorator'
 
+export const customExtensions: {[cid: number]: typeof glCustomContainer } = {};
+export const instanciatedOnce: {[cid: number]: boolean } = {};
+
 export function UsingSlots(...slots: string[]) {
 	return function(target: any) {
 		target.prototype.usedSlots = target.prototype.usedSlots ?
@@ -197,8 +200,18 @@ export class goldenLink extends goldenContainer {
 @Component
 export class glCustomContainer extends goldenLink {
 	get definedVueComponent() { return this; }
+	created() {
+		instanciatedOnce[(<any>this.constructor).cid] = true;
+	}
 	nodePath() {
 		return (<any>this).vueParent.childPath(this.$children[0]);
 	}
 	getChildConfig(): any { return null; }
+}
+
+var oldExtend = glCustomContainer.extend;
+glCustomContainer.extend = function(options) {
+	var rv = oldExtend.call(this, options);
+	customExtensions[(<any>rv).cid] = rv;
+	return rv;
 }

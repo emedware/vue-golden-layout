@@ -1,5 +1,6 @@
 import { Watch, Component, Prop, Emit, Model } from 'vue-property-decorator'
 import { glRow } from './gl-groups'
+import { isSubWindow } from './utils'
 
 @Component
 export default class glDstack extends glRow {
@@ -11,11 +12,13 @@ export default class glDstack extends glRow {
 	@Model('tab-change') activeTab: string
 	@Emit() tabChange(tabId: string) { }
 	@Watch('activeTab', {immediate: true}) async progTabChange(tabId: any) {
-		await this.layout.glo;
-		var stack: any = this.stack
-		for(var child of stack.contentItems)
-			if(child.vueObject && child.vueObject.givenTabId === tabId)
-				stack.setActiveContentItem(child.container?(<any>child).container.parent:child);
+		if(!isSubWindow) {
+			await this.layout.glo;
+			var stack: any = this.stack
+			for(var child of stack.contentItems)
+				if(child.vueObject && child.vueObject.givenTabId === tabId)
+					stack.setActiveContentItem(child.container?(<any>child).container.parent:child);
+		}
 	}
 
 	get glChildrenTarget() { return this.stack; }

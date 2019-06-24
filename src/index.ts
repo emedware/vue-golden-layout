@@ -8,6 +8,7 @@ import glRouter from './router/gl-router.vue'
 import glRoute from './router/gl-route.vue'
 import glContainerRoute from './router/gl-container-route.vue'
 export { glCustomContainer } from './roles'
+export { isSubWindow } from './utils';
 
 var components : any = {
 	goldenLayout, glComponent,

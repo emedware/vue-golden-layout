@@ -1,0 +1,1 @@
+export const isSubWindow = /[?&]gl-window=/.test(window.location.search);

@@ -7,8 +7,9 @@
 import Vue, { VNode, VueConstructor } from 'vue'
 import { Component, Model, Prop, Watch, Emit, Provide } from 'vue-property-decorator'
 import * as GoldenLayout from 'golden-layout'
-import { goldenContainer } from './roles'
+import { goldenContainer, customExtensions, instanciatedOnce } from './roles'
 import * as resize from 'vue-resize-directive'
+import { isSubWindow } from './utils'
 
 export type globalComponent = (gl: goldenLayout, container: any, state: any)=> void;
 export type Dictionary<T = any> = {[key: string]: T}
@@ -165,8 +166,7 @@ export default class goldenLayout extends goldenContainer {
 	}
 	get definedVueComponent() { return this; }
 	@Provide() get layout() { return this; }
-	@Emit() subWindow(is: boolean) {}
-	mounted() {
+	async mounted() {
 		var me = this, layoutRoot = this.$refs.layoutRoot, gl: GoldenLayout,
 			state = this.state instanceof Promise ?
 				this.state : Promise.resolve(this.state);
@@ -175,11 +175,8 @@ export default class goldenLayout extends goldenContainer {
 		var sleep = (timeout: number, rv: any)=> new Promise(function(resolve: (value: any)=> void, _: any) {
 			setTimeout(()=> resolve(rv), timeout);
 		});
-		const isSubWindow = /[?&]gl-window=/.test(window.location.search);
 		state
-			//.then(s=> sleep(isSubWindow?2000:0, s))
 			.then((state: any)=> {
-			this.subWindow(isSubWindow);
 			if(state && !isSubWindow) {
 				this.config = state.content ?
 					state :
@@ -268,6 +265,7 @@ export default class goldenLayout extends goldenContainer {
 				itm.vueObject.glObject = itm;
 				if(itm.config.vue && itm.vueObject.nodePath) {
 					itm.config.__defineGetter__('vue', ()=> itm.vueObject.nodePath());
+					itm.config.definedIn = itm.vueObject.definedVueComponent.constructor.cid;
 				}
 				if(itm.vueObject.initialState)
 					itm.vueObject.initialState(itm.config.componentState);
@@ -283,6 +281,13 @@ export default class goldenLayout extends goldenContainer {
 			forwardEvt(gl, this, ['itemCreated', 'stackCreated', 'rowCreated', 'tabCreated', 'columnCreated', 'componentCreated',
 				'selectionChanged', 'windowOpened', 'windowClosed', 'itemDestroyed', 'initialised', 'activeContentItemChanged']);
 			//#endregion
+			if(isSubWindow) {
+				//TODO: Instanciate all the `definedVueComponent` before `gl.init();`
+				/* TODO: use these in popups with itm.config.definedIn to instanciate all needed custom extension to define templates
+				var t = customExtensions;
+				var u = instanciatedOnce;*/
+				debugger;
+			}
 			try{
 				gl.init();
 			} catch(e) {
