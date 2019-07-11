@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import { Component, Prop, Watch, Inject } from 'vue-property-decorator'
+import { isSubWindow } from './utils'
 
 export const customExtensions: {[cid: number]: typeof glCustomContainer } = {};
-export const instanciatedOnce: {[cid: number]: boolean } = {};
+export const instanciatedCustomContainer: {[cid: number]: glCustomContainer } = {};
 
 export function UsingSlots(...slots: string[]) {
 	return function(target: any) {
@@ -19,7 +20,7 @@ export class goldenItem extends Vue {
 @Component
 @UsingSlots('default')
 export class goldenContainer extends goldenItem {
-	definedVueComponent: goldenContainer
+	readonly definedVueComponent: goldenContainer
 	config: any = {
 		content: []
 	}
@@ -187,7 +188,7 @@ export class goldenChild extends goldenItem {
 }
 
 @Component({mixins: [goldenChild]})
-export class goldenLink extends goldenContainer {
+export class goldenLink extends goldenContainer {	//TODO: should use typescript keyword `implements`
 	// declaration of goldenChild properties
 	container: any
 	tabId: string
@@ -199,9 +200,10 @@ export class goldenLink extends goldenContainer {
 
 @Component
 export class glCustomContainer extends goldenLink {
-	get definedVueComponent() { return this; }
+	get definedVueComponent(): goldenContainer { return this; }
 	created() {
-		instanciatedOnce[(<any>this.constructor).cid] = true;
+		if(!isSubWindow)
+			instanciatedCustomContainer[(<any>this)._uid] = this;
 	}
 	nodePath() {
 		return (<any>this).vueParent.childPath(this.$children[0]);

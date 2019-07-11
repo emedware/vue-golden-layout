@@ -1,18 +1,29 @@
 <template>
 	<div ref="layoutRoot" v-resize="onResize">
 		<slot />
+		<div v-if="isSubWindow" style="display: none;">
+			<div v-for="(comp, mwUid) in popoutMirrors" :key="mwUid" :is="comp" />
+		</div>
 	</div>
 </template>
 <script lang="ts">
 import Vue, { VNode, VueConstructor } from 'vue'
 import { Component, Model, Prop, Watch, Emit, Provide } from 'vue-property-decorator'
 import * as GoldenLayout from 'golden-layout'
-import { goldenContainer, customExtensions, instanciatedOnce } from './roles'
+import { goldenContainer, customExtensions, instanciatedCustomContainer } from './roles'
 import * as resize from 'vue-resize-directive'
-import { isSubWindow } from './utils'
+import { isSubWindow, Dictionary, Semaphore, newSemaphore } from './utils'
+import { Object } from 'core-js';
+
+import { EventEmitter } from 'golden-layout'
+declare module "golden-layout" {
+	interface EventEmitter {
+		query: (name: string, ...params: any[])=> Promise<any>
+		response: (name: string, cb: (...params: any[])=> any)=> any
+	}
+}
 
 export type globalComponent = (gl: goldenLayout, container: any, state: any)=> void;
-export type Dictionary<T = any> = {[key: string]: T}
 var globalComponents: Dictionary<globalComponent> = {};
 
 //This is necessary as in poped-out windows, an observed config has arrays that return `instanceof Array` false
@@ -25,11 +36,6 @@ export function registerGlobalComponent(name: string, comp: globalComponent) {
 	globalComponents[name] = comp;
 }
 
-interface Semaphore<T> extends Promise<T> {
-	resolve: (arg?: T)=> void;
-	reject: (arg?: T)=> void;
-}
-
 interface slotComponent {
 	customVueComponent: VueConstructor
 	content: any
@@ -38,7 +44,7 @@ interface slotComponent {
 @Component({directives: {resize}})
 export default class goldenLayout extends goldenContainer {
 	$router : any
-
+	isSubWindow: boolean = isSubWindow
 	//Settings
 	@Prop({default: true}) hasHeaders: boolean
 	@Prop({default: true}) reorderEnabled: boolean
@@ -87,6 +93,10 @@ export default class goldenLayout extends goldenContainer {
 	gl: GoldenLayout
 	tplCount: Dictionary<number> = {}
 	tplPreload : Dictionary<any> = {}
+
+	/// List of Vue component that mirror components from the main window
+	// mwUid = Main Window _uid (the _uid of the component in the main window)
+	popoutMirrors: {[mwUid: number]: Vue} = {}
 	
 	registerComponent(component: any/*: Vue|()=>any*/, name?: string, prefix?: string): string {
 		if(!name) {
@@ -158,11 +168,7 @@ export default class goldenLayout extends goldenContainer {
 	}
 	//cached by Vue
 	get glo(): Semaphore<any> {
-		var access, rv = new Promise<any>(function(resolve, reject) {
-			access = {resolve, reject};
-		});
-		Object.assign(rv, access);
-		return <Semaphore<any>>rv;
+		return newSemaphore();
 	}
 	get definedVueComponent() { return this; }
 	@Provide() get layout() { return this; }
@@ -176,7 +182,7 @@ export default class goldenLayout extends goldenContainer {
 			setTimeout(()=> resolve(rv), timeout);
 		});
 		state
-			.then((state: any)=> {
+			.then(async (state: any)=> {
 			if(state && !isSubWindow) {
 				this.config = state.content ?
 					state :
@@ -263,9 +269,10 @@ export default class goldenLayout extends goldenContainer {
 					itm.config.vue && !isSubWindow ? this.getChild(itm.config.vue) :
 					{};
 				itm.vueObject.glObject = itm;
-				if(itm.config.vue && itm.vueObject.nodePath) {
+				if(itm.config.vue && itm.vueObject.nodePath && !isSubWindow) {
 					itm.config.__defineGetter__('vue', ()=> itm.vueObject.nodePath());
-					itm.config.definedIn = itm.vueObject.definedVueComponent.constructor.cid;
+					let definition = itm.vueObject.definedVueComponent;
+					itm.config.definedIn = definition._uid;
 				}
 				if(itm.vueObject.initialState)
 					itm.vueObject.initialState(itm.config.componentState);
@@ -282,11 +289,48 @@ export default class goldenLayout extends goldenContainer {
 				'selectionChanged', 'windowOpened', 'windowClosed', 'itemDestroyed', 'initialised', 'activeContentItemChanged']);
 			//#endregion
 			if(isSubWindow) {
-				//TODO: Instanciate all the `definedVueComponent` before `gl.init();`
-				/* TODO: use these in popups with itm.config.definedIn to instanciate all needed custom extension to define templates
-				var t = customExtensions;
-				var u = instanciatedOnce;*/
-				debugger;
+				var tabs: any[] = gl.config.content[0].content;
+				let loaders = {};
+				gl.eventHub.on('comp-mirror', (uid: number, cid: number, data: Dictionary, propsData: Dictionary)=> {
+					if(!cid) {
+						this.popoutMirrors[uid]	= this;
+					} else {
+						this.popoutMirrors[uid] = new customExtensions[cid]({data, propsData});
+					}
+					loaders[uid].resolve();
+				});
+				for(let tab of tabs) {
+					let definition: number = tab.definedIn;
+					if(!loaders[definition]) {
+						loaders[definition] = (async (definition)=> {
+							var descr = await this.gl.eventHub.query('comp-mirror', definition);
+							if(!descr) {
+								this.popoutMirrors[definition]	= this;
+							} else {
+								this.popoutMirrors[definition] = new customExtensions[descr.cid]({
+									data: descr.data,
+									propsData: descr.propsData
+								});
+							}
+						})(definition);
+					}
+				}
+				await Promise.all(Object.values(loaders));
+			} else {
+				gl.eventHub.response('comp-mirror', (uid: number)=> {
+					var comp = instanciatedCustomContainer[uid];
+					return comp ?
+						{
+							cid: (<any>comp.constructor).cid,
+							data: comp.$data,
+							propsData: comp.$props
+						} :
+						null;
+					if(!comp) gl.eventHub.emit('comp-mirror', uid);
+					else gl.eventHub.emit('comp-mirror',
+						uid, (<any>comp.constructor).cid,
+						comp.$data, comp.$props);
+				});
 			}
 			try{
 				gl.init();

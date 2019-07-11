@@ -38,6 +38,10 @@ export default class glRouter extends glCustomContainer {
 	@Prop({default: 'router'}) dstackId: string
 	@Prop({default: ()=> []})
 	routes: Location[]
+	
+	get definedVueComponent(): goldenContainer {
+		return this.$parent.definedVueComponent;
+	}
 
 	async mounted() {
 		//With immediate: true, the watch is called before $refs are initialised

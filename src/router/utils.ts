@@ -1,5 +1,6 @@
 import { Route } from 'vue-router'
-import goldenLayout, { registerGlobalComponent, Dictionary } from '../golden.vue'
+import goldenLayout, { registerGlobalComponent } from '../golden.vue'
+import { Dictionary } from '../utils'
 import { goldenItem } from '../roles'
 import Vue, { ComponentOptions, Component, AsyncComponent, VueConstructor } from 'vue'
 
