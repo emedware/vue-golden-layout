@@ -35,7 +35,7 @@ declare global {
 function sendResponse(queryId: number, name: string, sub: Window, result: any, failure?: boolean) {
 	var event, eventName = failure?errorEvent:responseEvent;
 
-	if( document.createEvent ) {
+	if(document.createEvent) {
 		event = sub.document.createEvent('HTMLEvents');
 		event.initEvent(eventName, true, true);
 	} else {
@@ -45,7 +45,6 @@ function sendResponse(queryId: number, name: string, sub: Window, result: any, f
 
 	event.eventName = eventName;
 	event.queryId = queryId;
-	event.queryName = name;
 	event.result = result;
 
 	if(document.createEvent) {
@@ -75,7 +74,9 @@ if(isSubWindow) {
 		delete queries[queryId];
 	});
 	window.addEventListener(errorEvent, function() {
-		debugger;
+		var queryId = (<any>event).queryId;
+		queries[queryId].reject((<any>event).result);
+		delete queries[queryId];
 	});
 } else {
 	window.addEventListener('gl_child_event', function() {

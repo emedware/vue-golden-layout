@@ -1,16 +1,17 @@
 <template>
 	<div ref="layoutRoot" v-resize="onResize">
-		<slot />
-		<div v-if="isSubWindow" style="display: none;">
-			<div v-for="(comp, mwUid) in popoutMirrors" :key="mwUid" :is="comp" />
+		<div v-if="isSubWindow" style="display: none;" id="twins">
+			<div v-for="(comp, mwUid) in popoutMirrors" :key="mwUid"
+				:is="comp.options" v-bind="comp.propsData"></div>
 		</div>
+		<slot v-else />
 	</div>
 </template>
 <script lang="ts">
 import Vue, { VNode, VueConstructor } from 'vue'
 import { Component, Model, Prop, Watch, Emit, Provide } from 'vue-property-decorator'
 import * as GoldenLayout from 'golden-layout'
-import { goldenContainer, customExtensions, instanciatedCustomContainer } from './roles'
+import { goldenContainer, customExtensions, instanciatedCustomContainer, goldenChild, goldenItem } from './roles'
 import * as resize from 'vue-resize-directive'
 import { isSubWindow, Dictionary, Semaphore, newSemaphore } from './utils'
 import { Object } from 'core-js';
@@ -113,7 +114,8 @@ export default class goldenLayout extends goldenContainer {
 			};
 		if(this.gl) {
 			this.gl.registerComponent(name, tplData);
-			console.warn('Dynamic golden-layout components should be named templates instead.');
+			//TODO: The warning might be relevant even with prefix, if loaded after the prefix-object has been constructed
+			if(!prefix) console.warn('Dynamic golden-layout components should be named templates instead.');
 		} else this.tplPreload[name] = tplData;
 		return name;
 	}
@@ -172,6 +174,23 @@ export default class goldenLayout extends goldenContainer {
 	}
 	get definedVueComponent() { return this; }
 	@Provide() get layout() { return this; }
+	
+	getSubChild(path: string): goldenChild {
+		var rootPathLength: number = 0, rootPathComponent: goldenItem = null;
+		for(var comp of this.$children)
+			if(comp.$data._nodePath) {
+				let compPathLength: number = comp.$data._nodePath.length;
+				if(path.substring(0, compPathLength) === comp.$data._nodePath &&
+					compPathLength  > rootPathLength)
+						[rootPathLength, rootPathComponent] = [compPathLength, <goldenItem>comp];
+			}
+		rootPathComponent = rootPathComponent.childMe;
+		var remainingPath = path.substr(rootPathLength+1);
+		return remainingPath ?
+			(<goldenContainer>rootPathComponent).getChild(remainingPath) :
+			<goldenChild>rootPathComponent;
+	}
+
 	async mounted() {
 		var me = this, layoutRoot = this.$refs.layoutRoot, gl: GoldenLayout,
 			state = this.state instanceof Promise ?
@@ -266,7 +285,10 @@ export default class goldenLayout extends goldenContainer {
 			});
 			gl.on('itemCreated', (itm: any) => {
 				itm.vueObject = itm === gl.root ? this :
-					itm.config.vue && !isSubWindow ? this.getChild(itm.config.vue) :
+					itm.config.vue ?
+						isSubWindow ?
+							this.getSubChild(itm.config.vue) :
+							this.getChild(itm.config.vue) :
 					{};
 				itm.vueObject.glObject = itm;
 				if(itm.config.vue && itm.vueObject.nodePath && !isSubWindow) {
@@ -291,27 +313,18 @@ export default class goldenLayout extends goldenContainer {
 			if(isSubWindow) {
 				var tabs: any[] = gl.config.content[0].content;
 				let loaders = {};
-				gl.eventHub.on('comp-mirror', (uid: number, cid: number, data: Dictionary, propsData: Dictionary)=> {
-					if(!cid) {
-						this.popoutMirrors[uid]	= this;
-					} else {
-						this.popoutMirrors[uid] = new customExtensions[cid]({data, propsData});
-					}
-					loaders[uid].resolve();
-				});
 				for(let tab of tabs) {
 					let definition: number = tab.definedIn;
 					if(!loaders[definition]) {
 						loaders[definition] = (async (definition)=> {
 							var descr = await this.gl.eventHub.query('comp-mirror', definition);
-							if(!descr) {
-								this.popoutMirrors[definition]	= this;
-							} else {
-								this.popoutMirrors[definition] = new customExtensions[descr.cid]({
-									data: descr.data,
-									propsData: descr.propsData
-								});
-							}
+							if(descr) Vue.set(this.popoutMirrors, definition, {
+								options: {
+									extends: customExtensions[descr.cid],
+									data: ()=> descr.data
+								},
+								propsData: descr.propsData
+							});
 						})(definition);
 					}
 				}
@@ -322,7 +335,7 @@ export default class goldenLayout extends goldenContainer {
 					return comp ?
 						{
 							cid: (<any>comp.constructor).cid,
-							data: comp.$data,
+							data: {_nodePath: comp.nodePath(), ...comp.$data},
 							propsData: comp.$props
 						} :
 						null;

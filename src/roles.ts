@@ -15,6 +15,7 @@ export function UsingSlots(...slots: string[]) {
 export class goldenItem extends Vue {
 	glObject: any = null
 	get childMe() { return <goldenChild><unknown>this; }
+	get parentMe() { return <goldenContainer><unknown>this; }
 }
 
 @Component
@@ -75,20 +76,14 @@ export class goldenContainer extends goldenItem {
 	get glChildren(): goldenChild[] {
 		return this.glObject.contentItems.map((x : any)=> x.vueObject);
 	}
-	vueChild(child: number|Vue): goldenChild {
-		var rv = 'number'=== typeof child ? this.$children[child] : <Vue>child;
-		while(rv instanceof glCustomContainer)
-			rv = rv.$children[0];
-		return <goldenChild>rv;
-	}
-	get childMe() {
-		return this.vueChild(this);
+	vueChild(child: number): goldenChild {
+		return (<goldenItem>this.$children[child]).childMe;
 	}
 	/**
 	  * Get the list of Vue children and not their definition abstract component
 	  */ 
 	vueChildren(): goldenChild[] {
-		return <goldenChild[]>this.$children.map(this.vueChild.bind(this)).filter(x=> x instanceof goldenItem);
+		return <goldenChild[]>this.$children.map(comp=> (<goldenItem>comp).childMe).filter(x=> x instanceof goldenItem);
 	}
 	events: string[] = ['open', 'resize', 'destroy', 'close', 'tab', 'hide', 'show']
 	mounted() {
@@ -110,10 +105,7 @@ export class goldenChild extends goldenItem {
 	  * Gets the Vue container that is not a component definition and therefore actually contains this
 	  */ 
 	get vueParent(): goldenContainer {
-		var rv = <goldenContainer>this.$parent;
-		while(rv instanceof glCustomContainer)
-			rv = <goldenContainer>rv.$parent;
-		return rv;
+		return this.$parent.parentMe;
 	}
 	
 	get definedVueComponent(): goldenContainer {
@@ -158,11 +150,12 @@ export class goldenChild extends goldenItem {
 	}
 	
 	created() {
-		if(!(this.vueParent instanceof goldenContainer))
+		if(!this.vueParent.addGlChild)
 			throw new Error('gl-child can only appear directly in a golden-layout container');
 	}
 	nodePath() {
-		return this.vueParent.childPath(this.childMe);
+		// this.$data._nodePath is defined when this is a pop-out mirror component
+		return this.$data._nodePath || this.vueParent.childPath(this.childMe);
 	}
 	mounted() {
 		var dimensions: any = {};
@@ -196,17 +189,25 @@ export class goldenLink extends goldenContainer {	//TODO: should use typescript 
 	title: string
 	$parent: goldenContainer
 	givenProp: (prop: string)=> any
+	vueParent: goldenContainer
 }
 
 @Component
 export class glCustomContainer extends goldenLink {
 	get definedVueComponent(): goldenContainer { return this; }
+	get childMe() {
+		return (<goldenItem>this.$children[0]).childMe;
+	}
+	get parentMe() {
+		return this.vueParent;
+	}
 	created() {
 		if(!isSubWindow)
 			instanciatedCustomContainer[(<any>this)._uid] = this;
 	}
 	nodePath() {
-		return (<any>this).vueParent.childPath(this.$children[0]);
+		// this.$data._nodePath is defined when this is a pop-out mirror component
+		return this.$data._nodePath || (<any>this).vueParent.childPath(this.$children[0]);
 	}
 	getChildConfig(): any { return null; }
 }
