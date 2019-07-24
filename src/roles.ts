@@ -7,6 +7,7 @@ export const instanciatedCustomContainer: {[cid: number]: glCustomContainer } = 
 
 export function UsingSlots(...slots: string[]) {
 	return function(target: any) {
+		//TODO: find another way than to use the prototype (browse throught the lineage) not to have this accessible in the component's data
 		target.prototype.usedSlots = target.prototype.usedSlots ?
 			slots.concat(target.prototype.usedSlots) : slots;
 	}
@@ -122,6 +123,7 @@ export class goldenChild extends goldenItem {
 
 	givenProp(prop: string): any {
 		var itr: any = this;
+		//TODO: `instanceof glCustomContainer` fails in popout windows
 		while(!itr[prop] && itr.$parent instanceof glCustomContainer)
 			itr = itr.$parent;
 		return itr[prop];
@@ -153,6 +155,7 @@ export class goldenChild extends goldenItem {
 		if(!this.vueParent.addGlChild)
 			throw new Error('gl-child can only appear directly in a golden-layout container');
 	}
+
 	nodePath() {
 		// this.$data._nodePath is defined when this is a pop-out mirror component
 		return this.$data._nodePath || this.vueParent.childPath(this.childMe);
@@ -180,16 +183,21 @@ export class goldenChild extends goldenItem {
 	events: string[] = ['stateChanged', 'titleChanged', 'activeContentItemChanged', 'beforeItemDestroyed', 'itemDestroyed', 'itemCreated']
 }
 
-@Component({mixins: [goldenChild]})
-export class goldenLink extends goldenContainer {	//TODO: should use typescript keyword `implements`
-	// declaration of goldenChild properties
-	container: any
-	tabId: string
-	givenTabId: string
-	title: string
-	$parent: goldenContainer
-	givenProp: (prop: string)=> any
-	vueParent: goldenContainer
+@Component({mixins: [goldenContainer]})
+export class goldenLink extends goldenChild implements goldenContainer {	//TODO: should use typescript keyword `implements`
+	// declaration of goldenContainer properties
+	readonly definedVueComponent: goldenContainer
+	config: any
+	layout: any
+	childPath:(comp: goldenChild)=> string
+	getChild: (path: string)=> goldenChild
+	readonly glChildrenTarget: any
+	addGlChild: (child : any, comp : any)=> void
+	removeGlChild: (index: number)=> void
+	readonly glChildren: goldenChild[]
+	vueChild: (child: number)=> goldenChild
+	vueChildren: ()=> goldenChild[]
+	events: string[]
 }
 
 @Component

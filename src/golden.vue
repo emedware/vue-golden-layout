@@ -109,6 +109,7 @@ export default class goldenLayout extends goldenContainer {
 			component :
 			function(container: any, state: any) {
 				container.getElement().append(component.$el);
+				//TODO: `events` should not be an instance property
 				forwardEvt(container, component, component.events);
 				component.container = container;
 			};
@@ -190,7 +191,6 @@ export default class goldenLayout extends goldenContainer {
 			(<goldenContainer>rootPathComponent).getChild(remainingPath) :
 			<goldenChild>rootPathComponent;
 	}
-
 	async mounted() {
 		var me = this, layoutRoot = this.$refs.layoutRoot, gl: GoldenLayout,
 			state = this.state instanceof Promise ?

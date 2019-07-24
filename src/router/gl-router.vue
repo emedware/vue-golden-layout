@@ -36,8 +36,7 @@ export default class glRouter extends glCustomContainer {
 	@Provide() get _glRouter() { return this; }
 	@Prop({default: '/'}) emptyRoute: string
 	@Prop({default: 'router'}) dstackId: string
-	@Prop({default: ()=> []})
-	routes: Location[]
+	@Prop({default: ()=> []}) routes: Location[]
 	
 	get definedVueComponent(): goldenContainer {
 		return this.$parent.definedVueComponent;

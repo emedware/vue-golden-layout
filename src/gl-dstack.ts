@@ -24,12 +24,14 @@ export default class glDstack extends glRow {
 	get glChildrenTarget() { return this.stack; }
 	content: any[]
 	getChildConfig(): any {
-		var config = (<any>glRow).extendOptions.methods.getChildConfig.apply(this);  //super is a @Component
+		var that = this,
+			config = (<any>glRow).extendOptions.methods.getChildConfig.apply(this);  //super is a @Component
 		this.content = config.content.filter((x: any) => !x.isClosable && !x.reorderEnabled);
 		config.content = [{
 			type: 'stack',
 			content: config.content.slice(0),
-			dstackId: this.dstackId
+			dstackId: this.dstackId,
+			get vue() { return that.nodePath() }
 		}];
 		return config;
 	}
@@ -48,7 +50,7 @@ export default class glDstack extends glRow {
 	}
 	cachedStack: any = null
 	get stack() {
-		var ci = this.glObject , rv: any;
+		var ci = this.glObject , rv: any, that = this;
 		if(!ci) return null;
 		if(this.cachedStack && this.cachedStack.vueObject.glObject)
 			return this.cachedStack;
@@ -57,7 +59,8 @@ export default class glDstack extends glRow {
 			ci.addChild({
 				type: 'stack',
 				content: this.content.slice(0),
-				dstackId: this.dstackId
+				dstackId: this.dstackId,
+				get vue() { return that.nodePath() }
 			}, 0);
 			rv = ci.contentItems[0];
 			rv.on('activeContentItemChanged', this.activeContentItemChanged);
@@ -87,7 +90,7 @@ export default class glDstack extends glRow {
 		}
 		var glo = await this.layout.glo,
 			root_child = glo.root.contentItems[0];
-		if(glo.isSubWindow && root_child.config.dstackId === this.dstackId) {
+		if(isSubWindow && root_child.config.dstackId === this.dstackId) {
 			(<any>window).dstackId = this.dstackId;
 			root_child.contentItems
 				.filter((x: any)=> !x.config.isClosable && !x.reorderEnabled)
