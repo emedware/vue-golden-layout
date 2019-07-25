@@ -9,6 +9,9 @@
 			<h1>CompA</h1>
 			<button @click="state.bottomSheet = !state.bottomSheet">Toggle</button>
 			<button @click="addStack">Add</button>
+			<gl-drag component="DragTest" :data="{}">
+				<button>Drag</button>
+			</gl-drag>
 			<p><input v-model="testText" /></p>
 			<p>
 				<router-link to="/lr">Layout-route</router-link>&nbsp;
@@ -31,11 +34,18 @@
 <script lang="ts">
 import Vue from 'vue'
 import { Component, Inject, Model, Prop, Watch, Emit } from 'vue-property-decorator'
-import { glCustomContainer } from 'vue-golden-layout'
+import { glCustomContainer, glDrag } from 'vue-golden-layout'
 import { letters } from './router'
+import DragTest from './dragTest.vue'
 
-@Component
+@Component({
+	components: {
+		glDrag
+	}
+})
 export default class demoStack extends glCustomContainer {
+	DragTest : any = DragTest;
+
 	@Model('changeState') state: {
 		bottomSheet: boolean,
 		stackSubs: number[],
@@ -47,6 +57,7 @@ export default class demoStack extends glCustomContainer {
 
 	letters = letters
 	testText = "testing text."
+
 	closed(n: number) {
 		var ndx = this.state.stackSubs.indexOf(n);
 		console.assert(!!~ndx, 'Element in state array');

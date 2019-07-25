@@ -7,18 +7,21 @@ import glDstack from './gl-dstack'
 import glRouter from './router/gl-router.vue'
 import glRoute from './router/gl-route.vue'
 import glContainerRoute from './router/gl-container-route.vue'
+import glDrag from './gl-drag.vue'
 export { glCustomContainer } from './roles'
 
 var components : any = {
 	goldenLayout, glComponent,
 	glRow, glCol, glStack, glDstack,
-	glRouter, glRoute, glContainerRoute
+	glRouter, glRoute, glContainerRoute,
+	glDrag
 };
 
 export {
 	goldenLayout, glComponent,
 	glRow, glCol, glStack, glDstack,
-	glRouter, glRoute, glContainerRoute
+	glRouter, glRoute, glContainerRoute,
+	glDrag
 }
 
 export default {
