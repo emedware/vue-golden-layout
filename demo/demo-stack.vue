@@ -9,7 +9,7 @@
 			<h1>CompA</h1>
 			<button @click="state.bottomSheet = !state.bottomSheet">Toggle</button>
 			<button @click="addStack">Add</button>
-			<gl-drag component="DragTest" :data="{}">
+			<gl-drag :component="DragTest" componentName="DragTest" :data="{}">
 				<button>Drag</button>
 			</gl-drag>
 			<p><input v-model="testText" /></p>
@@ -40,7 +40,7 @@ import DragTest from './dragTest.vue'
 
 @Component({
 	components: {
-		glDrag
+		glDrag, DragTest
 	}
 })
 export default class demoStack extends glCustomContainer {
