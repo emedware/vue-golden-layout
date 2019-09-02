@@ -3,7 +3,6 @@ import { goldenChild } from '../roles'
 import { defaultTitler, RouteComponentName } from './utils'
 import glRouteBase from './gl-route-base'
 import Vue from 'vue'
-
 @Component
 export default class glComponentRoute extends glRouteBase {
 	@Prop() component: typeof Vue

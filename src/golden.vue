@@ -11,9 +11,9 @@
 import Vue, { VNode, VueConstructor } from 'vue'
 import { Component, Model, Prop, Watch, Emit, Provide } from 'vue-property-decorator'
 import * as GoldenLayout from 'golden-layout'
-import { goldenContainer, customExtensions, instanciatedCustomContainer, goldenChild, goldenItem } from './roles'
+import { goldenContainer, instanciatedItem, goldenChild, goldenItem } from './roles'
 import * as resize from 'vue-resize-directive'
-import { isSubWindow, Dictionary, Semaphore, newSemaphore } from './utils'
+import { customExtensions, isSubWindow, Dictionary, Semaphore, newSemaphore } from './utils'
 import { Object } from 'core-js';
 
 import { EventEmitter } from 'golden-layout'
@@ -292,9 +292,12 @@ export default class goldenLayout extends goldenContainer {
 					{};
 				itm.vueObject.glObject = itm;
 				if(itm.config.vue && itm.vueObject.nodePath && !isSubWindow) {
-					itm.config.__defineGetter__('vue', ()=> itm.vueObject.nodePath());
+					itm.config.__defineGetter__('vue', ()=> itm.vueObject.nodePath);
 					let definition = itm.vueObject.definedVueComponent;
-					itm.config.definedIn = definition._uid;
+					if(definition === this)
+						itm.config.rootId = itm.vueObject._uid
+					else
+						itm.config.definedIn = definition._uid;
 				}
 				if(itm.vueObject.initialState)
 					itm.vueObject.initialState(itm.config.componentState);
@@ -315,10 +318,13 @@ export default class goldenLayout extends goldenContainer {
 				let loaders = {};
 				for(let tab of tabs) {
 					let definition: number = tab.definedIn;
+					if(!definition)
+						definition = tab.rootId;
 					if(!loaders[definition]) {
 						loaders[definition] = (async (definition)=> {
 							var descr = await this.gl.eventHub.query('comp-mirror', definition);
-							if(descr) Vue.set(this.popoutMirrors, definition, {
+							console.assert(descr, 'Either a root UID or a custom container is given');
+							Vue.set(this.popoutMirrors, definition, {
 								options: {
 									extends: customExtensions[descr.cid],
 									data: ()=> descr.data
@@ -331,27 +337,22 @@ export default class goldenLayout extends goldenContainer {
 				await Promise.all(Object.values(loaders));
 			} else {
 				gl.eventHub.response('comp-mirror', (uid: number)=> {
-					var comp = instanciatedCustomContainer[uid];
+					var comp = instanciatedItem[uid];
 					return comp ?
 						{
 							cid: (<any>comp.constructor).cid,
-							data: {_nodePath: comp.nodePath(), ...comp.$data},
-							propsData: comp.$props
+							data: {_nodePath: comp.nodePath, ...comp.$data},
+							propsData: comp.$options.propsData
 						} :
 						null;
-					if(!comp) gl.eventHub.emit('comp-mirror', uid);
-					else gl.eventHub.emit('comp-mirror',
-						uid, (<any>comp.constructor).cid,
-						comp.$data, comp.$props);
 				});
 			}
 			try{
 				gl.init();
 			} catch(e) {
 				this.glo.reject(e);
-				if(e.type === 'popoutBlocked') {
-					alert('The browser has blocked the pop-up you requested. Please allow pop-ups for this site.')
-				}
+				if(e.type === 'popoutBlocked')
+					alert('The browser has blocked the pop-up you requested. Please allow pop-ups for this site.');
 			}
 			if(this.interWindow) {
 				gl.eventHub.on('inter-window', (value: Dictionary)=> {

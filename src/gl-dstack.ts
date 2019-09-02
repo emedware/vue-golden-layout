@@ -30,8 +30,8 @@ export default class glDstack extends glRow {
 		config.content = [{
 			type: 'stack',
 			content: config.content.slice(0),
-			dstackId: this.dstackId,
-			get vue() { return that.nodePath() }
+			dstackId: this.dstackId/*,
+			get vue() { return that.nodePath }*/
 		}];
 		return config;
 	}
@@ -59,8 +59,8 @@ export default class glDstack extends glRow {
 			ci.addChild({
 				type: 'stack',
 				content: this.content.slice(0),
-				dstackId: this.dstackId,
-				get vue() { return that.nodePath() }
+				dstackId: this.dstackId/*,
+				get vue() { return that.nodePath }*/
 			}, 0);
 			rv = ci.contentItems[0];
 			rv.on('activeContentItemChanged', this.activeContentItemChanged);
@@ -94,7 +94,7 @@ export default class glDstack extends glRow {
 			(<any>window).dstackId = this.dstackId;
 			root_child.contentItems
 				.filter((x: any)=> !x.config.isClosable && !x.reorderEnabled)
-				.map((comp: any)=> comp.close());
+				.map((comp: any)=> this.stack.removeChild(comp));
 		}
 		glo.on('windowOpened', onWindowPopout);
 		this.stack;

@@ -97,3 +97,13 @@ if(isSubWindow) {
 		}
 	});
 }
+
+import Vue from 'vue'
+export const customExtensions: {[cid: number]: typeof Vue } = {};
+
+var oldExtend = Vue.extend;
+Vue.extend = function(options) {
+	var rv = oldExtend.apply(this, arguments);
+	customExtensions[(<any>rv).cid] = rv;
+	return rv;
+}

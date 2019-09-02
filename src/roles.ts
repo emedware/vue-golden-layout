@@ -2,8 +2,7 @@ import Vue from 'vue'
 import { Component, Prop, Watch, Inject } from 'vue-property-decorator'
 import { isSubWindow } from './utils'
 
-export const customExtensions: {[cid: number]: typeof glCustomContainer } = {};
-export const instanciatedCustomContainer: {[cid: number]: glCustomContainer } = {};
+export const instanciatedItem: {[uid: number]: goldenItem } = {};
 
 export function UsingSlots(...slots: string[]) {
 	return function(target: any) {
@@ -15,8 +14,10 @@ export function UsingSlots(...slots: string[]) {
 
 export class goldenItem extends Vue {
 	glObject: any = null
+	// To be overriden
 	get childMe() { return <goldenChild><unknown>this; }
 	get parentMe() { return <goldenContainer><unknown>this; }
+	get nodePath(): string { return ''; }
 }
 
 @Component
@@ -29,7 +30,7 @@ export class goldenContainer extends goldenItem {
 	layout: any
 	childPath(comp: goldenChild): string {
 		var childMe = <goldenChild><any>this;
-		var rv = childMe.nodePath?`${childMe.nodePath()}.`:'';
+		var rv = childMe.nodePath?`${childMe.nodePath}.`:'';
 		var ndx = this.vueChildren().indexOf(comp);
 		console.assert(!!~ndx, 'Child exists');
 		return rv+ndx;
@@ -154,9 +155,11 @@ export class goldenChild extends goldenItem {
 	created() {
 		if(!this.vueParent.addGlChild)
 			throw new Error('gl-child can only appear directly in a golden-layout container');
+		if(!isSubWindow)
+			instanciatedItem[(<any>this)._uid] = this;
 	}
 
-	nodePath() {
+	get nodePath() {
 		// this.$data._nodePath is defined when this is a pop-out mirror component
 		return this.$data._nodePath || this.vueParent.childPath(this.childMe);
 	}
@@ -170,7 +173,7 @@ export class goldenChild extends goldenItem {
 				...dimensions,
 				...childConfig,
 				title: childConfig.title||this.givenProp('title'),
-				vue: this.nodePath()
+				vue: this.nodePath
 			}, this);
 	}
 	beforeDestroy() {
@@ -209,20 +212,5 @@ export class glCustomContainer extends goldenLink {
 	get parentMe() {
 		return this.vueParent;
 	}
-	created() {
-		if(!isSubWindow)
-			instanciatedCustomContainer[(<any>this)._uid] = this;
-	}
-	nodePath() {
-		// this.$data._nodePath is defined when this is a pop-out mirror component
-		return this.$data._nodePath || (<any>this).vueParent.childPath(this.$children[0]);
-	}
 	getChildConfig(): any { return null; }
-}
-
-var oldExtend = glCustomContainer.extend;
-glCustomContainer.extend = function(options) {
-	var rv = oldExtend.call(this, options);
-	customExtensions[(<any>rv).cid] = rv;
-	return rv;
 }
