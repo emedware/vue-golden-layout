@@ -72,7 +72,8 @@ function createRouteComponent(comp: VueConstructor, routerSpec: RouterSpec, rout
 	}
 	const component = template ? new Vue({
 		render(ce) {
-			return template instanceof Array ?
+			// `instanceof Array` fails in popouts: `template` is a `window.opener.Array` then
+			return template.constructor.name === 'Array' ?
 				ce('div', {class: 'glComponent'}, template) :
 				template;
 		},

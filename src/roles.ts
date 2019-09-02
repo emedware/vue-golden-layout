@@ -123,8 +123,7 @@ export class goldenChild extends goldenItem {
 
 	givenProp(prop: string): any {
 		var itr: any = this;
-		//TODO: `instanceof glCustomContainer` fails in popout windows
-		while(!itr[prop] && itr.$parent instanceof glCustomContainer)
+		while(!itr[prop] && itr.$parent.constructor.name === 'glCustomContainer')
 			itr = itr.$parent;
 		return itr[prop];
 	}
