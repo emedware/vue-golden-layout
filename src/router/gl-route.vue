@@ -25,10 +25,10 @@ import { freezeRoute } from './utils'
 type VueComponent = ComponentOptions<Vue> | typeof Vue | AsyncComponent;
 
 @Component({
-	mixins: [glRouteBase],
+	mixins: [glCustomContainer],
 	components: {glComponentRoute, glContainerRoute, glComponent}
 })
-export default class glRoute extends glCustomContainer {
+export default class glRoute extends glRouteBase {
 	closable: boolean
 	location: Location
 	@Prop({default: 'Loading'}) loading: string

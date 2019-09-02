@@ -29,8 +29,7 @@ export class goldenContainer extends goldenItem {
 	}
 	layout: any
 	childPath(comp: goldenChild): string {
-		var childMe = <goldenChild><any>this;
-		var rv = childMe.nodePath?`${childMe.nodePath}.`:'';
+		var rv = this.childMe.nodePath?`${this.childMe.nodePath}.`:'';
 		var ndx = this.vueChildren().indexOf(comp);
 		console.assert(!!~ndx, 'Child exists');
 		return rv+ndx;
@@ -159,6 +158,8 @@ export class goldenChild extends goldenItem {
 			instanciatedItem[(<any>this)._uid] = this;
 	}
 
+	// Don't remove: goldenItem is weirdly inherited in popouts
+	get childMe(): goldenChild { return this; }
 	get nodePath() {
 		// this.$data._nodePath is defined when this is a pop-out mirror component
 		return this.$data._nodePath || this.vueParent.childPath(this.childMe);
@@ -187,7 +188,9 @@ export class goldenChild extends goldenItem {
 }
 
 @Component({mixins: [goldenContainer]})
-export class goldenLink extends goldenChild implements goldenContainer {	//TODO: should use typescript keyword `implements`
+export class goldenLink extends goldenChild implements goldenContainer {
+	//TODO: `implements` should help avoid props redeclaration - but does not
+
 	// declaration of goldenContainer properties
 	readonly definedVueComponent: goldenContainer
 	config: any

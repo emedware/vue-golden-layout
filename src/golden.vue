@@ -326,6 +326,9 @@ export default class goldenLayout extends goldenContainer {
 							console.assert(descr, 'Either a root UID or a custom container is given');
 							Vue.set(this.popoutMirrors, definition, {
 								options: {
+									beforeCreate() {
+										this._provided = descr.inject;
+									},
 									extends: customExtensions[descr.cid],
 									data: ()=> descr.data
 								},
@@ -338,11 +341,25 @@ export default class goldenLayout extends goldenContainer {
 			} else {
 				gl.eventHub.response('comp-mirror', (uid: number)=> {
 					var comp = instanciatedItem[uid];
+					if(!comp) return null;
+					var inject = null, injectionSpecs = comp.$options.inject;
+					if(comp.$options.inject) {
+						inject = {};
+						for(let iName in injectionSpecs) {
+							let injection = comp[iName];
+							if(injection) {
+								/*if(injection.uid) injection = {uid: injection.uid};
+								else if(injection.cid) injection = {cid: injection.cid};*/
+								inject[injectionSpecs[iName].from || iName] = comp[iName];
+							}
+						}
+					}
 					return comp ?
 						{
 							cid: (<any>comp.constructor).cid,
 							data: {_nodePath: comp.nodePath, ...comp.$data},
-							propsData: comp.$options.propsData
+							propsData: comp.$options.propsData,
+							inject
 						} :
 						null;
 				});
