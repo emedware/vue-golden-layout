@@ -181,10 +181,10 @@ export default class goldenLayout extends goldenContainer {
 	
 	getSubChild(path: string): goldenChild {
 		var rootPathLength: number = 0, rootPathComponent: goldenItem = null;
-		for(var comp of this.$children)
-			if(comp.$data._nodePath) {
-				let compPathLength: number = comp.$data._nodePath.length;
-				if(path.substring(0, compPathLength) === comp.$data._nodePath &&
+		for(var comp of <goldenChild[]>this.$children)
+			if(comp.parentNodePath) {
+				let compPathLength: number = comp.parentNodePath.length;
+				if(path.substring(0, compPathLength) === comp.parentNodePath &&
 					compPathLength  > rootPathLength)
 						[rootPathLength, rootPathComponent] = [compPathLength, <goldenItem>comp];
 			}
@@ -332,6 +332,7 @@ export default class goldenLayout extends goldenContainer {
 								options: {
 									beforeCreate() {
 										this._provided = descr.inject;
+										this.parentNodePath = descr.nodePath
 									},
 									extends: customExtensions[descr.cid],
 									data: ()=> descr.data
@@ -361,7 +362,8 @@ export default class goldenLayout extends goldenContainer {
 					return comp ?
 						{
 							cid: (<any>comp.constructor).cid,
-							data: {_nodePath: comp.nodePath, ...comp.$data},
+							data: comp.$data,
+							nodePath: comp.nodePath,
 							propsData: comp.$options.propsData,
 							inject
 						} :

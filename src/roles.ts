@@ -159,9 +159,10 @@ export class goldenChild extends goldenItem {
 
 	// Don't remove: goldenItem is weirdly inherited in popouts
 	get childMe(): goldenChild { return this; }
+	// Defined when this is a pop-out mirror component
+	parentNodePath?: string
 	get nodePath() {
-		// this.$data._nodePath is defined when this is a pop-out mirror component
-		return this.$data._nodePath || this.vueParent.childPath(this.childMe);
+		return this.parentNodePath || this.vueParent.childPath(this.childMe);
 	}
 	mounted() {
 		var dimensions: any = {};
