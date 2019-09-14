@@ -2,8 +2,6 @@ import Vue from 'vue'
 import { Component, Prop, Watch, Inject } from 'vue-property-decorator'
 import { isSubWindow, xInstanceOf } from './utils'
 
-export const instanciatedItem: {[uid: number]: goldenItem } = {};
-
 export function UsingSlots(...slots: string[]) {
 	return function(target: any) {
 		//TODO: find another way than to use the prototype (browse throught the lineage) not to have this accessible in the component's data
@@ -18,6 +16,7 @@ export class goldenItem extends Vue {
 	get childMe() { return <goldenChild><unknown>this; }
 	get parentMe() { return <goldenContainer><unknown>this; }
 	get nodePath(): string { return ''; }
+	layout: any
 }
 
 @Component
@@ -27,7 +26,6 @@ export class goldenContainer extends goldenItem {
 	config: any = {
 		content: []
 	}
-	layout: any
 	childPath(comp: goldenChild): string {
 		var rv = this.childMe.nodePath?`${this.childMe.nodePath}.`:'';
 		var ndx = this.vueChildren().indexOf(comp);
@@ -153,16 +151,13 @@ export class goldenChild extends goldenItem {
 	created() {
 		if(!this.vueParent.addGlChild)
 			throw new Error('gl-child can only appear directly in a golden-layout container');
-		if(!isSubWindow)
-			instanciatedItem[(<any>this)._uid] = this;
 	}
 
 	// Don't remove: goldenItem is weirdly inherited in popouts
 	get childMe(): goldenChild { return this; }
 	// Defined when this is a pop-out mirror component
-	parentNodePath?: string
 	get nodePath() {
-		return this.parentNodePath || this.vueParent.childPath(this.childMe);
+		return this.vueParent.childPath(this.childMe);
 	}
 	mounted() {
 		var dimensions: any = {};

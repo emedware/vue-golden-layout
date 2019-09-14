@@ -53,8 +53,8 @@ function sendResponse(queryId: number, name: string, sub: Window, result: any, f
 		sub.fireEvent('on' + event.eventType, event);
 	}
 }
-
-Object.assign((<any>GoldenLayout).__lm.utils.EventHub.prototype, {
+var lm = (<any>GoldenLayout).__lm;
+Object.assign(lm.utils.EventHub.prototype, {
 	query: async function(name: string, ...args: any[]) {
 		var rv = newSemaphore<any>();
 		queries[++queryId] = rv;
@@ -67,47 +67,6 @@ Object.assign((<any>GoldenLayout).__lm.utils.EventHub.prototype, {
 	}
 });
 
-if(isSubWindow) {
-	window.addEventListener(responseEvent, function() {
-		var queryId = (<any>event).queryId;
-		queries[queryId].resolve((<any>event).result);
-		delete queries[queryId];
-	});
-	window.addEventListener(errorEvent, function() {
-		var queryId = (<any>event).queryId;
-		queries[queryId].reject((<any>event).result);
-		delete queries[queryId];
-	});
-} else {
-	window.addEventListener('gl_child_event', function() {
-		if(queryEvent=== (<any>event).__glArgs[0]) {
-			var [_, queryId, name, ...params] = (<any>event).__glArgs, rv,
-				sub = (<any>event).__gl.container.ownerDocument.defaultView.window;
-			try {
-				rv = queryCallBacks[name](...params);
-			} catch(e) {
-				return sendResponse(queryId, name, sub, e, true);
-			}
-			if(rv instanceof Promise)
-				rv
-					.then(x=> sendResponse(queryId, name, sub, x))
-					.catch(x=> sendResponse(queryId, name, sub, x, true));
-			else
-				sendResponse(queryId, name, sub, rv);
-		}
-	});
-}
-
-import Vue from 'vue'
-export const customExtensions: {[cid: number]: typeof Vue } = {};
-
-var oldExtend = Vue.extend;
-Vue.extend = function(options) {
-	var rv = oldExtend.apply(this, arguments);
-	customExtensions[(<any>rv).cid] = rv;
-	return rv;
-}
-
 /// Equivalent of `obj instanceOf name` but accepting cross-windows classes.
 // Ex: A popup and the main window buth have an `Array` class defined - and they are different
 //  Therefore `x instanceOf Array` will return false if the Array class is from the other window
@@ -116,4 +75,24 @@ export function xInstanceOf(obj: any, name: string) {
 	while(browser.name !== name && browser.super)
 		browser = browser.super;
 	return browser.name === name;
+}
+
+export var poppingOut = false;
+// hook `createPopout` to give objects instead of destroying then on-destroy
+var oldCreatePopout = lm.LayoutManager.prototype.createPopout;
+lm.LayoutManager.prototype.createPopout = function(item) {
+	poppingOut = true;
+	var rv = oldCreatePopout.apply(this, arguments);
+	poppingOut = false;
+	var obj = item.vueObject, rootPaths = {};
+	if(obj.nodePath) rootPaths[obj.nodePath] = obj;
+	for(let sub of item.contentItems) {
+		obj = sub.vueObject;
+		rootPaths[obj.nodePath] = obj;
+	}
+	rv.getWindow().poppedoutVue = {
+		layout: obj && obj.layout,
+		path: rootPaths
+	};
+	return rv;
 }

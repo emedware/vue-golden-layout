@@ -1,10 +1,6 @@
 <template>
 	<div ref="layoutRoot" v-resize="onResize">
-		<div v-if="isSubWindow" style="display: none;" id="twins">
-			<div v-for="(comp, mwUid) in popoutMirrors" :key="mwUid"
-				:is="comp.options" v-bind="comp.propsData"></div>
-		</div>
-		<slot v-else />
+		<slot v-if="!isSubWindow" />
 	</div>
 </template>
 <script lang="ts">
@@ -14,18 +10,10 @@
 import Vue, { VNode, VueConstructor } from 'vue'
 import { Component, Model, Prop, Watch, Emit, Provide } from 'vue-property-decorator'
 import * as GoldenLayout from 'golden-layout'
-import { goldenContainer, instanciatedItem, goldenChild, goldenItem } from './roles'
+import { goldenContainer, goldenChild, goldenItem } from './roles'
 import * as resize from 'vue-resize-directive'
-import { customExtensions, isSubWindow, Dictionary, Semaphore, newSemaphore } from './utils'
+import { isSubWindow, Dictionary, Semaphore, newSemaphore, poppingOut } from './utils'
 import { Object } from 'core-js';
-
-import { EventEmitter } from 'golden-layout'
-declare module "golden-layout" {
-	interface EventEmitter {
-		query: (name: string, ...params: any[])=> Promise<any>
-		response: (name: string, cb: (...params: any[])=> any)=> any
-	}
-}
 
 export type globalComponent = (gl: goldenLayout, container: any, state: any)=> void;
 var globalComponents: Dictionary<globalComponent> = {};
@@ -97,10 +85,6 @@ export default class goldenLayout extends goldenContainer {
 	gl: GoldenLayout
 	tplCount: Dictionary<number> = {}
 	tplPreload : Dictionary<any> = {}
-
-	/// List of Vue component that mirror components from the main window
-	// mwUid = Main Window _uid (the _uid of the component in the main window)
-	popoutMirrors: {[mwUid: number]: Vue} = {}
 	
 	registerComponent(component: any/*: Vue|()=>any*/, name?: string, prefix?: string): string {
 		if(!name) {
@@ -181,19 +165,20 @@ export default class goldenLayout extends goldenContainer {
 	
 	getSubChild(path: string): goldenChild {
 		var rootPathLength: number = 0, rootPathComponent: goldenItem = null;
-		for(var comp of <goldenChild[]>this.$children)
-			if(comp.parentNodePath) {
-				let compPathLength: number = comp.parentNodePath.length;
-				if(path.substring(0, compPathLength) === comp.parentNodePath &&
-					compPathLength  > rootPathLength)
-						[rootPathLength, rootPathComponent] = [compPathLength, <goldenItem>comp];
-			}
+		for(let compPath in this.rootPath) {
+			let compPathLength: number = compPath.length;
+			if(path.substring(0, compPathLength) === compPath &&
+				compPathLength  > rootPathLength)
+					[rootPathLength, rootPathComponent] = [compPathLength, this.rootPath[compPath]];
+		}
 		rootPathComponent = rootPathComponent.childMe;
 		var remainingPath = path.substr(rootPathLength+1);
 		return remainingPath ?
 			(<goldenContainer>rootPathComponent).getChild(remainingPath) :
 			<goldenChild>rootPathComponent;
 	}
+	rootPath?: {[path: string]: goldenItem}
+	parentLayout?: goldenLayout
 	async mounted() {
 		var me = this, layoutRoot = this.$refs.layoutRoot, gl: GoldenLayout,
 			state = this.state instanceof Promise ?
@@ -231,17 +216,27 @@ export default class goldenLayout extends goldenContainer {
 				};
 			}
 			this.gl = gl = new GoldenLayout(this.config, <Element>layoutRoot);
+			var poppedoutVue = (<any>window).poppedoutVue;
+			if(poppedoutVue) {
+				this.rootPath = poppedoutVue.path;
+				this.parentLayout = poppedoutVue.layout;
+			}
 			//#region Register gl-components
-			// Components registered with this.registerComponent(...)
-			for(var tpl in this.tplPreload)
-				gl.registerComponent(tpl, this.tplPreload[tpl]);
-			delete this.tplPreload;
-			// Register direct-children templates
-			for(var tpl in this.slotTemplates)
-				gl.registerComponent(tpl, this.slotComponentWrap(this.slotTemplates[tpl].content));
-			// Register global components given by other vue-components
-			for(var tpl in globalComponents)
-				gl.registerComponent(tpl, this.globalComponentWrap(globalComponents[tpl]));
+			// In a popup, use parents's registrations
+			if(this.parentLayout)
+				(<any>gl)._components = (<any>this.parentLayout.gl)._components
+			else {
+				// Components registered with this.registerComponent(...)
+				for(var tpl in this.tplPreload)
+					gl.registerComponent(tpl, this.tplPreload[tpl]);
+				delete this.tplPreload;
+				// Register direct-children templates
+				for(var tpl in this.slotTemplates)
+					gl.registerComponent(tpl, this.slotComponentWrap(this.slotTemplates[tpl].content));
+				// Register global components given by other vue-components
+				for(var tpl in globalComponents)
+					gl.registerComponent(tpl, this.globalComponentWrap(globalComponents[tpl]));
+			}
 			//#endregion
 			//#region Events
 			var raiseStateChanged: (arg?: number)=> void;
@@ -296,17 +291,16 @@ export default class goldenLayout extends goldenContainer {
 				itm.vueObject.glObject = itm;
 				if(itm.config.vue && itm.vueObject.nodePath && !isSubWindow) {
 					itm.config.__defineGetter__('vue', ()=> itm.vueObject.nodePath);
-					let definition = itm.vueObject.definedVueComponent;
-					if(definition === this)
-						itm.config.rootId = itm.vueObject._uid
-					else
-						itm.config.definedIn = definition._uid;
 				}
 				if(itm.vueObject.initialState)
 					itm.vueObject.initialState(itm.config.componentState);
 			});
 			gl.on('itemDestroyed', (itm: any) => {
 				itm.vueObject.glObject = null;
+				if(!poppingOut) {
+					//TODO: destroy vueObject
+					//TODO: (somewhere else) BrowserWindow.on('close') should destroy all the vue objects if not popped in
+				}
 				//Bugfix: when destroying a tab before itm, stack' activeItemIndex is not updated and become invalid
 				if(itm.parent && itm.parent.isStack && itm.parent.contentItems.indexOf(itm) < itm.parent.config.activeItemIndex)
 					setTimeout(()=> {
@@ -316,60 +310,6 @@ export default class goldenLayout extends goldenContainer {
 			forwardEvt(gl, this, ['itemCreated', 'stackCreated', 'rowCreated', 'tabCreated', 'columnCreated', 'componentCreated',
 				'selectionChanged', 'windowOpened', 'windowClosed', 'itemDestroyed', 'initialised', 'activeContentItemChanged']);
 			//#endregion
-			if(isSubWindow) {
-				var tabs: any[] = gl.config.content[0].content;
-				let loaders = {};
-				for(let tab of tabs) {
-					let definition: number = tab.definedIn;
-					if(!definition)
-						definition = tab.rootId;
-					if(!loaders[definition]) {
-						loaders[definition] = (async (definition)=> {
-							var descr = await this.gl.eventHub.query('comp-mirror', definition);
-							descr.inject.layout = this;
-							console.assert(descr, 'Either a root UID or a custom container is given');
-							Vue.set(this.popoutMirrors, definition, {
-								options: {
-									beforeCreate() {
-										this._provided = descr.inject;
-										this.parentNodePath = descr.nodePath
-									},
-									extends: customExtensions[descr.cid],
-									data: ()=> descr.data
-								},
-								propsData: descr.propsData
-							});
-						})(definition);
-					}
-				}
-				await Promise.all(Object.values(loaders));
-			} else {
-				gl.eventHub.response('comp-mirror', (uid: number)=> {
-					var comp = instanciatedItem[uid];
-					if(!comp) return null;
-					var inject = null, injectionSpecs = comp.$options.inject;
-					if(comp.$options.inject) {
-						inject = {};
-						for(let iName in injectionSpecs) {
-							let injection = comp[iName];
-							if(injection) {
-								/*if(injection.uid) injection = {uid: injection.uid};
-								else if(injection.cid) injection = {cid: injection.cid};*/
-								inject[injectionSpecs[iName].from || iName] = comp[iName];
-							}
-						}
-					}
-					return comp ?
-						{
-							cid: (<any>comp.constructor).cid,
-							data: comp.$data,
-							nodePath: comp.nodePath,
-							propsData: comp.$options.propsData,
-							inject
-						} :
-						null;
-				});
-			}
 			try{
 				gl.init();
 			} catch(e) {
