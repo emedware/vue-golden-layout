@@ -8,6 +8,9 @@
 	</div>
 </template>
 <script lang="ts">
+////TODO2: Trouver un moyen pour retrouver de quel sous-composant un tab s'agit dans un popup, quand les composants ont bougé
+//         Peut se faire en donnant une image de l'arbre des nodePath
+////TODO3: Trouver un moyen de faire de même quand l'élément est crée dynamiquement
 import Vue, { VNode, VueConstructor } from 'vue'
 import { Component, Model, Prop, Watch, Emit, Provide } from 'vue-property-decorator'
 import * as GoldenLayout from 'golden-layout'
@@ -323,6 +326,7 @@ export default class goldenLayout extends goldenContainer {
 					if(!loaders[definition]) {
 						loaders[definition] = (async (definition)=> {
 							var descr = await this.gl.eventHub.query('comp-mirror', definition);
+							descr.inject.layout = this;
 							console.assert(descr, 'Either a root UID or a custom container is given');
 							Vue.set(this.popoutMirrors, definition, {
 								options: {

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import { Component, Prop, Watch, Inject } from 'vue-property-decorator'
-import { isSubWindow } from './utils'
+import { isSubWindow, xInstanceOf } from './utils'
 
 export const instanciatedItem: {[uid: number]: goldenItem } = {};
 
@@ -123,7 +123,7 @@ export class goldenChild extends goldenItem {
 
 	givenProp(prop: string): any {
 		var itr: any = this;
-		while(!itr[prop] && itr.$parent.constructor.name === 'glCustomContainer')
+		while(!itr[prop] && xInstanceOf(itr.$parent, 'glCustomContainer'))
 			itr = itr.$parent;
 		return itr[prop];
 	}
