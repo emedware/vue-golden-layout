@@ -96,3 +96,19 @@ lm.LayoutManager.prototype.createPopout = function(item) {
 	};
 	return rv;
 }
+
+var bp = lm.controls.BrowserPopout.prototype;
+
+export var poppingIn = false;
+// hook `createPopout` to give objects instead of destroying then on-destroy
+var oldPopIn = bp.popIn;
+bp.popIn = function() {
+	poppingIn = true;
+	this.emit('beforePopIn');
+	// GL bug-fix: poping-in empty window
+	var rv = this.getGlInstance().root.contentItems.length ?
+		oldPopIn.apply(this, arguments) :
+		this.close();
+	poppingIn = false;
+	return rv;
+}

@@ -1,6 +1,7 @@
 import { Watch, Component, Prop, Emit, Model } from 'vue-property-decorator'
 import { glRow } from './gl-groups'
 import { isSubWindow } from './utils'
+import Vue from 'vue'
 
 @Component
 export default class glDstack extends glRow {
@@ -66,6 +67,10 @@ export default class glDstack extends glRow {
 			rv.on('activeContentItemChanged', this.activeContentItemChanged);
 			this.activeContentItemChanged();
 		}
+		rv.on('destroy', ()=> Vue.nextTick(()=> {
+			this.cachedStack = null;
+			this.stack;
+		}));
 		return this.cachedStack = rv;
 	}
 	
@@ -85,12 +90,11 @@ export default class glDstack extends glRow {
 			var rootChild = popup.getGlInstance().root.contentItems[0];
 			if(rootChild.config.dstackId === this.dstackId) {
 				//re-create the stack object
-				this.cachedStack = null;
-				this.stack;
 				rootChild.contentItems
 					.filter((x: any)=> !x.config.isClosable && !x.reorderEnabled)
 					.map((comp: any)=> rootChild.removeChild(comp));
 			}
 		});
+		this.stack;
 	}
 }

@@ -12,7 +12,7 @@ import { Component, Model, Prop, Watch, Emit, Provide } from 'vue-property-decor
 import * as GoldenLayout from 'golden-layout'
 import { goldenContainer, goldenChild, goldenItem } from './roles'
 import * as resize from 'vue-resize-directive'
-import { isSubWindow, Dictionary, Semaphore, newSemaphore, poppingOut } from './utils'
+import { isSubWindow, Dictionary, Semaphore, newSemaphore, poppingOut, poppingIn } from './utils'
 import { Object } from 'core-js';
 
 export type globalComponent = (gl: goldenLayout, container: any, state: any)=> void;
@@ -296,8 +296,11 @@ export default class goldenLayout extends goldenContainer {
 					itm.vueObject.initialState(itm.config.componentState);
 			});
 			gl.on('itemDestroyed', (itm: any) => {
-				itm.vueObject.glObject = null;
-				if(!poppingOut) {
+				//Bugfix: GL does NOT raise a 'destroy' event on the destroyed item
+				itm.emit('destroy', itm);
+
+				if(!poppingOut && !poppingIn) {
+					itm.vueObject.glObject = null;
 					//TODO: destroy vueObject
 					//TODO: (somewhere else) BrowserWindow.on('close') should destroy all the vue objects if not popped in
 				}
