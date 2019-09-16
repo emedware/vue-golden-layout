@@ -48,7 +48,6 @@ export default class goldenLayout extends goldenContainer {
 	@Prop({default: true}) showMaximiseIcon: boolean
 	@Prop({default: true}) showCloseIcon: boolean
 	@Model('state', {default: null}) state: any
-	@Prop() interWindow: object
 
 	@Watch('hasHeaders') @Watch('reorderEnabled') @Watch('selectionEnabled') @Watch('popoutWholeStack')
 	@Watch('blockedPopoutsThrowError') @Watch('closePopoutsOnUnload') @Watch('showPopoutIcon')
@@ -318,31 +317,7 @@ export default class goldenLayout extends goldenContainer {
 				if(e.type === 'popoutBlocked')
 					alert('The browser has blocked the pop-up you requested. Please allow pop-ups for this site.');
 			}
-			if(this.interWindow) {
-				gl.eventHub.on('inter-window', (value: Dictionary)=> {
-					if(value !== this.interWindow) {	//This happens when this wondow raise the event
-						this.receivingInterWindow = true;
-						for(let key of Object.keys(this.interWindow))
-							Vue.delete(this.interWindow, key);
-						for(let key in value)
-							Vue.set(this.interWindow, key, value[key]);
-					}
-				});
-				if(isSubWindow)
-					gl.eventHub.emit('query-inter-window');
-				else
-					gl.eventHub.on('query-inter-window', ()=> {
-						gl.eventHub.emit('inter-window', this.interWindow);
-					});
-			}
 		});
-	}
-	receivingInterWindow: boolean
-	@Watch('interWindow', {deep: true}) interWindowChange(value: Dictionary) {
-		if(this.receivingInterWindow)
-			this.receivingInterWindow = false;
-		else
-			this.gl.eventHub.emit('inter-window', this.interWindow);
 	}
 	onResize() { this.gl && this.gl.updateSize(); }
 }
