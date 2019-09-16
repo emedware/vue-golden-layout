@@ -296,13 +296,11 @@ export default class goldenLayout extends goldenContainer {
 					itm.vueObject.initialState(itm.config.componentState);
 			});
 			gl.on('itemDestroyed', (itm: any) => {
-				//Bugfix: GL does NOT raise a 'destroy' event on the destroyed item
-				itm.emit('destroy', itm);
+				itm.emit('destroyed', itm);
 
 				if(!poppingOut && !poppingIn) {
 					itm.vueObject.glObject = null;
-					//TODO: destroy vueObject
-					//TODO: (somewhere else) BrowserWindow.on('close') should destroy all the vue objects if not popped in
+					itm.vueObject.delete && itm.vueObject.delete();
 				}
 				//Bugfix: when destroying a tab before itm, stack' activeItemIndex is not updated and become invalid
 				if(itm.parent && itm.parent.isStack && itm.parent.contentItems.indexOf(itm) < itm.parent.config.activeItemIndex)

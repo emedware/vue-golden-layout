@@ -94,6 +94,9 @@ lm.LayoutManager.prototype.createPopout = function(item) {
 		layout: obj && obj.layout,
 		path: rootPaths
 	};
+	rv.getWindow().addEventListener('beforeunload', ()=> {
+		for(let p in rootPaths) rootPaths[p].delete();
+	});
 	return rv;
 }
 

@@ -71,8 +71,9 @@ export default class glRouter extends glCustomContainer {
 	destroyedRoute(route: glRoute) {
 		if(route.closable) {
 			var ndx = this.routes.findIndex(opened(route.location))
-			console.assert(~ndx, 'Closed route is in the array');
-			this.routes.splice(ndx, 1);
+			if(~ndx) this.routes.splice(ndx, 1);
+			//TODO: reenable (double delete when closing popup)
+			//else console.assert(false, 'Closed route is in the array');
 		}
 	}
 }

@@ -3,6 +3,8 @@ import { glRow } from './gl-groups'
 import { isSubWindow } from './utils'
 import Vue from 'vue'
 
+//TODO:Bug: When there is no fixed tabs, the d-stack disappears on popout
+
 @Component
 export default class glDstack extends glRow {
 	/**
@@ -60,14 +62,13 @@ export default class glDstack extends glRow {
 			ci.addChild({
 				type: 'stack',
 				content: this.content.slice(0),
-				dstackId: this.dstackId/*,
-				get vue() { return that.nodePath }*/
+				dstackId: this.dstackId
 			}, 0);
 			rv = ci.contentItems[0];
 			rv.on('activeContentItemChanged', this.activeContentItemChanged);
 			this.activeContentItemChanged();
 		}
-		rv.on('destroy', ()=> Vue.nextTick(()=> {
+		rv.on('destroyed', ()=> Vue.nextTick(()=> {
 			this.cachedStack = null;
 			this.stack;
 		}));
@@ -88,10 +89,10 @@ export default class glDstack extends glRow {
 		var glo = await this.layout.glo;
 		glo.on('windowOpened', (popup: any)=> {
 			var rootChild = popup.getGlInstance().root.contentItems[0];
-			if(rootChild.config.dstackId === this.dstackId) {
+			if(rootChild && rootChild.config.dstackId === this.dstackId) {
 				//re-create the stack object
 				rootChild.contentItems
-					.filter((x: any)=> !x.config.isClosable && !x.reorderEnabled)
+					.filter((x: any)=> !x.config.isClosable && !x.config.reorderEnabled)
 					.map((comp: any)=> rootChild.removeChild(comp));
 			}
 		});
