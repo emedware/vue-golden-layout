@@ -67,7 +67,7 @@ export default class glDstack extends glRow {
 			rv.on('activeContentItemChanged', this.activeContentItemChanged);
 			this.activeContentItemChanged();
 		}
-		rv.on('destroy', ()=> Vue.nextTick(()=> {
+		rv.on('destroyed', ()=> Vue.nextTick(()=> {
 			this.cachedStack = null;
 			this.stack;
 		}));
@@ -91,7 +91,7 @@ export default class glDstack extends glRow {
 			if(rootChild.config.dstackId === this.dstackId) {
 				//re-create the stack object
 				rootChild.contentItems
-					.filter((x: any)=> !x.config.isClosable && !x.reorderEnabled)
+					.filter((x: any)=> !x.config.isClosable && !x.config.reorderEnabled)
 					.map((comp: any)=> rootChild.removeChild(comp));
 			}
 		});

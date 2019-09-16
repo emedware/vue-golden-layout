@@ -126,6 +126,15 @@ export class goldenChild extends goldenItem {
 		return itr[prop];
 	}
 
+	rootProp(prop: string): any {
+		var itr: any = this, rv = itr[prop];
+		while(xInstanceOf(itr.$parent, 'glCustomContainer')) {
+			itr = itr.$parent;
+			if(prop in itr) rv = itr[prop];
+		}
+		return rv;
+	}
+
 	hide() { this.container && this.container.hide(); }
 	show() { this.container && this.container.show(); }
 	@Prop({default: false}) hidden: boolean
@@ -147,7 +156,10 @@ export class goldenChild extends goldenItem {
 	close() {
 		this.container && this.container.close();
 	}
-	
+	delete() {
+		this.$emit('destroy', this);
+		this.$destroy();
+	}
 	created() {
 		if(!this.vueParent.addGlChild)
 			throw new Error('gl-child can only appear directly in a golden-layout container');
@@ -164,10 +176,12 @@ export class goldenChild extends goldenItem {
 		if(undefined!== this.width) dimensions.width = this.width;
 		if(undefined!== this.height) dimensions.height = this.height;
 		let childConfig: any = this.getChildConfig();
-		if(childConfig)	//glCustomContainer shouldn't mount as their child is already mounted in the vueParent
+		if(childConfig) //glCustomContainer shouldn't mount as their child is already mounted in the vueParent
 			this.vueParent.addGlChild({
 				...dimensions,
 				...childConfig,
+				isClosable: this.rootProp('isClosable'),
+				reorderEnabled: this.rootProp('reorderEnabled'),
 				title: childConfig.title||this.givenProp('title'),
 				vue: this.nodePath
 			}, this);
@@ -177,7 +191,7 @@ export class goldenChild extends goldenItem {
 			this.glObject.parent.removeChild(this.glObject);
 	}
 	@Watch('glObject') destroy(v:boolean) {
-		if(!v) this.$emit('destroy', this);
+		if(!v) this.delete();
 	}
 	events: string[] = ['stateChanged', 'titleChanged', 'activeContentItemChanged', 'beforeItemDestroyed', 'itemDestroyed', 'itemCreated']
 }
@@ -203,9 +217,19 @@ export class goldenLink extends goldenChild implements goldenContainer {
 
 @Component
 export class glCustomContainer extends goldenLink {
+	constructor() {
+		super();
+		this.destructor = this.delete.bind(this);
+	}
 	get definedVueComponent(): goldenContainer { return this; }
+	cachedChildMe: goldenChild
+	destructor: any
 	get childMe() {
-		return (<goldenItem>this.$children[0]).childMe;
+		var rv = (<goldenItem>this.$children[0]).childMe;
+
+		if(this.cachedChildMe) this.cachedChildMe.$off('destroy', this.destructor);
+		if(rv) rv.$on('destroy', this.destructor);
+		return rv;
 	}
 	get parentMe() {
 		return this.vueParent;
