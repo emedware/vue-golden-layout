@@ -10,7 +10,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { Component, Inject, Model, Prop, Watch, Emit, Provide } from 'vue-property-decorator'
-import { glCustomContainer } from '../roles'
+import { glCustomContainer, goldenContainer } from '../roles'
 import glDstack from '../gl-dstack'
 import glRoute from './gl-route.vue'
 import { defaultTitler, UsingRoutes } from './utils'
@@ -36,8 +36,11 @@ export default class glRouter extends glCustomContainer {
 	@Provide() get _glRouter() { return this; }
 	@Prop({default: '/'}) emptyRoute: string
 	@Prop({default: 'router'}) dstackId: string
-	@Prop({default: ()=> []})
-	routes: Location[]
+	@Prop({default: ()=> []}) routes: Location[]
+	
+	get definedVueComponent(): goldenContainer {
+		return this.$parent.definedVueComponent;
+	}
 
 	async mounted() {
 		//With immediate: true, the watch is called before $refs are initialised
@@ -68,8 +71,9 @@ export default class glRouter extends glCustomContainer {
 	destroyedRoute(route: glRoute) {
 		if(route.closable) {
 			var ndx = this.routes.findIndex(opened(route.location))
-			console.assert(~ndx, 'Closed route is in the array');
-			this.routes.splice(ndx, 1);
+			if(~ndx) this.routes.splice(ndx, 1);
+			//TODO: reenable (double delete when closing popup)
+			//else console.assert(false, 'Closed route is in the array');
 		}
 	}
 }

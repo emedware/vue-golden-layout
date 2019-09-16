@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import { Component, Prop, Watch, Inject } from 'vue-property-decorator'
+import { isSubWindow, xInstanceOf } from './utils'
 
 export function UsingSlots(...slots: string[]) {
 	return function(target: any) {
+		//TODO: find another way than to use the prototype (browse throught the lineage) not to have this accessible in the component's data
 		target.prototype.usedSlots = target.prototype.usedSlots ?
 			slots.concat(target.prototype.usedSlots) : slots;
 	}
@@ -10,20 +12,22 @@ export function UsingSlots(...slots: string[]) {
 
 export class goldenItem extends Vue {
 	glObject: any = null
+	// To be overriden
 	get childMe() { return <goldenChild><unknown>this; }
+	get parentMe() { return <goldenContainer><unknown>this; }
+	get nodePath(): string { return ''; }
+	layout: any
 }
 
 @Component
 @UsingSlots('default')
 export class goldenContainer extends goldenItem {
-	definedVueComponent: goldenContainer
+	readonly definedVueComponent: goldenContainer
 	config: any = {
 		content: []
 	}
-	layout: any
 	childPath(comp: goldenChild): string {
-		var childMe = <goldenChild><any>this;
-		var rv = childMe.nodePath?`${childMe.nodePath()}.`:'';
+		var rv = this.childMe.nodePath?`${this.childMe.nodePath}.`:'';
 		var ndx = this.vueChildren().indexOf(comp);
 		console.assert(!!~ndx, 'Child exists');
 		return rv+ndx;
@@ -71,20 +75,14 @@ export class goldenContainer extends goldenItem {
 	get glChildren(): goldenChild[] {
 		return this.glObject.contentItems.map((x : any)=> x.vueObject);
 	}
-	vueChild(child: number|Vue): goldenChild {
-		var rv = 'number'=== typeof child ? this.$children[child] : <Vue>child;
-		while(rv instanceof glCustomContainer)
-			rv = rv.$children[0];
-		return <goldenChild>rv;
-	}
-	get childMe() {
-		return this.vueChild(this);
+	vueChild(child: number): goldenChild {
+		return (<goldenItem>this.$children[child]).childMe;
 	}
 	/**
 	  * Get the list of Vue children and not their definition abstract component
 	  */ 
 	vueChildren(): goldenChild[] {
-		return <goldenChild[]>this.$children.map(this.vueChild.bind(this)).filter(x=> x instanceof goldenItem);
+		return <goldenChild[]>this.$children.map(comp=> (<goldenItem>comp).childMe).filter(x=> x instanceof goldenItem);
 	}
 	events: string[] = ['open', 'resize', 'destroy', 'close', 'tab', 'hide', 'show']
 	mounted() {
@@ -106,10 +104,7 @@ export class goldenChild extends goldenItem {
 	  * Gets the Vue container that is not a component definition and therefore actually contains this
 	  */ 
 	get vueParent(): goldenContainer {
-		var rv = <goldenContainer>this.$parent;
-		while(rv instanceof glCustomContainer)
-			rv = <goldenContainer>rv.$parent;
-		return rv;
+		return this.$parent.parentMe;
 	}
 	
 	get definedVueComponent(): goldenContainer {
@@ -126,9 +121,18 @@ export class goldenChild extends goldenItem {
 
 	givenProp(prop: string): any {
 		var itr: any = this;
-		while(!itr[prop] && itr.$parent instanceof glCustomContainer)
+		while(!itr[prop] && xInstanceOf(itr.$parent, 'glCustomContainer'))
 			itr = itr.$parent;
 		return itr[prop];
+	}
+
+	rootProp(prop: string, init: any): any {
+		var itr: any = this, rv = init;
+		do {
+			if(prop in itr) rv = itr[prop];
+			itr = itr.$parent;
+		} while(xInstanceOf(itr, 'glCustomContainer'));
+		return rv;
 	}
 
 	hide() { this.container && this.container.hide(); }
@@ -152,12 +156,19 @@ export class goldenChild extends goldenItem {
 	close() {
 		this.container && this.container.close();
 	}
-	
+	delete() {
+		this.$emit('destroy', this);
+		this.$destroy();
+	}
 	created() {
-		if(!(this.vueParent instanceof goldenContainer))
+		if(!this.vueParent.addGlChild)
 			throw new Error('gl-child can only appear directly in a golden-layout container');
 	}
-	nodePath() {
+
+	// Don't remove: goldenItem is weirdly inherited in popouts
+	get childMe(): goldenChild { return this; }
+	// Defined when this is a pop-out mirror component
+	get nodePath() {
 		return this.vueParent.childPath(this.childMe);
 	}
 	mounted() {
@@ -165,12 +176,14 @@ export class goldenChild extends goldenItem {
 		if(undefined!== this.width) dimensions.width = this.width;
 		if(undefined!== this.height) dimensions.height = this.height;
 		let childConfig: any = this.getChildConfig();
-		if(childConfig)	//glCustomContainer shouldn't mount as their child is already mounted in the vueParent
+		if(childConfig) //glCustomContainer shouldn't mount as their child is already mounted in the vueParent
 			this.vueParent.addGlChild({
 				...dimensions,
 				...childConfig,
+				isClosable: this.rootProp('isClosable', childConfig.isClosable),
+				reorderEnabled: this.rootProp('reorderEnabled', childConfig.reorderEnabled),
 				title: childConfig.title||this.givenProp('title'),
-				vue: this.nodePath()
+				vue: this.nodePath
 			}, this);
 	}
 	beforeDestroy() {
@@ -178,27 +191,48 @@ export class goldenChild extends goldenItem {
 			this.glObject.parent.removeChild(this.glObject);
 	}
 	@Watch('glObject') destroy(v:boolean) {
-		if(!v) this.$emit('destroy', this);
+		if(!v) this.delete();
 	}
 	events: string[] = ['stateChanged', 'titleChanged', 'activeContentItemChanged', 'beforeItemDestroyed', 'itemDestroyed', 'itemCreated']
 }
 
-@Component({mixins: [goldenChild]})
-export class goldenLink extends goldenContainer {
-	// declaration of goldenChild properties
-	container: any
-	tabId: string
-	givenTabId: string
-	title: string
-	$parent: goldenContainer
-	givenProp: (prop: string)=> any
+@Component({mixins: [goldenContainer]})
+export class goldenLink extends goldenChild implements goldenContainer {
+	//TODO: `implements` should help avoid props redeclaration - but does not
+
+	// declaration of goldenContainer properties
+	readonly definedVueComponent: goldenContainer
+	config: any
+	layout: any
+	childPath:(comp: goldenChild)=> string
+	getChild: (path: string)=> goldenChild
+	readonly glChildrenTarget: any
+	addGlChild: (child : any, comp : any)=> void
+	removeGlChild: (index: number)=> void
+	readonly glChildren: goldenChild[]
+	vueChild: (child: number)=> goldenChild
+	vueChildren: ()=> goldenChild[]
+	events: string[]
 }
 
 @Component
 export class glCustomContainer extends goldenLink {
-	get definedVueComponent() { return this; }
-	nodePath() {
-		return (<any>this).vueParent.childPath(this.$children[0]);
+	constructor() {
+		super();
+		this.destructor = this.delete.bind(this);
+	}
+	get definedVueComponent(): goldenContainer { return this; }
+	cachedChildMe: goldenChild
+	destructor: any
+	get childMe() {
+		var rv = (<goldenItem>this.$children[0]).childMe;
+
+		if(this.cachedChildMe) this.cachedChildMe.$off('destroy', this.destructor);
+		if(rv) rv.$on('destroy', this.destructor);
+		return rv;
+	}
+	get parentMe() {
+		return this.vueParent;
 	}
 	getChildConfig(): any { return null; }
 }

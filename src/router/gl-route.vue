@@ -25,10 +25,10 @@ import { freezeRoute } from './utils'
 type VueComponent = ComponentOptions<Vue> | typeof Vue | AsyncComponent;
 
 @Component({
-	mixins: [glRouteBase],
+	mixins: [glCustomContainer],
 	components: {glComponentRoute, glContainerRoute, glComponent}
 })
-export default class glRoute extends glCustomContainer {
+export default class glRoute extends glRouteBase {
 	closable: boolean
 	location: Location
 	@Prop({default: 'Loading'}) loading: string
@@ -46,6 +46,7 @@ export default class glRoute extends glCustomContainer {
 		if(comp instanceof Promise) comp = await comp;
 		this.component = comp;
 		//TODO: ComponentOptions.extends
+		//TODO: `instanceof glCustomContainer` fails in popout windows
 		this.type = 'function'=== typeof comp && comp.prototype instanceof glCustomContainer ?
 			'container' : 'component';
 		freezeRoute(this, route);

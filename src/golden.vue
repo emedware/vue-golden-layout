@@ -1,17 +1,21 @@
 <template>
 	<div ref="layoutRoot" v-resize="onResize">
-		<slot />
+		<slot v-if="!isSubWindow" />
 	</div>
 </template>
 <script lang="ts">
+////TODO2: Trouver un moyen pour retrouver de quel sous-composant un tab s'agit dans un popup, quand les composants ont bougé
+//         Peut se faire en donnant une image de l'arbre des nodePath
+////TODO3: Trouver un moyen de faire de même quand l'élément est crée dynamiquement
 import Vue, { VNode, VueConstructor } from 'vue'
 import { Component, Model, Prop, Watch, Emit, Provide } from 'vue-property-decorator'
 import * as GoldenLayout from 'golden-layout'
-import { goldenContainer } from './roles'
+import { goldenContainer, goldenChild, goldenItem } from './roles'
 import * as resize from 'vue-resize-directive'
+import { isSubWindow, Dictionary, Semaphore, newSemaphore, poppingOut, poppingIn } from './utils'
+import { Object } from 'core-js';
 
 export type globalComponent = (gl: goldenLayout, container: any, state: any)=> void;
-export type Dictionary<T = any> = {[key: string]: T}
 var globalComponents: Dictionary<globalComponent> = {};
 
 //This is necessary as in poped-out windows, an observed config has arrays that return `instanceof Array` false
@@ -24,11 +28,6 @@ export function registerGlobalComponent(name: string, comp: globalComponent) {
 	globalComponents[name] = comp;
 }
 
-interface Semaphore<T> extends Promise<T> {
-	resolve: (arg?: T)=> void;
-	reject: (arg?: T)=> void;
-}
-
 interface slotComponent {
 	customVueComponent: VueConstructor
 	content: any
@@ -37,7 +36,7 @@ interface slotComponent {
 @Component({directives: {resize}})
 export default class goldenLayout extends goldenContainer {
 	$router : any
-
+	isSubWindow: boolean = isSubWindow
 	//Settings
 	@Prop({default: true}) hasHeaders: boolean
 	@Prop({default: true}) reorderEnabled: boolean
@@ -49,7 +48,6 @@ export default class goldenLayout extends goldenContainer {
 	@Prop({default: true}) showMaximiseIcon: boolean
 	@Prop({default: true}) showCloseIcon: boolean
 	@Model('state', {default: null}) state: any
-	@Prop() interWindow: object
 
 	@Watch('hasHeaders') @Watch('reorderEnabled') @Watch('selectionEnabled') @Watch('popoutWholeStack')
 	@Watch('blockedPopoutsThrowError') @Watch('closePopoutsOnUnload') @Watch('showPopoutIcon')
@@ -97,12 +95,14 @@ export default class goldenLayout extends goldenContainer {
 			component :
 			function(container: any, state: any) {
 				container.getElement().append(component.$el);
+				//TODO: `events` should not be an instance property
 				forwardEvt(container, component, component.events);
 				component.container = container;
 			};
 		if(this.gl) {
 			this.gl.registerComponent(name, tplData);
-			console.warn('Dynamic golden-layout components should be named templates instead.');
+			//TODO: The warning might be relevant even with prefix, if loaded after the prefix-object has been constructed
+			if(!prefix) console.warn('Dynamic golden-layout components should be named templates instead.');
 		} else this.tplPreload[name] = tplData;
 		return name;
 	}
@@ -157,16 +157,28 @@ export default class goldenLayout extends goldenContainer {
 	}
 	//cached by Vue
 	get glo(): Semaphore<any> {
-		var access, rv = new Promise<any>(function(resolve, reject) {
-			access = {resolve, reject};
-		});
-		Object.assign(rv, access);
-		return <Semaphore<any>>rv;
+		return newSemaphore();
 	}
 	get definedVueComponent() { return this; }
 	@Provide() get layout() { return this; }
-	@Emit() subWindow(is: boolean) {}
-	mounted() {
+	
+	getSubChild(path: string): goldenChild {
+		var rootPathLength: number = 0, rootPathComponent: goldenItem = null;
+		for(let compPath in this.rootPath) {
+			let compPathLength: number = compPath.length;
+			if(path.substring(0, compPathLength) === compPath &&
+				compPathLength  > rootPathLength)
+					[rootPathLength, rootPathComponent] = [compPathLength, this.rootPath[compPath]];
+		}
+		rootPathComponent = rootPathComponent.childMe;
+		var remainingPath = path.substr(rootPathLength+1);
+		return remainingPath ?
+			(<goldenContainer>rootPathComponent).getChild(remainingPath) :
+			<goldenChild>rootPathComponent;
+	}
+	rootPath?: {[path: string]: goldenItem}
+	parentLayout?: goldenLayout
+	async mounted() {
 		var me = this, layoutRoot = this.$refs.layoutRoot, gl: GoldenLayout,
 			state = this.state instanceof Promise ?
 				this.state : Promise.resolve(this.state);
@@ -175,11 +187,8 @@ export default class goldenLayout extends goldenContainer {
 		var sleep = (timeout: number, rv: any)=> new Promise(function(resolve: (value: any)=> void, _: any) {
 			setTimeout(()=> resolve(rv), timeout);
 		});
-		const isSubWindow = /[?&]gl-window=/.test(window.location.search);
 		state
-			//.then(s=> sleep(isSubWindow?2000:0, s))
-			.then((state: any)=> {
-			this.subWindow(isSubWindow);
+			.then(async (state: any)=> {
 			if(state && !isSubWindow) {
 				this.config = state.content ?
 					state :
@@ -206,17 +215,27 @@ export default class goldenLayout extends goldenContainer {
 				};
 			}
 			this.gl = gl = new GoldenLayout(this.config, <Element>layoutRoot);
+			var poppedoutVue = (<any>window).poppedoutVue;
+			if(poppedoutVue) {
+				this.rootPath = poppedoutVue.path;
+				this.parentLayout = poppedoutVue.layout;
+			}
 			//#region Register gl-components
-			// Components registered with this.registerComponent(...)
-			for(var tpl in this.tplPreload)
-				gl.registerComponent(tpl, this.tplPreload[tpl]);
-			delete this.tplPreload;
-			// Register direct-children templates
-			for(var tpl in this.slotTemplates)
-				gl.registerComponent(tpl, this.slotComponentWrap(this.slotTemplates[tpl].content));
-			// Register global components given by other vue-components
-			for(var tpl in globalComponents)
-				gl.registerComponent(tpl, this.globalComponentWrap(globalComponents[tpl]));
+			// In a popup, use parents's registrations
+			if(this.parentLayout)
+				(<any>gl)._components = (<any>this.parentLayout.gl)._components
+			else {
+				// Components registered with this.registerComponent(...)
+				for(var tpl in this.tplPreload)
+					gl.registerComponent(tpl, this.tplPreload[tpl]);
+				delete this.tplPreload;
+				// Register direct-children templates
+				for(var tpl in this.slotTemplates)
+					gl.registerComponent(tpl, this.slotComponentWrap(this.slotTemplates[tpl].content));
+				// Register global components given by other vue-components
+				for(var tpl in globalComponents)
+					gl.registerComponent(tpl, this.globalComponentWrap(globalComponents[tpl]));
+			}
 			//#endregion
 			//#region Events
 			var raiseStateChanged: (arg?: number)=> void;
@@ -263,17 +282,25 @@ export default class goldenLayout extends goldenContainer {
 			});
 			gl.on('itemCreated', (itm: any) => {
 				itm.vueObject = itm === gl.root ? this :
-					itm.config.vue && !isSubWindow ? this.getChild(itm.config.vue) :
+					itm.config.vue ?
+						isSubWindow ?
+							this.getSubChild(itm.config.vue) :
+							this.getChild(itm.config.vue) :
 					{};
 				itm.vueObject.glObject = itm;
-				if(itm.config.vue && itm.vueObject.nodePath) {
-					itm.config.__defineGetter__('vue', ()=> itm.vueObject.nodePath());
+				if(itm.config.vue && itm.vueObject.nodePath && !isSubWindow) {
+					itm.config.__defineGetter__('vue', ()=> itm.vueObject.nodePath);
 				}
 				if(itm.vueObject.initialState)
 					itm.vueObject.initialState(itm.config.componentState);
 			});
 			gl.on('itemDestroyed', (itm: any) => {
-				itm.vueObject.glObject = null;
+				itm.emit('destroyed', itm);
+
+				if(!poppingOut && !poppingIn) {
+					itm.vueObject.glObject = null;
+					itm.vueObject.delete && itm.vueObject.delete();
+				}
 				//Bugfix: when destroying a tab before itm, stack' activeItemIndex is not updated and become invalid
 				if(itm.parent && itm.parent.isStack && itm.parent.contentItems.indexOf(itm) < itm.parent.config.activeItemIndex)
 					setTimeout(()=> {
@@ -287,35 +314,10 @@ export default class goldenLayout extends goldenContainer {
 				gl.init();
 			} catch(e) {
 				this.glo.reject(e);
-				if(e.type === 'popoutBlocked') {
-					alert('The browser has blocked the pop-up you requested. Please allow pop-ups for this site.')
-				}
-			}
-			if(this.interWindow) {
-				gl.eventHub.on('inter-window', (value: Dictionary)=> {
-					if(value !== this.interWindow) {	//This happens when this wondow raise the event
-						this.receivingInterWindow = true;
-						for(let key of Object.keys(this.interWindow))
-							Vue.delete(this.interWindow, key);
-						for(let key in value)
-							Vue.set(this.interWindow, key, value[key]);
-					}
-				});
-				if(isSubWindow)
-					gl.eventHub.emit('query-inter-window');
-				else
-					gl.eventHub.on('query-inter-window', ()=> {
-						gl.eventHub.emit('inter-window', this.interWindow);
-					});
+				if(e.type === 'popoutBlocked')
+					alert('The browser has blocked the pop-up you requested. Please allow pop-ups for this site.');
 			}
 		});
-	}
-	receivingInterWindow: boolean
-	@Watch('interWindow', {deep: true}) interWindowChange(value: Dictionary) {
-		if(this.receivingInterWindow)
-			this.receivingInterWindow = false;
-		else
-			this.gl.eventHub.emit('inter-window', this.interWindow);
 	}
 	onResize() { this.gl && this.gl.updateSize(); }
 }

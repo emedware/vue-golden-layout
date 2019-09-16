@@ -49,8 +49,8 @@ export default class demoStack extends glCustomContainer {
 	testText = "testing text."
 	closed(n: number) {
 		var ndx = this.state.stackSubs.indexOf(n);
-		console.assert(!!~ndx, 'Element in state array');
-		this.state.stackSubs.splice(ndx, 1);
+		if(~ndx)
+			this.state.stackSubs.splice(ndx, 1);
 	}
 	addStack() {
 		this.state.stackSubs.push(++this.state.ssId);

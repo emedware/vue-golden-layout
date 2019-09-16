@@ -14,7 +14,7 @@
 import Vue from 'vue'
 import { Component, Inject, Model, Prop, Watch, Emit } from 'vue-property-decorator'
 import { goldenContainer, goldenChild } from './roles'
-import { Dictionary } from './golden.vue'
+import { Dictionary } from './utils.js'
 
 @Component
 export default class glComponent extends goldenChild {

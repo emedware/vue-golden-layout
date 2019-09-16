@@ -1,5 +1,6 @@
 import { Route } from 'vue-router'
-import goldenLayout, { registerGlobalComponent, Dictionary } from '../golden.vue'
+import goldenLayout, { registerGlobalComponent } from '../golden.vue'
+import { Dictionary, xInstanceOf } from '../utils'
 import { goldenItem } from '../roles'
 import Vue, { ComponentOptions, Component, AsyncComponent, VueConstructor } from 'vue'
 
@@ -71,7 +72,8 @@ function createRouteComponent(comp: VueConstructor, routerSpec: RouterSpec, rout
 	}
 	const component = template ? new Vue({
 		render(ce) {
-			return template instanceof Array ?
+			// `instanceof Array` fails in popouts: `template` is a `window.opener.Array` then
+			return xInstanceOf(template, 'Array') ?
 				ce('div', {class: 'glComponent'}, template) :
 				template;
 		},
