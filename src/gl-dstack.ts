@@ -80,23 +80,17 @@ export default class glDstack extends glRow {
 		}
 	}
 	async created() {
-		const that = this;
-		function onWindowPopout(popup: any) {
-			if(popup._popoutWindow.dstackId === that.dstackId) {
+		var glo = await this.layout.glo;
+		glo.on('windowOpened', (popup: any)=> {
+			var rootChild = popup.getGlInstance().root.contentItems[0];
+			if(rootChild.config.dstackId === this.dstackId) {
 				//re-create the stack object
-				that.cachedStack = null;
-				that.stack;
+				this.cachedStack = null;
+				this.stack;
+				rootChild.contentItems
+					.filter((x: any)=> !x.config.isClosable && !x.reorderEnabled)
+					.map((comp: any)=> rootChild.removeChild(comp));
 			}
-		}
-		var glo = await this.layout.glo,
-			root_child = glo.root.contentItems[0];
-		if(isSubWindow && root_child.config.dstackId === this.dstackId) {
-			(<any>window).dstackId = this.dstackId;
-			root_child.contentItems
-				.filter((x: any)=> !x.config.isClosable && !x.reorderEnabled)
-				.map((comp: any)=> this.stack.removeChild(comp));
-		}
-		glo.on('windowOpened', onWindowPopout);
-		this.stack;
+		});
 	}
 }
