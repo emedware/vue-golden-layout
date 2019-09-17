@@ -10,6 +10,5 @@ import { goldenLink } from './roles'
 
 @Component
 export default class glGroup extends goldenLink {
-	@Prop({default: false}) closable: boolean
 }
 </script>

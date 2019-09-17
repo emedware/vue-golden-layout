@@ -1,5 +1,5 @@
 <template>
-	<gl-dstack :dstack-id="dstackId" v-model="activeRoute">
+	<gl-dstack :dstack-id="dstackId" v-model="activeRoute" :closable="closable">
 		<slot />
 		<gl-route v-for="route in routes" :key="route.path"
 			:path="route.path" :name="route.name"

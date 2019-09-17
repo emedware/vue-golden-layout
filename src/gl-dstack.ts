@@ -11,6 +11,7 @@ export default class glDstack extends glRow {
 	 * Used to syncronise among different windows
 	 */
 	@Prop({required: true}) dstackId: string
+	@Prop({default: false}) closable: boolean
 	
 	@Model('tab-change') activeTab: string
 	@Emit() tabChange(tabId: string) { }
