@@ -39,12 +39,12 @@ export class goldenChild extends goldenItem {
 		return itr[prop];
 	}
 
-	rootProp(prop: string): any {
-		var itr: any = this, rv = itr[prop];
-		while(xInstanceOf(itr.$parent, 'glCustomContainer')) {
-			itr = itr.$parent;
+	rootProp(prop: string, init: any): any {
+		var itr: any = this, rv = init;
+		do {
 			if(prop in itr) rv = itr[prop];
-		}
+			itr = itr.$parent;
+		} while(xInstanceOf(itr, 'glCustomContainer'));
 		return rv;
 	}
 
@@ -70,8 +70,7 @@ export class goldenChild extends goldenItem {
 		this.container && this.container.close();
 	}
 	delete() {
-		if(!unloading) {	// If unloading, it might persist corrupted data
-			this.$parent.computeChildrenPath()
+		if(!unloading && this.closable) {	// If unloading, it might persist corrupted data
 			this.$emit('destroy', this);
 			this.$destroy();
 		}
@@ -96,8 +95,8 @@ export class goldenChild extends goldenItem {
 			this.vueParent.addGlChild({
 				...dimensions,
 				...childConfig,
-				isClosable: this.rootProp('closable'),
-				reorderEnabled: this.rootProp('reorderEnabled'),
+				isClosable: this.rootProp('isClosable', childConfig.isClosable),
+				reorderEnabled: this.rootProp('reorderEnabled', childConfig.reorderEnabled),
 				title: childConfig.title||this.givenProp('title'),
 				vue: this.nodePath
 			}, this);

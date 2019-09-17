@@ -47,7 +47,7 @@ import Persistance from 'vue-storage-decorator'
 
 
 const Persist = Persistance('browserGL');
-// Use for debug purpose: Persist.persisting = false;
+Persist.persisting = false;
 @Component({components: {PHead, demoStack}})
 export default class App extends Vue {
 	@Persist() state: any = null
