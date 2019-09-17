@@ -28,6 +28,7 @@ export default class glRouter extends glCustomContainer {
 	$router : VueRouter
 	$route : Route
 	activeRoute?: string|null = null
+	@Prop({default: false}) closable: boolean
 	@Prop({
 		default: defaultTitler,
 		type: Function

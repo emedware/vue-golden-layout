@@ -38,7 +38,7 @@ export default class glDstack extends glRow {
 		return config;
 	}
 	initialState() {
-		this.stack.on('activeContentItemChanged', this.activeContentItemChanged);
+		this.initStack(this.stack);
 	}
 	get activeContentItemChanged() {
 		return (()=> {
@@ -49,6 +49,18 @@ export default class glDstack extends glRow {
 					this.tabChange(vueObject.givenTabId);
 			}
 		}).bind(this);
+	}
+	initStack(item: any) {
+		item.on('activeContentItemChanged', this.activeContentItemChanged);
+		item.on('beforePopOut', (stack)=> {
+			stack.contentItems
+				.filter((x: any)=> !x.config.isClosable && !x.config.reorderEnabled)
+				.forEach((comp: any, index: number)=> {
+					stack.removeChild(comp);
+					if(index < stack.config.activeItemIndex)
+						--stack.config.activeItemIndex;
+				});
+		});
 	}
 	cachedStack: any = null
 	get stack() {
@@ -64,7 +76,7 @@ export default class glDstack extends glRow {
 				dstackId: this.dstackId
 			}, 0);
 			rv = ci.contentItems[0];
-			rv.on('activeContentItemChanged', this.activeContentItemChanged);
+			this.initStack(rv);
 			this.activeContentItemChanged();
 		}
 		rv.on('destroyed', ()=> Vue.nextTick(()=> {
@@ -86,15 +98,6 @@ export default class glDstack extends glRow {
 	}
 	async created() {
 		var glo = await this.layout.glo;
-		glo.on('windowOpened', (popup: any)=> {
-			var rootChild = popup.getGlInstance().root.contentItems[0];
-			if(rootChild && rootChild.config.dstackId === this.dstackId) {
-				//re-create the stack object
-				rootChild.contentItems
-					.filter((x: any)=> !x.config.isClosable && !x.config.reorderEnabled)
-					.map((comp: any)=> rootChild.removeChild(comp));
-			}
-		});
 		this.stack;
 	}
 }

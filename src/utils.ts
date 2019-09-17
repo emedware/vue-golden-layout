@@ -88,8 +88,9 @@ export function localWindow(obj: any) {
 export var poppingOut = false;
 // hook `createPopout` to give objects instead of destroying then on-destroy
 var oldCreatePopout = lm.LayoutManager.prototype.createPopout;
-lm.LayoutManager.prototype.createPopout = function(item, dimensions, parentId, indexInParent) {
+lm.LayoutManager.prototype.createPopout = function(item) {
 	poppingOut = true;
+	item.emit('beforePopOut', item);
 	var rv = oldCreatePopout.apply(this, arguments);
 	poppingOut = false;
 	if(item[0]) item = item[0];
