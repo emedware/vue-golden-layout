@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import { Component, Prop, Watch, Inject } from 'vue-property-decorator'
-import { isSubWindow, xInstanceOf } from './utils'
+import { isSubWindow, xInstanceOf, unloading } from './utils'
 
 export function UsingSlots(...slots: string[]) {
 	return function(target: any) {
@@ -157,8 +157,10 @@ export class goldenChild extends goldenItem {
 		this.container && this.container.close();
 	}
 	delete() {
-		this.$emit('destroy', this);
-		this.$destroy();
+		if(!unloading) {
+			this.$emit('destroy', this);
+			this.$destroy();
+		}
 	}
 	created() {
 		if(!this.vueParent.addGlChild)
@@ -225,7 +227,7 @@ export class glCustomContainer extends goldenLink {
 	cachedChildMe: goldenChild
 	destructor: any
 	get childMe() {
-		var rv = (<goldenItem>this.$children[0]).childMe;
+		var sub = <goldenItem>this.$children[0], rv = sub && sub.childMe;
 
 		if(this.cachedChildMe) this.cachedChildMe.$off('destroy', this.destructor);
 		if(rv) rv.$on('destroy', this.destructor);

@@ -4,21 +4,16 @@
 	</div>
 </template>
 <script lang="ts">
-////TODO2: Trouver un moyen pour retrouver de quel sous-composant un tab s'agit dans un popup, quand les composants ont bougé
-//         Peut se faire en donnant une image de l'arbre des nodePath
-////TODO3: Trouver un moyen de faire de même quand l'élément est crée dynamiquement
 import Vue, { VNode, VueConstructor } from 'vue'
-import { Component, Model, Prop, Watch, Emit, Provide } from 'vue-property-decorator'
+import { Component, Model, Prop, Watch, Provide } from 'vue-property-decorator'
 import * as GoldenLayout from 'golden-layout'
 import { goldenContainer, goldenChild, goldenItem } from './roles'
 import * as resize from 'vue-resize-directive'
-import { isSubWindow, Dictionary, Semaphore, newSemaphore, poppingOut, poppingIn } from './utils'
-import { Object } from 'core-js';
+import { isSubWindow, Dictionary, Semaphore, newSemaphore, poppingOut, poppingIn, unloading, localWindow } from './utils'
 
 export type globalComponent = (gl: goldenLayout, container: any, state: any)=> void;
 var globalComponents: Dictionary<globalComponent> = {};
 
-//This is necessary as in poped-out windows, an observed config has arrays that return `instanceof Array` false
 //avoid the objects being observed
 (<any>GoldenLayout.prototype)._isVue = true;
 (<any>GoldenLayout).__lm.items.AbstractContentItem.prototype._isVue = true;
@@ -71,8 +66,11 @@ export default class goldenLayout extends goldenContainer {
 		//TODO: change settings in this.gl
 	}
 
-	@Emit('state')
-	gotState(state: any, expanded: any) {}
+	gotState(state: any) {
+		state = localWindow(state);
+		if(!isSubWindow && !unloading)
+			this.$emit('state', GoldenLayout.minifyConfig(state), state);
+	}
 /*
 	labels: {
 		close: 'close',
@@ -215,6 +213,7 @@ export default class goldenLayout extends goldenContainer {
 				};
 			}
 			this.gl = gl = new GoldenLayout(this.config, <Element>layoutRoot);
+			(<any>gl).vueObject = this;
 			var poppedoutVue = (<any>window).poppedoutVue;
 			if(poppedoutVue) {
 				this.rootPath = poppedoutVue.path;
@@ -258,7 +257,7 @@ export default class goldenLayout extends goldenContainer {
 								throw e;
 						}
 						if(config) {
-							this.gotState(GoldenLayout.minifyConfig(config), config);
+							this.gotState(config);
 						}
 					}, 100);
 				};
@@ -272,7 +271,7 @@ export default class goldenLayout extends goldenContainer {
 					}
 					catch(e) {}
 					if(config) {
-						this.gotState(GoldenLayout.minifyConfig(config), config);
+						this.gotState(config);
 					}
 				};
 			}

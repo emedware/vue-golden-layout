@@ -77,21 +77,38 @@ export function xInstanceOf(obj: any, name: string) {
 	return browser.name === name;
 }
 
+export function localWindow(obj: any) {
+	if(!obj || 'object'!= typeof obj)
+		return obj;
+	var rv = xInstanceOf(obj, 'Array') ? [] : {};
+	for(let i in obj) rv[i] = localWindow(obj[i]);
+	return rv;
+}
+
 export var poppingOut = false;
 // hook `createPopout` to give objects instead of destroying then on-destroy
 var oldCreatePopout = lm.LayoutManager.prototype.createPopout;
-lm.LayoutManager.prototype.createPopout = function(item) {
+lm.LayoutManager.prototype.createPopout = function(item, dimensions, parentId, indexInParent) {
 	poppingOut = true;
 	var rv = oldCreatePopout.apply(this, arguments);
 	poppingOut = false;
-	var obj = item.vueObject, rootPaths = {};
-	if(obj.nodePath) rootPaths[obj.nodePath] = obj;
-	for(let sub of item.contentItems) {
-		obj = sub.vueObject;
-		rootPaths[obj.nodePath] = obj;
+	if(item[0]) item = item[0];
+	var rootPaths = {}, gl = this.vueObject;
+	function ref(path) { rootPaths[path] = gl.getChild(path); }
+	if(item.content) {	//config
+		if(item.vue) ref(item.vue);
+		for(let i=0; item.content[i]; ++i)
+			ref(item.content[i].vue);
+	} else {	//item
+		var obj = item.vueObject;
+		if(obj && obj.nodePath) rootPaths[obj.nodePath] = obj;
+		for(let sub of item.contentItems) {
+			obj = sub.vueObject;
+			rootPaths[obj.nodePath] = obj;
+		}
 	}
 	rv.getWindow().poppedoutVue = {
-		layout: obj && obj.layout,
+		layout: gl,
 		path: rootPaths
 	};
 	rv.getWindow().addEventListener('beforeunload', ()=> {
@@ -115,3 +132,6 @@ bp.popIn = function() {
 	poppingIn = false;
 	return rv;
 }
+
+export var unloading = false;
+window.addEventListener('beforeunload', ()=> { unloading = true; });

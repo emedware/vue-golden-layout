@@ -44,11 +44,10 @@ import { letters } from './router'
 import PHead from './p-head.vue'
 import demoStack from './demo-stack.vue'
 import Persistance from 'vue-storage-decorator'
-import { isSubWindow } from 'vue-golden-layout'
 
 
 const Persist = Persistance('browserGL');
-Persist.persisting = false; //!isSubWindow;
+// Use for debug purpose: Persist.persisting = false;
 @Component({components: {PHead, demoStack}})
 export default class App extends Vue {
 	@Persist() state: any = null
