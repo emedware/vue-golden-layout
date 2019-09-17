@@ -33,8 +33,7 @@ export default class glDstack extends glRow {
 		config.content = [{
 			type: 'stack',
 			content: config.content.slice(0),
-			dstackId: this.dstackId/*,
-			get vue() { return that.nodePath }*/
+			dstackId: this.dstackId
 		}];
 		return config;
 	}

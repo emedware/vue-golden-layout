@@ -16,7 +16,14 @@ export class goldenContainer extends goldenItem {
 	config: any = {
 		content: []
 	}
+	// Hack to force child-path re-computation
+	watchComputeChildrenPath: number = 0
+	computeChildrenPath() { ++this.watchComputeChildrenPath; }
+	created() { 
+		var x = 2;
+	 }
 	childPath(comp: goldenChild): string {
+		this.watchComputeChildrenPath;
 		var rv = this.childMe.nodePath?`${this.childMe.nodePath}.`:'';
 		var ndx = this.vueChildren().indexOf(comp);
 		console.assert(!!~ndx, 'Child exists');

@@ -19,6 +19,9 @@ export class goldenLink extends goldenChild implements goldenContainer {
 	vueChild: (child: number)=> goldenChild
 	vueChildren: ()=> goldenChild[]
 	events: string[]
+	
+	watchComputeChildrenPath: number = 0
+	computeChildrenPath: ()=> void
 }
 
 @Component

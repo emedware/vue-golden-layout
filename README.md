@@ -217,11 +217,6 @@ Therefore:
 - Changing this value to higher will not postpone the event fireing, it will just allow more time for the popup to load before raising an exception
 - This can be useful to increase in applications where the main page has some long loading process before displaying the golden-layout
 
-##### `inter-window`
-
-This (optional) is an object that will be shared among all the windows (the main one and the poped-out ones).
-The initial value will be set by the main window and ignored by the poped-out windows, though any change by any window will be propagated to all the others.
-
 #### Contained objects' properties
 
 - `title: string`: Used for tab title
