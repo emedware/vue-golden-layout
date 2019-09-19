@@ -1,5 +1,5 @@
 import { Component, Prop, Watch, Inject } from 'vue-property-decorator'
-import { xInstanceOf, unloading } from '../utils'
+import { xInstanceOf, statusChange } from '../utils'
 import { goldenContainer, goldenItem } from "./index"
 import goldenLayout from "../golden"
 
@@ -70,7 +70,7 @@ export class goldenChild extends goldenItem {
 		this.container && this.container.close();
 	}
 	delete() {
-		if(!unloading) {	// If unloading, it might persist corrupted data
+		if(!statusChange.unloading) {	// If unloading, it might persist corrupted data
 			this.$parent.computeChildrenPath()
 			this.$emit('destroy', this);
 			this.$destroy();

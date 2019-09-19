@@ -86,17 +86,22 @@ export function localWindow(obj: any) {
 	return rv;
 }
 
-export var poppingOut = false;
+export var statusChange = {
+	poppingOut: false,
+	poppingIn: false,
+	unloading: false
+};
+
 // hook `createPopout` to give objects instead of destroying then on-destroy
 var oldCreatePopout = lm.LayoutManager.prototype.createPopout;
 lm.LayoutManager.prototype.createPopout = function(item) {
 	var rv;
-	poppingOut = true;
+	statusChange.poppingOut = true;
 	try {
 		item.emit && item.emit('beforePopOut', item);
 		rv = oldCreatePopout.apply(this, arguments);
 	} finally {
-		poppingOut = false;
+		statusChange.poppingOut = false;
 	}
 	if(item[0]) item = item[0];
 	var rootPaths = {}, gl = this.vueObject;
@@ -125,12 +130,11 @@ lm.LayoutManager.prototype.createPopout = function(item) {
 
 var bp = lm.controls.BrowserPopout.prototype;
 
-export var poppingIn = false;
 // hook `createPopout` to give objects instead of destroying then on-destroy
 var oldPopIn = bp.popIn;
 bp.popIn = function() {
 	var rv;
-	poppingIn = true;
+	statusChange.poppingIn = true;
 	// GL bug-fix: poping-in empty window
 	try {
 		this.emit('beforePopIn');
@@ -138,13 +142,12 @@ bp.popIn = function() {
 			oldPopIn.apply(this, arguments) :
 			this.close();
 	} finally {
-		poppingIn = false;
+		statusChange.poppingIn = false;
 	}
 	return rv;
 }
 
-export var unloading = false;
-window.addEventListener('beforeunload', ()=> { unloading = true; });
+window.addEventListener('beforeunload', ()=> { statusChange.unloading = true; });
 
 export function isDragging(): boolean {
 	return $('body').hasClass('lm_dragging');

@@ -9,7 +9,7 @@ import { Component, Model, Prop, Watch, Provide } from 'vue-property-decorator'
 import * as GoldenLayout from 'golden-layout'
 import { goldenContainer, goldenChild, goldenItem } from './roles'
 import * as resize from 'vue-resize-directive'
-import { isSubWindow, Dictionary, Semaphore, newSemaphore, poppingOut, poppingIn, unloading, localWindow, isDragging } from './utils'
+import { isSubWindow, Dictionary, Semaphore, newSemaphore, statusChange, localWindow, isDragging } from './utils'
 
 export type globalComponent = (gl: goldenLayout, container: any, state: any)=> void;
 var globalComponents: Dictionary<globalComponent> = {};
@@ -68,7 +68,7 @@ export default class goldenLayout extends goldenContainer {
 
 	gotState(state: any) {
 		state = localWindow(state);
-		if(!isSubWindow && !unloading)
+		if(!isSubWindow && !statusChange.unloading)
 			this.$emit('state', GoldenLayout.minifyConfig(state), state);
 	}
 /*
@@ -297,7 +297,7 @@ export default class goldenLayout extends goldenContainer {
 				if(!isDragging()) {
 					itm.emit('destroyed', itm);
 
-					if(!poppingOut && !poppingIn) {
+					if(!statusChange.poppingOut && !statusChange.poppingIn) {
 						itm.vueObject.glObject = null;
 						itm.vueObject.delete && itm.vueObject.delete();
 					}
@@ -321,6 +321,11 @@ export default class goldenLayout extends goldenContainer {
 		});
 	}
 	onResize() { this.gl && this.gl.updateSize(); }
+	destroyed() {
+		statusChange.unloading = true;
+		this.gl.destroy();
+		statusChange.unloading = false;
+	}
 }
 
 export function renderVNodes(parent: any, el: any, vNodes: any, options?: any, state?: any) {
