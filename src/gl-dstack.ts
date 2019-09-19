@@ -3,14 +3,13 @@ import { glRow } from './gl-groups'
 import { isSubWindow } from './utils'
 import Vue from 'vue'
 
-//TODO:Bug: When there is no fixed tabs, the d-stack disappears on popout
-
 @Component
 export default class glDstack extends glRow {
 	/**
 	 * Used to syncronise among different windows
 	 */
 	@Prop({required: true}) dstackId: string
+	//TODO: `closable` should be forced true for the row, and forwarded to the created stack
 	@Prop({default: false}) closable: boolean
 	
 	@Model('tab-change') activeTab: string

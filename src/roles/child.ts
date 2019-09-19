@@ -103,7 +103,8 @@ export class goldenChild extends goldenItem {
 			}, this);
 	}
 	beforeDestroy() {
-		if(this.glObject) 	//It can be destroyed in reaction of the removal of the glObject too
+		//It can be destroyed in reaction of the removal of the glObject too
+		if(this.glObject && ~this.glObject.parent.contentItems.indexOf(this.glObject))
 			this.glObject.parent.removeChild(this.glObject);
 	}
 	@Watch('glObject') destroy(v:boolean) {

@@ -1,6 +1,6 @@
 <template>
 	<gl-col id="lr-col">
-		<gl-component title="Master" :closable="true">
+		<gl-component title="Master" :closable="false">
 			<p-head :title="title" />
 			Master: <input type="checkbox" v-model="checked" />
 		</gl-component>

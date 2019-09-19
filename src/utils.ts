@@ -93,7 +93,7 @@ lm.LayoutManager.prototype.createPopout = function(item) {
 	var rv;
 	poppingOut = true;
 	try {
-		item.emit('beforePopOut', item);
+		item.emit && item.emit('beforePopOut', item);
 		rv = oldCreatePopout.apply(this, arguments);
 	} finally {
 		poppingOut = false;
