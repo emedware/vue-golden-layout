@@ -123,7 +123,7 @@ lm.LayoutManager.prototype.createPopout = function(item) {
 		path: rootPaths
 	};
 	rv.getWindow().addEventListener('beforeunload', ()=> {
-		for(let p in rootPaths) rootPaths[p].delete();
+		if(!rv.poppedIn) for(let p in rootPaths) rootPaths[p].delete();
 	});
 	return rv;
 }
@@ -138,6 +138,7 @@ bp.popIn = function() {
 	// GL bug-fix: poping-in empty window
 	try {
 		this.emit('beforePopIn');
+		this.poppedIn = true;
 		rv = this.getGlInstance().root.contentItems.length ?
 			oldPopIn.apply(this, arguments) :
 			this.close();
