@@ -9,7 +9,7 @@ import { Component, Model, Prop, Watch, Provide } from 'vue-property-decorator'
 import * as GoldenLayout from 'golden-layout'
 import { goldenContainer, goldenChild, goldenItem } from './roles'
 import * as resize from 'vue-resize-directive'
-import { isSubWindow, Dictionary, Semaphore, newSemaphore, poppingOut, poppingIn, unloading, localWindow } from './utils'
+import { isSubWindow, Dictionary, Semaphore, newSemaphore, poppingOut, poppingIn, unloading, localWindow, isDragging } from './utils'
 
 export type globalComponent = (gl: goldenLayout, container: any, state: any)=> void;
 var globalComponents: Dictionary<globalComponent> = {};
@@ -294,11 +294,13 @@ export default class goldenLayout extends goldenContainer {
 					itm.vueObject.initialState(itm.config.componentState);
 			});
 			gl.on('itemDestroyed', (itm: any) => {
-				itm.emit('destroyed', itm);
+				if(!isDragging()) {
+					itm.emit('destroyed', itm);
 
-				if(!poppingOut && !poppingIn) {
-					itm.vueObject.glObject = null;
-					itm.vueObject.delete && itm.vueObject.delete();
+					if(!poppingOut && !poppingIn) {
+						itm.vueObject.glObject = null;
+						itm.vueObject.delete && itm.vueObject.delete();
+					}
 				}
 				//Bugfix: when destroying a tab before itm, stack' activeItemIndex is not updated and become invalid
 				if(itm.parent && itm.parent.isStack && itm.parent.contentItems.indexOf(itm) < itm.parent.config.activeItemIndex)

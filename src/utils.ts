@@ -1,6 +1,7 @@
 export const isSubWindow = /[?&]gl-window=/.test(window.location.search);
 export type Dictionary<T = any> = {[key: string]: T}
 import * as GoldenLayout from 'golden-layout'
+import * as $ from 'jquery'
 
 export function newSemaphore<T>(): Semaphore<T> {
 	var access, rv = new Promise<T>(function(resolve, reject) {
@@ -88,10 +89,15 @@ export function localWindow(obj: any) {
 export var poppingOut = false;
 // hook `createPopout` to give objects instead of destroying then on-destroy
 var oldCreatePopout = lm.LayoutManager.prototype.createPopout;
-lm.LayoutManager.prototype.createPopout = function(item, dimensions, parentId, indexInParent) {
+lm.LayoutManager.prototype.createPopout = function(item) {
+	var rv;
 	poppingOut = true;
-	var rv = oldCreatePopout.apply(this, arguments);
-	poppingOut = false;
+	try {
+		item.emit && item.emit('beforePopOut', item);
+		rv = oldCreatePopout.apply(this, arguments);
+	} finally {
+		poppingOut = false;
+	}
 	if(item[0]) item = item[0];
 	var rootPaths = {}, gl = this.vueObject;
 	function ref(path) { rootPaths[path] = gl.getChild(path); }
@@ -123,15 +129,23 @@ export var poppingIn = false;
 // hook `createPopout` to give objects instead of destroying then on-destroy
 var oldPopIn = bp.popIn;
 bp.popIn = function() {
+	var rv;
 	poppingIn = true;
-	this.emit('beforePopIn');
 	// GL bug-fix: poping-in empty window
-	var rv = this.getGlInstance().root.contentItems.length ?
-		oldPopIn.apply(this, arguments) :
-		this.close();
-	poppingIn = false;
+	try {
+		this.emit('beforePopIn');
+		rv = this.getGlInstance().root.contentItems.length ?
+			oldPopIn.apply(this, arguments) :
+			this.close();
+	} finally {
+		poppingIn = false;
+	}
 	return rv;
 }
 
 export var unloading = false;
 window.addEventListener('beforeunload', ()=> { unloading = true; });
+
+export function isDragging(): boolean {
+	return $('body').hasClass('lm_dragging');
+}

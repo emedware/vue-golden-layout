@@ -39,12 +39,12 @@ export class goldenChild extends goldenItem {
 		return itr[prop];
 	}
 
-	rootProp(prop: string, init: any): any {
-		var itr: any = this, rv = init;
-		do {
-			if(prop in itr) rv = itr[prop];
+	rootProp(prop: string): any {
+		var itr: any = this, rv = itr[prop];
+		while(xInstanceOf(itr.$parent, 'glCustomContainer')) {
 			itr = itr.$parent;
-		} while(xInstanceOf(itr, 'glCustomContainer'));
+			if(prop in itr) rv = itr[prop];
+		}
 		return rv;
 	}
 
@@ -70,7 +70,8 @@ export class goldenChild extends goldenItem {
 		this.container && this.container.close();
 	}
 	delete() {
-		if(!unloading && this.closable) {	// If unloading, it might persist corrupted data
+		if(!unloading) {	// If unloading, it might persist corrupted data
+			this.$parent.computeChildrenPath()
 			this.$emit('destroy', this);
 			this.$destroy();
 		}
@@ -95,14 +96,15 @@ export class goldenChild extends goldenItem {
 			this.vueParent.addGlChild({
 				...dimensions,
 				...childConfig,
-				isClosable: this.rootProp('isClosable', childConfig.isClosable),
-				reorderEnabled: this.rootProp('reorderEnabled', childConfig.reorderEnabled),
+				isClosable: this.rootProp('closable'),
+				reorderEnabled: this.rootProp('reorderEnabled'),
 				title: childConfig.title||this.givenProp('title'),
 				vue: this.nodePath
 			}, this);
 	}
 	beforeDestroy() {
-		if(this.glObject) 	//It can be destroyed in reaction of the removal of the glObject too
+		//It can be destroyed in reaction of the removal of the glObject too
+		if(this.glObject && ~this.glObject.parent.contentItems.indexOf(this.glObject))
 			this.glObject.parent.removeChild(this.glObject);
 	}
 	@Watch('glObject') destroy(v:boolean) {

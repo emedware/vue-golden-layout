@@ -1,5 +1,5 @@
 <template>
-	<gl-dstack :dstack-id="dstackId" v-model="activeRoute">
+	<gl-dstack :dstack-id="dstackId" v-model="activeRoute" :closable="closable">
 		<slot />
 		<gl-route v-for="route in routes" :key="route.path"
 			:path="route.path" :name="route.name"
@@ -28,6 +28,7 @@ export default class glRouter extends glCustomContainer {
 	$router : VueRouter
 	$route : Route
 	activeRoute?: string|null = null
+	@Prop({default: false}) closable: boolean
 	@Prop({
 		default: defaultTitler,
 		type: Function
