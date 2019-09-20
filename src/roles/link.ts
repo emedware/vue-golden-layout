@@ -7,6 +7,7 @@ export class goldenLink extends goldenChild implements goldenContainer {
 	//TODO: `implements` should help avoid props redeclaration - but does not
 
 	// declaration of goldenContainer properties
+	destroyed: ()=> void
 	readonly definedVueComponent: goldenContainer
 	config: any
 	layout: goldenLayout
@@ -19,6 +20,8 @@ export class goldenLink extends goldenChild implements goldenContainer {
 	vueChild: (child: number)=> goldenChild
 	vueChildren: ()=> goldenChild[]
 	events: string[]
+	groupColor: string
+	colorGroup: boolean
 	
 	watchComputeChildrenPath: number = 0
 	computeChildrenPath: ()=> void

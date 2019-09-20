@@ -1,5 +1,6 @@
-import { Component } from 'vue-property-decorator'
+import { Component, Provide, Prop } from 'vue-property-decorator'
 import { goldenChild, goldenItem } from "./index"
+import { allocateColor, freeColor } from '../colours'
 
 export function UsingSlots(...slots: string[]) {
 	return function(target: any) {
@@ -9,9 +10,18 @@ export function UsingSlots(...slots: string[]) {
 	}
 }
 
-@Component
+@Component({mixins: [{
+	data(vm: any) {
+		if(vm.colorGroup)
+			vm.groupColor = allocateColor();
+		else if(vm.belongGroupColor)
+			vm.groupColor = vm.belongGroupColor;
+	}
+}]})
 @UsingSlots('default')
 export class goldenContainer extends goldenItem {
+	@Provide() groupColor: string
+	@Prop({default: false}) colorGroup: boolean
 	readonly definedVueComponent: goldenContainer
 	config: any = {
 		content: []
@@ -19,9 +29,6 @@ export class goldenContainer extends goldenItem {
 	// Hack to force child-path re-computation
 	watchComputeChildrenPath: number = 0
 	computeChildrenPath() { ++this.watchComputeChildrenPath; }
-	created() { 
-		var x = 2;
-	 }
 	childPath(comp: goldenChild): string {
 		this.watchComputeChildrenPath;
 		var rv = this.childMe.nodePath?`${this.childMe.nodePath}.`:'';
@@ -84,5 +91,9 @@ export class goldenContainer extends goldenItem {
 	events: string[] = ['open', 'resize', 'destroy', 'close', 'tab', 'hide', 'show']
 	mounted() {
 		this.layout.useSlotTemplates(this);
+	}
+	destroyed() {
+		if(this.groupColor)
+			freeColor(this.groupColor);
 	}
 }

@@ -6,6 +6,7 @@ import goldenLayout from "../golden"
 @Component
 export class goldenChild extends goldenItem {
 	@Inject() layout: goldenLayout
+	@Inject({from: 'groupColor'}) belongGroupColor: string
 	@Prop() width: number
 	@Prop() height: number
 	@Watch('width') reWidth(w:number) { this.container && this.container.setSize(w, false); }
