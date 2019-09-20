@@ -2,13 +2,10 @@ import { Watch, Component, Prop, Emit, Model } from 'vue-property-decorator'
 import { glRow } from './gl-groups'
 import { isSubWindow } from './utils'
 import Vue from 'vue'
+import * as $ from 'jquery'
 
 @Component
 export default class glDstack extends glRow {
-	/**
-	 * Used to syncronise among different windows
-	 */
-	@Prop({required: true}) dstackId: string
 	//TODO: `closable` should be forced true for the row, and forwarded to the created stack
 	@Prop({default: false}) closable: boolean
 	
@@ -32,8 +29,7 @@ export default class glDstack extends glRow {
 		this.content = config.content.filter((x: any) => !x.isClosable && !x.reorderEnabled);
 		config.content = [{
 			type: 'stack',
-			content: config.content.slice(0),
-			dstackId: this.dstackId
+			content: config.content.slice(0)
 		}];
 		return config;
 	}
@@ -50,9 +46,9 @@ export default class glDstack extends glRow {
 			}
 		}).bind(this);
 	}
-	initStack(item: any) {
-		item.on('activeContentItemChanged', this.activeContentItemChanged);
-		item.on('beforePopOut', (stack)=> {
+	initStack(stack: any) {
+		stack.on('activeContentItemChanged', this.activeContentItemChanged);
+		stack.on('beforePopOut', stack=> {
 			stack.contentItems
 				.filter((x: any)=> !x.config.isClosable && !x.config.reorderEnabled)
 				.forEach((comp: any, index: number)=> {
@@ -61,6 +57,23 @@ export default class glDstack extends glRow {
 						--stack.config.activeItemIndex;
 				});
 		});
+		stack.on('poppedOut', bw=> bw.on('beforePopIn', ()=> {
+			var bwGl = bw.getGlInstance(),
+				childConfig = $.extend( true, {}, bwGl.toConfig() ).content[ 0 ];
+			for(let item of childConfig.content)
+				stack.addChild(item);
+			bwGl.root.contentItems = [];
+		}));
+		stack.on('itemCreated', event=> {
+			this.addAnchor(event.origin);
+		});
+	}
+	addAnchor(item: any) {
+		if(item.parent === this.stack && !item.config.isClosable && !item.config.reorderEnabled)
+			setTimeout(()=> {
+				var tab = item.tab;
+				if(tab) tab.element.append('<b class="dstack_anchor" />');
+			});
 	}
 	cachedStack: any = null
 	get stack() {
@@ -68,14 +81,15 @@ export default class glDstack extends glRow {
 		if(!ci) return null;
 		if(this.cachedStack && this.cachedStack.vueObject.glObject)
 			return this.cachedStack;
-		rv = ci.contentItems.find((x: any) => x.isStack && x.config.dstackId === this.dstackId);
+		rv = ci.contentItems.find((x: any) => x.isStack);
 		if(!rv) {
 			ci.addChild({
 				type: 'stack',
-				content: this.content.slice(0),
-				dstackId: this.dstackId
+				content: this.content.slice(0)
 			}, 0);
 			rv = ci.contentItems[0];
+			for(let item of rv.contentItems)
+				this.addAnchor(item);
 			this.initStack(rv);
 			this.activeContentItemChanged();
 		}

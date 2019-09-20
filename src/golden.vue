@@ -3,6 +3,17 @@
 		<slot v-if="!isSubWindow" />
 	</div>
 </template>
+<style>
+.dstack_anchor {
+    position: absolute;
+    right: 6px;
+    width: 11px;
+    height: 11px;
+}
+.dstack_anchor::after {
+	content: "\2693";
+}
+</style>
 <script lang="ts">
 import Vue, { VNode, VueConstructor } from 'vue'
 import { Component, Model, Prop, Watch, Provide } from 'vue-property-decorator'
@@ -159,6 +170,7 @@ export default class goldenLayout extends goldenContainer {
 	}
 	get definedVueComponent() { return this; }
 	@Provide() get layout() { return this; }
+	@Provide() groupColor: string = null
 	
 	getSubChild(path: string): goldenChild {
 		var rootPathLength: number = 0, rootPathComponent: goldenItem = null;
@@ -279,6 +291,9 @@ export default class goldenLayout extends goldenContainer {
 			gl.on('initialised', () => {
 				this.glo.resolve(gl);
 			});
+			function colorizeTab(tab: any, color: string) {
+				tab.element.css('background-color', color);
+			}
 			gl.on('itemCreated', (itm: any) => {
 				itm.vueObject = itm === gl.root ? this :
 					itm.config.vue ?
@@ -292,6 +307,14 @@ export default class goldenLayout extends goldenContainer {
 				}
 				if(itm.vueObject.initialState)
 					itm.vueObject.initialState(itm.config.componentState);
+				if(itm.vueObject.belongGroupColor && itm.tab)
+					colorizeTab(itm.tab, itm.vueObject.belongGroupColor);
+			});
+			gl.on('tabCreated', (itm: any) => {
+				var vo = itm.contentItem.vueObject,
+					color = vo && vo.belongGroupColor;
+				if(color)
+					colorizeTab(itm, color);
 			});
 			gl.on('itemDestroyed', (itm: any) => {
 				if(!isDragging()) {

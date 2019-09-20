@@ -17,7 +17,7 @@
 				</span>
 			</p>
 		</gl-component>
-		<gl-dstack ref="myStack" dstack-id="dynamics">
+		<gl-dstack ref="myStack">
 			<gl-component title="Dstack demonstration" :closable="false" :reorder-enabled="false">
 				This element is just present to test the ability of the d-stack if this stack happens to be popped out.
 			</gl-component>
