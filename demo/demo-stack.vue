@@ -1,10 +1,5 @@
 <template>
 	<gl-row :closable="false">
-		<div slot="stackCtr" slot-scope="{ stackSub }" class="test-template">
-			Added item (id: {{stackSub}})
-			<button @click="remStack(stackSub)">Remove</button>
-			<p><input v-model="testText" /></p>
-		</div>
 		<gl-component title="compA" class="test-component">
 			<h1>CompA</h1>
 			<button @click="state.bottomSheet = !state.bottomSheet">Toggle</button>
@@ -22,9 +17,13 @@
 				This element is just present to test the ability of the d-stack if this stack happens to be popped out.
 			</gl-component>
 			<gl-component v-for="stackSub in state.stackSubs" :key="stackSub"
-				:title="'dynamic'+stackSub"
-				@destroy="closed(stackSub)"
-				template="stackCtr" :state="{stackSub}" />
+					:title="'dynamic'+stackSub"
+					@destroy="closed(stackSub)"
+					:state="{stackSub}">
+				Dynamic item (id: {{stackSub}})
+				<button @click="remStack(stackSub)">Remove</button>
+				<p><input v-model="testText" /></p>
+			</gl-component>
 		</gl-dstack>
 	</gl-row>
 </template>

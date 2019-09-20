@@ -29,6 +29,7 @@ var globalComponents: Dictionary<globalComponent> = {};
 (<any>GoldenLayout.prototype)._isVue = true;
 (<any>GoldenLayout).__lm.items.AbstractContentItem.prototype._isVue = true;
 
+export const genericTemplate = 'Generic.Vue';
 export function registerGlobalComponent(name: string, comp: globalComponent) {
 	console.assert(!globalComponents[name], `Component name "${name}" unused`);
 	globalComponents[name] = comp;
@@ -91,30 +92,7 @@ export default class goldenLayout extends goldenContainer {
 	},*/
 
 	gl: GoldenLayout
-	tplCount: Dictionary<number> = {}
-	tplPreload : Dictionary<any> = {}
 	
-	registerComponent(component: any/*: Vue|()=>any*/, name?: string, prefix?: string): string {
-		if(!name) {
-			if(!prefix) prefix = '';
-			if(!this.tplCount[prefix]) this.tplCount[prefix] = 0;
-			name = `${prefix}.tpl`+(++this.tplCount[prefix]);
-		}
-		var tplData = 'function'=== typeof component ?
-			component :
-			function(container: any, state: any) {
-				container.getElement().append(component.$el);
-				//TODO: `events` should not be an instance property
-				forwardEvt(container, component, component.events);
-				component.container = container;
-			};
-		if(this.gl) {
-			this.gl.registerComponent(name, tplData);
-			//TODO: The warning might be relevant even with prefix, if loaded after the prefix-object has been constructed
-			if(!prefix) console.warn('Dynamic golden-layout components should be named templates instead.');
-		} else this.tplPreload[name] = tplData;
-		return name;
-	}
 	//#region vNode helpers
 	
 	appendVNodes(container: any, vNodes: any, state?: any) {
@@ -135,35 +113,6 @@ export default class goldenLayout extends goldenContainer {
 	}
 
 	//#endregion
-	
-	slotTemplates: Dictionary<slotComponent> = {}
-	registerSlotTemplates(name: string, customVueComponent: VueConstructor, content: any) {
-		var already = this.slotTemplates[name];
-		if(already) {
-			console.assert(
-				already.customVueComponent === customVueComponent,
-				`Custom gl-component registered by '${already.customVueComponent.name}' then '${customVueComponent.name}'`);
-		} else {
-			this.slotTemplates[name] = {customVueComponent, content};
-			if(this.gl)
-				this.gl.registerComponent(name, this.slotComponentWrap(content));
-		}
-	}
-	useSlotTemplates(customComponent: Vue) {
-		var ctr = <VueConstructor>customComponent.constructor,
-			hackyCC = <any>customComponent,
-			slots = hackyCC.$slots,
-			scopedSlots = hackyCC.$scopedSlots;
-			
-		// Register direct-children templates
-		for(var tpl in slots)
-			if(!~hackyCC.usedSlots.indexOf(tpl))
-				this.registerSlotTemplates(tpl, ctr, slots[tpl]);
-		// Register direct-children templates with a scope
-		for(var tpl in scopedSlots)
-			if(!~hackyCC.usedSlots.indexOf(tpl))
-				this.registerSlotTemplates(tpl, ctr, scopedSlots[tpl]);
-	}
 	//cached by Vue
 	get glo(): Semaphore<any> {
 		return newSemaphore();
@@ -173,6 +122,7 @@ export default class goldenLayout extends goldenContainer {
 	@Provide() groupColor: string = null
 	
 	getSubChild(path: string): goldenChild {
+		if(!isSubWindow) return this.getChild(path);
 		var rootPathLength: number = 0, rootPathComponent: goldenItem = null;
 		for(let compPath in this.rootPath) {
 			let compPathLength: number = compPath.length;
@@ -236,18 +186,20 @@ export default class goldenLayout extends goldenContainer {
 			if(this.parentLayout)
 				(<any>gl)._components = (<any>this.parentLayout.gl)._components
 			else {
-				// Components registered with this.registerComponent(...)
-				for(var tpl in this.tplPreload)
-					gl.registerComponent(tpl, this.tplPreload[tpl]);
-				delete this.tplPreload;
-				// Register direct-children templates
-				for(var tpl in this.slotTemplates)
-					gl.registerComponent(tpl, this.slotComponentWrap(this.slotTemplates[tpl].content));
+				gl.registerComponent(genericTemplate, 
+					(container: any, state: any)=> {
+						var component = this.getSubChild(container._config.vue)
+						container.getElement().append(component.$el);
+						//TODO: `events` should not be an instance property
+						forwardEvt(container, component, component.events);
+						component.container = container;
+					});
 				// Register global components given by other vue-components
 				for(var tpl in globalComponents)
 					gl.registerComponent(tpl, this.globalComponentWrap(globalComponents[tpl]));
 			}
 			//#endregion
+				
 			//#region Events
 			var raiseStateChanged: (arg?: number)=> void;
 			//TODO: have only one raiseStateChanged function ?
@@ -297,16 +249,14 @@ export default class goldenLayout extends goldenContainer {
 			gl.on('itemCreated', (itm: any) => {
 				itm.vueObject = itm === gl.root ? this :
 					itm.config.vue ?
-						isSubWindow ?
-							this.getSubChild(itm.config.vue) :
-							this.getChild(itm.config.vue) :
-					{};
+						this.getSubChild(itm.config.vue) :
+						{};
 				itm.vueObject.glObject = itm;
 				if(itm.config.vue && itm.vueObject.nodePath && !isSubWindow) {
 					itm.config.__defineGetter__('vue', ()=> itm.vueObject.nodePath);
 				}
 				if(itm.vueObject.initialState)
-					itm.vueObject.initialState(itm.config.componentState);
+					itm.vueObject.initialState(itm.config);
 				var color = itm.vueObject.childMe && itm.vueObject.childMe.tabColor;
 				if(color && itm.tab)
 					colorizeTab(itm.tab, color);

@@ -1,6 +1,7 @@
 import { Component, Provide, Prop } from 'vue-property-decorator'
 import { goldenChild, goldenItem } from "./index"
 import { allocateColor, freeColor } from '../colors'
+import { genericTemplate } from '../golden.vue'
 
 export function UsingSlots(...slots: string[]) {
 	return function(target: any) {
@@ -54,7 +55,7 @@ export class goldenContainer extends goldenItem {
 	addGlChild(child : any, comp : any) {
 		if(comp && 'component'=== child.type) {
 			if(!child.componentName)
-				child.componentName = this.layout.registerComponent(comp, null, this.definedVueComponent.$options.name);
+				child.componentName = genericTemplate;
 			if(!child.componentState)
 				child.componentState = {};
 		}
@@ -89,9 +90,6 @@ export class goldenContainer extends goldenItem {
 		return <goldenChild[]>this.$children.map(comp=> (<goldenItem>comp).childMe).filter(x=> x instanceof goldenItem);
 	}
 	events: string[] = ['open', 'resize', 'destroy', 'close', 'tab', 'hide', 'show']
-	mounted() {
-		this.layout.useSlotTemplates(this);
-	}
 	destroyed() {
 		if(this.groupColor)
 			freeColor(this.groupColor);

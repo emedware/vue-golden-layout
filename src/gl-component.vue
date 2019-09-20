@@ -18,20 +18,16 @@ import { Dictionary } from './utils.js'
 
 @Component
 export default class glComponent extends goldenChild {
-	@Prop() template: string
-	@Model('state') state: Dictionary
 	toggleMaximise() {
 		this.container && this.container.toggleMaximise();
 	}
-	@Emit('state') initialState(state: Dictionary) {}
+	initialState(config: Dictionary) {}
 	
 	getChildConfig() : any {
 		return {
 			type: 'component',
 			isClosable: this.closable,
 			reorderEnabled: this.reorderEnabled,
-			componentName: this.template,
-			componentState: this.state
 		};
 	}
 }
