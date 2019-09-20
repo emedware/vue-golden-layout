@@ -99,10 +99,12 @@ lm.LayoutManager.prototype.createPopout = function(item) {
 	statusChange.poppingOut = true;
 	try {
 		item.emit && item.emit('beforePopOut', item);
+		if(!item.contentItems.length) return null;
 		rv = oldCreatePopout.apply(this, arguments);
 	} finally {
 		statusChange.poppingOut = false;
 	}
+	item.emit && item.emit('poppedOut', rv);
 	if(item[0]) item = item[0];
 	var rootPaths = {}, gl = this.vueObject;
 	function ref(path) { rootPaths[path] = gl.getChild(path); }
@@ -118,12 +120,24 @@ lm.LayoutManager.prototype.createPopout = function(item) {
 			rootPaths[obj.nodePath] = obj;
 		}
 	}
-	rv.getWindow().poppedoutVue = {
+	var ppWindow = rv.getWindow();
+	ppWindow.poppedoutVue = {
 		layout: gl,
 		path: rootPaths
 	};
-	rv.getWindow().addEventListener('beforeunload', ()=> {
+	ppWindow.addEventListener('beforeunload', ()=> {
 		if(!rv.poppedIn) for(let p in rootPaths) rootPaths[p].delete();
+	});
+	rv.on('initialised', ()=> {
+		var ppGl = rv.getGlInstance(), emptyCheck = null;
+		//Automatically closes the window when there is no more tabs
+		ppGl.on('itemDestroyed', ()=> {
+			if(!emptyCheck) emptyCheck = setTimeout(()=> {
+				emptyCheck = null;
+				if(!ppGl.root.contentItems.length)
+					ppWindow.close();
+			});
+		});
 	});
 	return rv;
 }

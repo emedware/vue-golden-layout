@@ -1,5 +1,5 @@
 <template>
-	<gl-dstack :dstack-id="dstackId" v-model="activeRoute" :closable="closable">
+	<gl-dstack v-model="activeRoute" :closable="closable">
 		<slot />
 		<gl-route v-for="route in routes" :key="route.path"
 			:path="route.path" :name="route.name"
@@ -36,7 +36,6 @@ export default class glRouter extends glCustomContainer {
 	@Provide() titler: (route: any)=> string
 	@Provide() get _glRouter() { return this; }
 	@Prop({default: '/'}) emptyRoute: string
-	@Prop({default: 'router'}) dstackId: string
 	@Prop({default: ()=> []}) routes: Location[]
 	
 	get definedVueComponent(): goldenContainer {
