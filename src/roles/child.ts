@@ -49,6 +49,10 @@ export class goldenChild extends goldenItem {
 		return rv;
 	}
 
+	tabColor(): string {
+		return this.belongGroupColor;
+	}
+
 	hide() { this.container && this.container.hide(); }
 	show() { this.container && this.container.show(); }
 	@Prop({default: false}) hidden: boolean

@@ -25,6 +25,10 @@ export class goldenLink extends goldenChild implements goldenContainer {
 	
 	watchComputeChildrenPath: number = 0
 	computeChildrenPath: ()=> void
+
+	tabColor(): string {
+		return this.belongGroupColor || this.groupColor;
+	}
 }
 
 @Component

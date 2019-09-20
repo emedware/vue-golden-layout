@@ -1,5 +1,5 @@
 <template>
-	<gl-col :tab-id="tabId" :title="title" :closable="false" >
+	<gl-col :tab-id="tabId" :title="title" :closable="false" :color-group="true">
 		<component v-bind:is="{extends: component}" />
 	</gl-col>
 </template>

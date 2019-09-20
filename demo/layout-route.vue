@@ -1,5 +1,5 @@
 <template>
-	<gl-row id="lr-col" :color-group="true">
+	<gl-row id="lr-col">
 		<gl-dstack>
 			<gl-component title="Master" :closable="false" :reorderEnabled="false">
 				<p-head :title="title" />

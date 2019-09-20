@@ -1,6 +1,6 @@
 import { Component, Provide, Prop } from 'vue-property-decorator'
 import { goldenChild, goldenItem } from "./index"
-import { allocateColor, freeColor } from '../colours'
+import { allocateColor, freeColor } from '../colors'
 
 export function UsingSlots(...slots: string[]) {
 	return function(target: any) {

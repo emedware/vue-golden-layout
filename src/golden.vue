@@ -307,12 +307,13 @@ export default class goldenLayout extends goldenContainer {
 				}
 				if(itm.vueObject.initialState)
 					itm.vueObject.initialState(itm.config.componentState);
-				if(itm.vueObject.belongGroupColor && itm.tab)
-					colorizeTab(itm.tab, itm.vueObject.belongGroupColor);
+				var color = itm.vueObject.childMe && itm.vueObject.childMe.tabColor;
+				if(color && itm.tab)
+					colorizeTab(itm.tab, color);
 			});
 			gl.on('tabCreated', (itm: any) => {
 				var vo = itm.contentItem.vueObject,
-					color = vo && vo.belongGroupColor;
+					color = vo && vo.childMe.tabColor;
 				if(color)
 					colorizeTab(itm, color);
 			});
