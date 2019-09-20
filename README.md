@@ -208,7 +208,7 @@ itemCreated
 
 (default: 5 = 5 seconds)
 
-When the state change, an event is fired and provides the new state. Unfortunately, when something is poped-out, querying the state will raise an exception is the pop-out' golden-layout is not loaded. Hence, the first call to `GoldenLayout.toConfig()` will for sure raise an exception.
+When the state change, an event is fired and provides the new state. Unfortunately, when something is poped-out, querying the state will raise an exception if the pop-out' golden-layout is not loaded. Hence, the first call to `GoldenLayout.toConfig()` will for sure raise an exception.
 
 The policy chosen here is to then wait a bit and try again. In order to avoid infinite exception+try-again, a time-out is still specified.
 
@@ -269,7 +269,7 @@ Specify the URL to use when the user closes all the tabs (`"/"` by default)
 
 They can take a `name` and/or a `path`, and their `closable` and `reorder-enabled` properties are false by default. They can be forced a `title` but their container' `titler` will be used if not.
 
-Note: all the elements inside them rendered from route' component will have a `this.$route` pointing to the given route, not the present one.
+Note: all the elements inside them will have a `this.$route` pointing to the given route, not the actual URL.
 
 ## glCustomContainers
 
@@ -297,3 +297,5 @@ export class MyComp extends glCustomContainer {
 ```
 
 The template' root must therefore be a proper golden-layout child (row, col, stack, ...)
+
+This can also be used for route components.
