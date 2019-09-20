@@ -2,7 +2,7 @@
 	<gl-row id="lr-col">
 		<gl-dstack>
 			<gl-component title="Master" :closable="false" :reorderEnabled="false">
-				<p-head :title="title" />
+				<p-head :title="$route.meta.title" />
 				Master: <input type="checkbox" v-model="checked" />
 			</gl-component>
 		</gl-dstack>
