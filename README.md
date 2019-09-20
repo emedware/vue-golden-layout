@@ -65,36 +65,6 @@ Component can be described *by extension* - namely, by giving their content usin
 </gl-component>
 ```
 
-## Named templates
-
-In order to use `v-if` and `v-for` to control the content, templates have to be defined and used with a name.
-If this rule is broken :
-
-- Popup will display blank
-- Loading a saved state will fail
-- This will be displayed in the console: "Dynamic golden-layout components should be named templates instead."
-
-### Defining a template
-
-This is done through `slot`s in the `<golden-layout>` element (the square brackets stand for "optional")
-
-```html
-<template slot="template-name"[ slot-scope="myState"]>
-    ...
-</template>
-```
-
-The content of `myState` can of course be changed. This will be saved/loaded when the overall state is saved/loaded.
-
-### Using a template
-
-`gl-component` has a `template` property. This is a string that target the `slot` defined.
-It also (useful for `v-for`s) has a `state` property that will be used as the `slot-scope`
-
-```html
-<gl-component v-for="sth in swhr" :key="sth.else" template="template-name" :state="sth.state" />
-```
-
 ## Saving/restoring states
 
 The `golden-layout` has a *property* and an *event* named `state`.
@@ -108,6 +78,7 @@ Notes:
 - The property `state` can be given minified or not
 - The event `state` gives indeed the minified version of the config, and the expanded version as a second argument.
 - It is also the `v-model` of the `golden-layout`
+- In order to reload a state, the Vue object structure must be reloaded identical too
 
 ## Low-level functionalities
 
@@ -124,7 +95,7 @@ import { registerGlobalComponent } from 'vue-golden-layout'
 
 ### CSS
 
-The glComponent are the ones directly included in the `<div>` controlled and sized by golden-layout and answers to this class to fit in the layout child container, that can be overridden
+The elements with the `glComponent` CSS class are the ones directly included in the `<div>` controlled and sized by golden-layout and answers to this class to fit in the layout child container, that can be overridden
 
 ```css
 .glComponent {

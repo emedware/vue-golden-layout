@@ -1,22 +1,21 @@
 <template>
-<div>
-	<button class="reset" @click="reset">Reset localStorage</button>
-	<golden-layout class="hscreen" v-model="state">
-		<template slot="bottom">
-			Bottom
-		</template>
-		<gl-col :closable="false">
-			<gl-router empty-route="/a" :routes="routes">
-				<template slot="route" slot-scope="{ meta }">
-					<p-head :title="meta.title" />
-					<main />
-				</template>
-			</gl-router>
-			<demo-stack v-model="demoStackState" />
-			<gl-component v-if="demoStackState.bottomSheet" template="bottom" @destroy="demoStackState.bottomSheet = false" />
-		</gl-col>
-	</golden-layout>
-</div>
+	<div>
+		<button class="reset" @click="reset">Reset localStorage</button>
+		<golden-layout class="hscreen" v-model="state">
+			<gl-col :closable="false">
+				<gl-router empty-route="/a" :routes="routes">
+					<template slot="route" slot-scope="{ meta }">
+						<p-head :title="meta.title" />
+						<main />
+					</template>
+				</gl-router>
+				<demo-stack v-model="demoStackState" />
+				<gl-component title="Bottom" v-if="demoStackState.bottomSheet" @destroy="demoStackState.bottomSheet = false">
+					Bottom pane
+				</gl-component>
+			</gl-col>
+		</golden-layout>
+	</div>
 </template>
 <style>
 body {
