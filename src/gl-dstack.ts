@@ -59,7 +59,8 @@ export default class glDstack extends glRow {
 		});
 		stack.on('poppedOut', bw=> bw.on('beforePopIn', ()=> {
 			var bwGl = bw.getGlInstance(),
-				childConfig = $.extend( true, {}, bwGl.toConfig() ).content[ 0 ];
+				childConfig = $.extend(true, {}, bwGl.toConfig()).content[0],
+				stack = this.stack;
 			for(let item of childConfig.content)
 				stack.addChild(item);
 			bwGl.root.contentItems = [];

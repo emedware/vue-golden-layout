@@ -99,7 +99,7 @@ lm.LayoutManager.prototype.createPopout = function(item) {
 	statusChange.poppingOut = true;
 	try {
 		item.emit && item.emit('beforePopOut', item);
-		if(!item.contentItems.length) return null;
+		if(!(item.contentItems || item[0].content).length) return null;
 		rv = oldCreatePopout.apply(this, arguments);
 	} finally {
 		statusChange.poppingOut = false;
