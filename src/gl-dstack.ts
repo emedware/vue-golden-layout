@@ -46,9 +46,9 @@ export default class glDstack extends glRow {
 			}
 		}).bind(this);
 	}
-	initStack(item: any) {
-		item.on('activeContentItemChanged', this.activeContentItemChanged);
-		item.on('beforePopOut', stack=> {
+	initStack(stack: any) {
+		stack.on('activeContentItemChanged', this.activeContentItemChanged);
+		stack.on('beforePopOut', stack=> {
 			stack.contentItems
 				.filter((x: any)=> !x.config.isClosable && !x.config.reorderEnabled)
 				.forEach((comp: any, index: number)=> {
@@ -57,14 +57,23 @@ export default class glDstack extends glRow {
 						--stack.config.activeItemIndex;
 				});
 		});
-		item.on('poppedOut', bw=> bw.on('beforePopIn', ()=> {
+		stack.on('poppedOut', bw=> bw.on('beforePopIn', ()=> {
 			var bwGl = bw.getGlInstance(),
-				childConfig = $.extend( true, {}, bwGl.toConfig() ).content[ 0 ],
-				parent = this.stack;
+				childConfig = $.extend( true, {}, bwGl.toConfig() ).content[ 0 ];
 			for(let item of childConfig.content)
-				parent.addChild(item);
+				stack.addChild(item);
 			bwGl.root.contentItems = [];
 		}));
+		stack.on('itemCreated', event=> {
+			this.addAnchor(event.origin);
+		});
+	}
+	addAnchor(item: any) {
+		if(item.parent === this.stack && !item.config.isClosable && !item.config.reorderEnabled)
+			setTimeout(()=> {
+				var tab = item.tab;
+				if(tab) tab.element.append('<b class="dstack_anchor" />');
+			});
 	}
 	cachedStack: any = null
 	get stack() {
@@ -79,6 +88,8 @@ export default class glDstack extends glRow {
 				content: this.content.slice(0)
 			}, 0);
 			rv = ci.contentItems[0];
+			for(let item of rv.contentItems)
+				this.addAnchor(item);
 			this.initStack(rv);
 			this.activeContentItemChanged();
 		}

@@ -3,6 +3,17 @@
 		<slot v-if="!isSubWindow" />
 	</div>
 </template>
+<style>
+.dstack_anchor {
+    position: absolute;
+    right: 6px;
+    width: 11px;
+    height: 11px;
+}
+.dstack_anchor::after {
+	content: "\2693";
+}
+</style>
 <script lang="ts">
 import Vue, { VNode, VueConstructor } from 'vue'
 import { Component, Model, Prop, Watch, Provide } from 'vue-property-decorator'
