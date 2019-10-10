@@ -51,8 +51,8 @@ export default class demoStack extends glCustomContainer {
 	}
 	remStack(id: number) {
 		var ndx = this.state.stackSubs.indexOf(id);
-		if(~ndx)
-			this.state.stackSubs.splice(ndx, 1);
+		if(~ndx) this.state.stackSubs.splice(ndx, 1);
+		else console.assert(false, 'Closed dynamic component is in the array');
 	}
 }
 </script>
