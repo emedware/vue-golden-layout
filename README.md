@@ -50,18 +50,6 @@ You can now browse `http://localhost:9000`
 
 The example can also be found in the sources under the '/demo' folder
 
-## Don't forget in order to make it work
-
-- Include a golden-layout theme CSS.
-
-```typescript
-import 'golden-layout/src/css/goldenlayout-light-theme.css'
-```
-
-Available themes are `light`, `dark`, `soda`, `translucent`.
-
-`goldenlayout-base.css` is already integrated to the library.
-
 ## Usage
 
 ```javascript
@@ -77,11 +65,23 @@ import vgl from 'vue-golden-layout/src'
 Vue.use(vgl);
 ```
 
+### Don't forget in order to make it work
+
+- Include a golden-layout theme CSS.
+
+```typescript
+import 'golden-layout/src/css/goldenlayout-light-theme.css'
+```
+
+Available themes are `light`, `dark`, `soda`, `translucent`.
+
+`goldenlayout-base.css` is already integrated to the library.
+
 ## Structure
 
 Elements like `<gl-row>`, `<gl-col>` and `<gl-stack>` can be represented in a tree - they respectively stand for a golden-layout row, column and stack.
 
-## Inserting components
+### Inserting components
 
 Component can be described *by extension* - namely, by giving their content using the data from the defining component.
 
@@ -131,8 +131,6 @@ itemDestroyed
 initialised
 activeContentItemChanged
 ```
-
-Also, the event `sub-window` is emitted on mount with a `is: boolean` argument that is `true` iif this instance of golden-layout is loaded as a pop-up window.
 
 #### Contained objects' events
 
@@ -200,6 +198,8 @@ A container for which this property is set to `true` will see all his descendant
 This is meant to be used when the same component can be used twice on different objects, to follow in the pop-outs which is the descendant of which.
 
 ## Specific components
+
+Some components have been programmed as an extension, even if they are not part of golden-layout *proprio sensu*.
 
 ### gl-dstack
 
@@ -270,7 +270,7 @@ export class MyComp extends glCustomContainer {
 
 The template' root must therefore be a proper golden-layout child (row, col, stack, ...)
 
-This can also be used for route components.
+These components can be used as route components.
 
 ## Low-level functionalities
 
