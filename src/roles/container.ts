@@ -21,7 +21,7 @@ export function UsingSlots(...slots: string[]) {
 }]})
 @UsingSlots('default')
 export class goldenContainer extends goldenItem {
-	@Provide() groupColor: string
+	@Provide() groupColor: string|null
 	@Prop({default: false}) colorGroup: boolean
 	readonly definedVueComponent: goldenContainer
 	config: any = {

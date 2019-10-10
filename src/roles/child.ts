@@ -49,7 +49,7 @@ export class goldenChild extends goldenItem {
 		return rv;
 	}
 
-	tabColor(): string {
+	tabColor(): string|null {
 		return this.belongGroupColor;
 	}
 

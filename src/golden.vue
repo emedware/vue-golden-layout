@@ -119,18 +119,18 @@ export default class goldenLayout extends goldenContainer {
 	}
 	get definedVueComponent() { return this; }
 	@Provide() get layout() { return this; }
-	@Provide() groupColor: string = null
+	@Provide() groupColor: string|null = null
 	
 	getSubChild(path: string): goldenChild {
 		if(!isSubWindow) return this.getChild(path);
-		var rootPathLength: number = 0, rootPathComponent: goldenItem = null;
+		var rootPathLength: number = 0, rootPathComponent: goldenItem|null = null;
 		for(let compPath in this.rootPath) {
 			let compPathLength: number = compPath.length;
 			if(path.substring(0, compPathLength) === compPath &&
 				compPathLength  > rootPathLength)
 					[rootPathLength, rootPathComponent] = [compPathLength, this.rootPath[compPath]];
 		}
-		rootPathComponent = rootPathComponent.childMe;
+		rootPathComponent = (<goldenItem>rootPathComponent).childMe;
 		var remainingPath = path.substr(rootPathLength+1);
 		return remainingPath ?
 			(<goldenContainer>rootPathComponent).getChild(remainingPath) :
@@ -271,7 +271,8 @@ export default class goldenLayout extends goldenContainer {
 				if(!isDragging()) {
 					itm.emit('destroyed', itm);
 
-					if(!statusChange.poppingOut && !statusChange.poppingIn) {
+					if(!statusChange.poppingOut && !statusChange.poppingIn &&
+							!itm.vueObject._isBeingDestroyed && !itm.vueObject._isDestroyed ) {
 						itm.vueObject.glObject = null;
 						itm.vueObject.delete && itm.vueObject.delete();
 					}
