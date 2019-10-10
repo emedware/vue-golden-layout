@@ -12,7 +12,7 @@ export default class glDstack extends glRow {
 	@Model('tab-change') activeTab: string
 	@Emit() tabChange(tabId: string) { }
 	@Watch('activeTab', {immediate: true}) async progTabChange(tabId: any) {
-		if(!isSubWindow) {
+		if('undefined'!== typeof tabId /*&& !isSubWindow*/) {
 			await this.layout.glo;
 			var stack: any = this.stack
 			for(var child of stack.contentItems)
@@ -48,7 +48,7 @@ export default class glDstack extends glRow {
 	}
 	initStack(stack: any) {
 		stack.on('activeContentItemChanged', this.activeContentItemChanged);
-		stack.on('beforePopOut', stack=> {
+		stack.on('beforePopOut', (stack: any)=> {
 			stack.contentItems
 				.filter((x: any)=> !x.config.isClosable && !x.config.reorderEnabled)
 				.forEach((comp: any, index: number)=> {
@@ -57,7 +57,7 @@ export default class glDstack extends glRow {
 						--stack.config.activeItemIndex;
 				});
 		});
-		stack.on('poppedOut', bw=> bw.on('beforePopIn', ()=> {
+		stack.on('poppedOut', (bw: any)=> bw.on('beforePopIn', ()=> {
 			var bwGl = bw.getGlInstance(),
 				childConfig = $.extend(true, {}, bwGl.toConfig()).content[0],
 				stack = this.stack;
@@ -65,7 +65,7 @@ export default class glDstack extends glRow {
 				stack.addChild(item);
 			bwGl.root.contentItems = [];
 		}));
-		stack.on('itemCreated', event=> {
+		stack.on('itemCreated', (event: any)=> {
 			this.addAnchor(event.origin);
 		});
 	}

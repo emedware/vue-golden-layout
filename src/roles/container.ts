@@ -21,7 +21,7 @@ export function UsingSlots(...slots: string[]) {
 }]})
 @UsingSlots('default')
 export class goldenContainer extends goldenItem {
-	@Provide() groupColor: string
+	@Provide() groupColor: string|null
 	@Prop({default: false}) colorGroup: boolean
 	readonly definedVueComponent: goldenContainer
 	config: any = {
@@ -64,18 +64,6 @@ export class goldenContainer extends goldenItem {
 			ci.addChild(child);
 		else
 			this.config.content.push(child);
-	}
-	removeGlChild(index: number) {
-		var ci = this.glObject;
-		if(ci) {
-			ci.removeChild(ci.contentItems[index]);
-			for(; index< ci.contentItems.length; ++index)
-				ci.contentItems[index].index = index;
-		} else {
-			this.config.content.splice(index, 1);
-			for(; index< this.config.content.length; ++index)
-				this.config.content[index].index = index;
-		}
 	}
 	get glChildren(): goldenChild[] {
 		return this.glObject.contentItems.map((x : any)=> x.vueObject);

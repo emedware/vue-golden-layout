@@ -15,18 +15,17 @@ export class goldenLink extends goldenChild implements goldenContainer {
 	getChild: (path: string)=> goldenChild
 	readonly glChildrenTarget: any
 	addGlChild: (child : any, comp : any)=> void
-	removeGlChild: (index: number)=> void
 	readonly glChildren: goldenChild[]
 	vueChild: (child: number)=> goldenChild
 	vueChildren: ()=> goldenChild[]
 	events: string[]
-	groupColor: string
+	groupColor: string|null
 	colorGroup: boolean
 	
 	watchComputeChildrenPath: number = 0
 	computeChildrenPath: ()=> void
 
-	tabColor(): string {
+	tabColor(): string|null {
 		return this.belongGroupColor || this.groupColor;
 	}
 }

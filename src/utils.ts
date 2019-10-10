@@ -1,4 +1,5 @@
 export const isSubWindow = /[?&]gl-window=/.test(window.location.search);
+import { goldenItem, goldenChild } from "./roles";
 export type Dictionary<T = any> = {[key: string]: T}
 import * as GoldenLayout from 'golden-layout'
 import * as $ from 'jquery'
@@ -59,7 +60,7 @@ Object.assign(lm.utils.EventHub.prototype, {
 	query: async function(name: string, ...args: any[]) {
 		var rv = newSemaphore<any>();
 		queries[++queryId] = rv;
-		this.emit(queryEvent, queryId, name, ...args);
+		(<any>this).emit(queryEvent, queryId, name, ...args);
 		return rv;
 	},
 	response: function(name: string, cb: responseCallBack) {
@@ -78,10 +79,10 @@ export function xInstanceOf(obj: any, name: string) {
 	return browser.name === name;
 }
 
-export function localWindow(obj: any) {
+export function localWindow(obj: any): any {
 	if(!obj || 'object'!= typeof obj)
 		return obj;
-	var rv = xInstanceOf(obj, 'Array') ? [] : {};
+	var rv: Dictionary = xInstanceOf(obj, 'Array') ? [] : {};
 	for(let i in obj) rv[i] = localWindow(obj[i]);
 	return rv;
 }
@@ -94,8 +95,8 @@ export var statusChange = {
 
 // hook `createPopout` to give objects instead of destroying then on-destroy
 var oldCreatePopout = lm.LayoutManager.prototype.createPopout;
-lm.LayoutManager.prototype.createPopout = function(item) {
-	var rv;
+lm.LayoutManager.prototype.createPopout = function(item: any) {
+	var rv: any;
 	statusChange.poppingOut = true;
 	try {
 		item.emit && item.emit('beforePopOut', item);
@@ -106,8 +107,8 @@ lm.LayoutManager.prototype.createPopout = function(item) {
 	}
 	item.emit && item.emit('poppedOut', rv);
 	if(item[0]) item = item[0];
-	var rootPaths = {}, gl = this.vueObject;
-	function ref(path) { rootPaths[path] = gl.getChild(path); }
+	var rootPaths: Dictionary<goldenChild> = {}, gl = this.vueObject;
+	function ref(path: string) { rootPaths[path] = gl.getChild(path); }
 	if(item.content) {	//config
 		if(item.vue) ref(item.vue);
 		for(let i=0; item.content[i]; ++i)
@@ -129,7 +130,7 @@ lm.LayoutManager.prototype.createPopout = function(item) {
 		if(!rv.poppedIn) for(let p in rootPaths) rootPaths[p].delete();
 	});
 	rv.on('initialised', ()=> {
-		var ppGl = rv.getGlInstance(), emptyCheck = null;
+		var ppGl = rv.getGlInstance(), emptyCheck: ReturnType<typeof setTimeout>|null = null;
 		//Automatically closes the window when there is no more tabs
 		ppGl.on('itemDestroyed', ()=> {
 			if(!emptyCheck) emptyCheck = setTimeout(()=> {
