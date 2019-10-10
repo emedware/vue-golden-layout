@@ -14,14 +14,41 @@ Integration of the golden-layout to Vue
 npm i -S vue-golden-layout
 ```
 
-> For the ones who clone, in order to test, a static sample application can be compiled :
->
-> ```sh
-> npm install
-> npm run demo
-> ```
->
-> You can now browse `http://localhost:9000`
+### Fast example
+
+```html
+<golden-layout>
+  <gl-row>
+    <gl-component title="component1">
+      <h1>Component 1</h1>
+    </gl-component>
+    <gl-stack>
+      <gl-component title="component2">
+        <h1>Component 2</h1>
+      </gl-component>
+      <gl-component title="component3">
+        <h1>Component 3</h1>
+      </gl-component>
+    </gl-stack>
+  </gl-row>
+</golden-layout>
+```
+
+Note: each component who is not rendered in a stack will indeed be rendered in a golden-layout singleton stack.
+
+### Bigger example
+
+A more complex exemple is in the project when git-cloned.
+In order to test, the static sample application can be compiled like this:
+
+```sh
+npm install
+npm run demo
+```
+
+You can now browse `http://localhost:9000`
+
+The example can also be found in the sources under the '/demo' folder
 
 ## Don't forget in order to make it work
 
@@ -67,6 +94,8 @@ Component can be described *by extension* - namely, by giving their content usin
 
 ## Saving/restoring states
 
+TL;DR: The state is the model of the golden-layout object
+
 The `golden-layout` has a *property* and an *event* named `state`.
 
 - The event is triggered when the state has changed (even deeply, like a deep watch).
@@ -80,42 +109,7 @@ Notes:
 - It is also the `v-model` of the `golden-layout`
 - In order to reload a state, the Vue object structure must be reloaded identical too
 
-## Low-level functionalities
-
-### global components
-
-Some golden-layout global component can be given before any instanciation (while declaring classes) by calling this function:
-
-```typescript
-import { registerGlobalComponent } from 'vue-golden-layout'
-// registerGlobalComponent(name: string, comp: (gl: goldenLayout, container: any, state: any)=> void)
-```
-
-`(container: any, state: any)=> void` is the signature of a gloden-layout component and they are created per golden-layout instances
-
-### CSS
-
-The elements with the `glComponent` CSS class are the ones directly included in the `<div>` controlled and sized by golden-layout and answers to this class to fit in the layout child container, that can be overridden
-
-```css
-.glComponent {
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-}
-```
-
-### Objects linking
-
-Golden-layout and Vue both have objects representing their internal state. A `glRow` is associated with a `ContentItem`.
-
-Each vue object has a `glObject` property and, vice versa, each golden-layout object has a `vueObject` property linking to each another.
-
-#### Virtual vs actual tree
-
-Vue objects (rows, components, stacks, ...) all have a `$parent` that retrieve their Vue' parent. Also their children might be retrieved with `$children`.
-
-Though, the user might change the order of things and who contain what. To retrieve the golden-layout-wise hierarchy, we can use `glParent` as well as `glChindren` on the vue objects to retrieve vue objects.
+## Components events and properties
 
 ### Events
 
@@ -185,7 +179,7 @@ The policy chosen here is to then wait a bit and try again. In order to avoid in
 
 Therefore:
 
-- Changing this value to higher will not postpone the event fireing, it will just allow more time for the popup to load before raising an exception
+- Changing this value to higher will not postpone the event fireing, it will just allow more time for the pop-out to load before raising an exception
 - This can be useful to increase in applications where the main page has some long loading process before displaying the golden-layout
 
 #### Contained objects' properties
@@ -197,6 +191,13 @@ Therefore:
 - `closable: boolean`
 - `reorderEnabled: boolean`
 - `hidden: boolean`
+
+#### Containers
+
+Containers have an additional `color-group: boolean` property defaulted to `false`.
+A container for which this property is set to `true` will see all his descendants have a color assigned to their tabs.
+
+This is meant to be used when the same component can be used twice on different objects, to follow in the pop-outs which is the descendant of which.
 
 ## Specific components
 
@@ -270,3 +271,48 @@ export class MyComp extends glCustomContainer {
 The template' root must therefore be a proper golden-layout child (row, col, stack, ...)
 
 This can also be used for route components.
+
+## Low-level functionalities
+
+### Global components
+
+Some golden-layout global component can be given before any instanciation (while declaring classes) by calling this function:
+
+```typescript
+import { registerGlobalComponent } from 'vue-golden-layout'
+// registerGlobalComponent(name: string, comp: (gl: goldenLayout, container: any, state: any)=> void)
+```
+
+`(container: any, state: any)=> void` is the signature of a gloden-layout component and they are created per golden-layout instances
+
+### `isSubWindow`
+
+```typescript
+import { isSubWindow } from 'vue-golden-layout'
+```
+
+The main application component will be created in any pop-out that is opened. The `<golden-layout>` node will generate an empty HTML content, so nothing in it will be rendered. Though, if needed, this value is `true` when the component is generated in a pop-out which indicate that the component won't even be rendered and should take no action.
+
+### CSS
+
+The elements with the `glComponent` CSS class are the ones directly included in the `<div>` controlled and sized by golden-layout and answers to this class to fit in the layout child container, that can be overridden
+
+```css
+.glComponent {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+```
+
+### Objects linking
+
+Golden-layout and Vue both have objects representing their internal state. A `glRow` is associated with a `ContentItem`.
+
+Each vue object has a `glObject` property and, vice versa, each golden-layout object has a `vueObject` property linking to each another.
+
+#### Virtual vs actual tree
+
+Vue objects (rows, components, stacks, ...) all have a `$parent` that retrieve their Vue' parent. Also their children might be retrieved with `$children`.
+
+Though, the user might change the order of things and who contain what. To retrieve the golden-layout-wise hierarchy, we can use `glParent` as well as `glChindren` on the vue objects to retrieve vue objects.

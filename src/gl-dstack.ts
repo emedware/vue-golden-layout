@@ -1,6 +1,5 @@
 import { Watch, Component, Prop, Emit, Model } from 'vue-property-decorator'
 import { glRow } from './gl-groups'
-import { isSubWindow } from './utils'
 import Vue from 'vue'
 import * as $ from 'jquery'
 
@@ -12,7 +11,7 @@ export default class glDstack extends glRow {
 	@Model('tab-change') activeTab: string
 	@Emit() tabChange(tabId: string) { }
 	@Watch('activeTab', {immediate: true}) async progTabChange(tabId: any) {
-		if('undefined'!== typeof tabId /*&& !isSubWindow*/) {
+		if('undefined'!== typeof tabId) {
 			await this.layout.glo;
 			var stack: any = this.stack
 			for(var child of stack.contentItems)

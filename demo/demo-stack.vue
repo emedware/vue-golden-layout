@@ -12,13 +12,13 @@
 				</span>
 			</p>
 		</gl-component>
-		<gl-dstack ref="myStack">
+		<gl-dstack>
 			<gl-component title="Dstack demonstration" :closable="false" :reorder-enabled="false">
 				This element is just present to test the ability of the d-stack if this stack happens to be popped out.
 			</gl-component>
 			<gl-component v-for="stackSub in state.stackSubs" :key="stackSub"
 					:title="'dynamic'+stackSub"
-					@destroy="closed(stackSub)"
+					@destroy="remStack(stackSub)"
 					:state="{stackSub}">
 				Dynamic item (id: {{stackSub}})
 				<button @click="remStack(stackSub)">Remove</button>
@@ -46,11 +46,6 @@ export default class demoStack extends glCustomContainer {
 
 	letters = letters
 	testText = "testing text."
-	closed(n: number) {
-		var ndx = this.state.stackSubs.indexOf(n);
-		if(~ndx)
-			this.state.stackSubs.splice(ndx, 1);
-	}
 	addStack() {
 		this.state.stackSubs.push(++this.state.ssId);
 	}
