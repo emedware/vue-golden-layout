@@ -74,9 +74,9 @@ export class goldenChild extends goldenItem {
 	close() {
 		this.container && this.container.close();
 	}
-	__isDestroyed?: boolean
+	_isDestroyed?: boolean
 	delete() {
-		if(!statusChange.unloading && !this.__isDestroyed) {	// If unloading, it might persist corrupted data
+		if(!statusChange.unloading && !this._isDestroyed) {	// If unloading, it might persist corrupted data
 			this.$parent.computeChildrenPath()
 			this.$emit('destroy', this);
 			this.$destroy();
@@ -108,13 +108,10 @@ export class goldenChild extends goldenItem {
 				vue: this.nodePath
 			}, this);
 	}
-	beforeDestroy() {
+	destroyed() {
 		//It can be destroyed in reaction of the removal of the glObject too
-		if(this.glObject && ~this.glObject.parent.contentItems.indexOf(this.glObject)) {
-			//Vue sets its value to `true` after the 'beforeDestroy' event - Another one is used not to interfere
-			this.__isDestroyed = true;
+		if(this.glObject && ~this.glObject.parent.contentItems.indexOf(this.glObject))
 			this.glObject.parent.removeChild(this.glObject);
-		}
 	}
 	@Watch('glObject') destroy(v:boolean) {
 		if(!v) this.delete();
