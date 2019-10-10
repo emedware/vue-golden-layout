@@ -65,18 +65,6 @@ export class goldenContainer extends goldenItem {
 		else
 			this.config.content.push(child);
 	}
-	removeGlChild(index: number) {
-		var ci = this.glObject;
-		if(ci) {
-			ci.removeChild(ci.contentItems[index]);
-			for(; index< ci.contentItems.length; ++index)
-				ci.contentItems[index].index = index;
-		} else {
-			this.config.content.splice(index, 1);
-			for(; index< this.config.content.length; ++index)
-				this.config.content[index].index = index;
-		}
-	}
 	get glChildren(): goldenChild[] {
 		return this.glObject.contentItems.map((x : any)=> x.vueObject);
 	}
