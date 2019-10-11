@@ -49,12 +49,34 @@ export class goldenChild extends goldenItem {
 		return rv;
 	}
 
-	tabColor(): string|null {
+	get tabColor(): string|null {
 		return this.belongGroupColor;
 	}
 
 	hide() { this.container && this.container.hide(); }
 	show() { this.container && this.container.show(); }
+	shouldFocus: boolean
+	focus() {
+		var brwsr = this.childMe.glObject, doc;
+		if(brwsr) {
+			this.show();
+			for(; !brwsr.isRoot; brwsr = brwsr.parent) {
+				if(brwsr.parent.isStack)
+					brwsr.parent.setActiveContentItem(brwsr);
+			}
+			doc = brwsr.layoutManager.container[0].ownerDocument;
+			(doc.defaultView || doc.parentWindow).focus();
+		} else
+			this.shouldFocus = true;
+	}
+	@Watch('glObject') glObjectSet(v:boolean) {
+		if(!v) this.delete();
+		else if(this.shouldFocus) {
+			this.shouldFocus = false;
+			this.focus();
+		}
+	}
+
 	@Prop({default: false}) hidden: boolean
 
 	@Watch('container')
@@ -71,12 +93,9 @@ export class goldenChild extends goldenItem {
 
 	@Prop({default: true}) closable: boolean
 	@Prop({default: true}) reorderEnabled: boolean
-	close() {
-		this.container && this.container.close();
-	}
-	__isDestroyed?: boolean
+	_isDestroyed?: boolean
 	delete() {
-		if(!statusChange.unloading && !this.__isDestroyed) {	// If unloading, it might persist corrupted data
+		if(!statusChange.unloading && !this._isDestroyed) {	// If unloading, it might persist corrupted data
 			this.$parent.computeChildrenPath()
 			this.$emit('destroy', this);
 			this.$destroy();
@@ -108,16 +127,9 @@ export class goldenChild extends goldenItem {
 				vue: this.nodePath
 			}, this);
 	}
-	beforeDestroy() {
-		//It can be destroyed in reaction of the removal of the glObject too
-		if(this.glObject && ~this.glObject.parent.contentItems.indexOf(this.glObject)) {
-			//Vue sets its value to `true` after the 'beforeDestroy' event - Another one is used not to interfere
-			this.__isDestroyed = true;
+	destroyed() {
+		if(this.glObject && ~this.glObject.parent.contentItems.indexOf(this.glObject))
 			this.glObject.parent.removeChild(this.glObject);
-		}
-	}
-	@Watch('glObject') destroy(v:boolean) {
-		if(!v) this.delete();
 	}
 	events: string[] = ['stateChanged', 'titleChanged', 'activeContentItemChanged', 'beforeItemDestroyed', 'itemDestroyed', 'itemCreated']
 }

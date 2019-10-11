@@ -4,8 +4,6 @@ import goldenLayout from "../golden"
 
 @Component({mixins: [goldenContainer]})
 export class goldenLink extends goldenChild implements goldenContainer {
-	//TODO: `implements` should help avoid props redeclaration - but does not
-
 	// declaration of goldenContainer properties
 	destroyed: ()=> void
 	readonly definedVueComponent: goldenContainer
@@ -25,7 +23,7 @@ export class goldenLink extends goldenChild implements goldenContainer {
 	watchComputeChildrenPath: number = 0
 	computeChildrenPath: ()=> void
 
-	tabColor(): string|null {
+	get tabColor(): string|null {
 		return this.belongGroupColor || this.groupColor;
 	}
 }

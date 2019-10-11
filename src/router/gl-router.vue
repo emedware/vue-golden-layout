@@ -51,7 +51,7 @@ export default class glRouter extends glCustomContainer {
 		return route.path === this.emptyRoute;
 	}
 	@Watch('activeRoute') setPath(path: string) {
-		if(path != this.$route.fullPath)
+		if(path && path != this.$route.fullPath)
 			this.$router.replace(path);
 	}
 	@Watch('$route')
@@ -72,8 +72,7 @@ export default class glRouter extends glCustomContainer {
 		if(route.closable) {
 			var ndx = this.routes.findIndex(opened(route.location))
 			if(~ndx) this.routes.splice(ndx, 1);
-			//TODO: reenable (double delete when closing popup)
-			//else console.assert(false, 'Closed route is in the array');
+			else console.assert(false, 'Closed route is in the array');
 		}
 	}
 }

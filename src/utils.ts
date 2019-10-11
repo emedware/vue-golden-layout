@@ -69,9 +69,9 @@ Object.assign(lm.utils.EventHub.prototype, {
 	}
 });
 
-/// Equivalent of `obj instanceOf name` but accepting cross-windows classes.
+/// Equivalent of `obj instanceof name` but accepting cross-windows classes.
 // Ex: A popup and the main window buth have an `Array` class defined - and they are different
-//  Therefore `x instanceOf Array` will return false if the Array class is from the other window
+//  Therefore `x instanceof Array` will return false if the Array class is from the other window
 export function xInstanceOf(obj: any, name: string) {
 	var browser = obj.constructor;
 	while(browser.name !== name && browser.super)

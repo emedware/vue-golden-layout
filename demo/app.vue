@@ -9,9 +9,9 @@
 						<main />
 					</template>
 				</gl-router>
-				<demo-stack v-model="demoStackState" />
+				<demo-stack :state="demoStackState" />
 				<gl-component title="Bottom" v-if="demoStackState.bottomSheet" @destroy="demoStackState.bottomSheet = false">
-					Bottom pane
+					<p>Routes: {{routes}}</p>
 				</gl-component>
 			</gl-col>
 		</golden-layout>
