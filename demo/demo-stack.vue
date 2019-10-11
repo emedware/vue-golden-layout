@@ -35,14 +35,11 @@ import { letters } from './router'
 
 @Component
 export default class demoStack extends glCustomContainer {
-	@Model('changeState') state: {
+	@Prop() state: {
 		bottomSheet: boolean,
 		stackSubs: number[],
 		ssId: number
 	}
-	
-	@Watch('state', {deep: true})
-	@Emit() changeState() { }
 
 	letters = letters
 	testText = "testing text."

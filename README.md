@@ -81,9 +81,9 @@ Available themes are `light`, `dark`, `soda`, `translucent`.
 
 Elements like `<gl-row>`, `<gl-col>` and `<gl-stack>` can be represented in a tree - they respectively stand for a golden-layout row, column and stack.
 
-### Inserting components
+### Components
 
-Component can be described *by extension* - namely, by giving their content using the data from the defining component.
+Component are described *by extension* - namely, by giving their content using the data from the defining component.
 
 ```html
 <gl-component>
@@ -94,7 +94,7 @@ Component can be described *by extension* - namely, by giving their content usin
 
 ## Saving/restoring states
 
-TL;DR: The state is the model of the golden-layout object
+> TL;DR: The state is the model of the golden-layout object
 
 The `golden-layout` has a *property* and an *event* named `state`.
 
