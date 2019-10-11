@@ -19,8 +19,9 @@ import glComponentRoute from './gl-component-route'
 import glContainerRoute from './gl-container-route.vue'
 import glComponent from '../gl-component.vue'
 import glRouteBase from './gl-route-base'
-import VueRouter, { Location } from 'vue-router';
+import VueRouter, { Location } from 'vue-router'
 import { freezeRoute } from './utils'
+import { xInstanceOf } from '../utils'
 
 type VueComponent = ComponentOptions<Vue> | typeof Vue | AsyncComponent;
 
@@ -46,8 +47,7 @@ export default class glRoute extends glRouteBase {
 		if(comp instanceof Promise) comp = await comp;
 		this.component = comp;
 		//TODO: ComponentOptions.extends
-		//TODO: `instanceof glCustomContainer` fails in popout windows
-		this.type = 'function'=== typeof comp && comp.prototype instanceof glCustomContainer ?
+		this.type = 'function'=== typeof comp && xInstanceOf(comp.prototype, 'glCustomContainer') ?
 			'container' : 'component';
 		freezeRoute(this, route);
 	}

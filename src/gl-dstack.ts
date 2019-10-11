@@ -2,6 +2,7 @@ import { Watch, Component, Prop, Emit, Model } from 'vue-property-decorator'
 import { glRow } from './gl-groups'
 import Vue from 'vue'
 import * as $ from 'jquery'
+import { goldenChild } from './roles'
 
 @Component
 export default class glDstack extends glRow {
@@ -10,13 +11,13 @@ export default class glDstack extends glRow {
 	
 	@Model('tab-change') activeTab: string
 	@Emit() tabChange(tabId: string) { }
-	@Watch('activeTab', {immediate: true}) async progTabChange(tabId: any) {
-		if('undefined'!== typeof tabId) {
-			await this.layout.glo;
-			var stack: any = this.stack
-			for(var child of stack.contentItems)
-				if(child.vueObject && child.vueObject.givenTabId === tabId)
-					stack.setActiveContentItem(child.container?(<any>child).container.parent:child);
+	@Watch('activeTab', {immediate: true}) progTabChange(tabId: any) {
+		if('undefined'!== typeof tabId && null!== tabId) {
+			for(let child of <goldenChild[]>this.$children)
+				if(child.givenTabId === tabId) {
+					child.focus();
+					break;
+				}
 		}
 	}
 
@@ -57,6 +58,7 @@ export default class glDstack extends glRow {
 				});
 		});
 		stack.on('poppedOut', (bw: any)=> bw.on('beforePopIn', ()=> {
+			// TODO: store the d-stack nodePath in the window config to pop-in in the right d-stack even after page reload
 			var bwGl = bw.getGlInstance(),
 				childConfig = $.extend(true, {}, bwGl.toConfig()).content[0],
 				stack = this.stack;
@@ -111,7 +113,7 @@ export default class glDstack extends glRow {
 		}
 	}
 	async created() {
-		var glo = await this.layout.glo;
+		await this.layout.glo;
 		this.stack;
 	}
 }

@@ -11,7 +11,7 @@
 				</gl-router>
 				<demo-stack :state="demoStackState" />
 				<gl-component title="Bottom" v-if="demoStackState.bottomSheet" @destroy="demoStackState.bottomSheet = false">
-					Bottom pane
+					<p>Routes: {{routes}}</p>
 				</gl-component>
 			</gl-col>
 		</golden-layout>

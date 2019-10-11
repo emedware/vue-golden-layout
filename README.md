@@ -190,12 +190,22 @@ Therefore:
 - `reorderEnabled: boolean`
 - `hidden: boolean`
 
+#### Contained objects' methods
+
+- `show()` and `hide()` respectively show and hide the element
+- `focus()` brings the element in front recursively, making sure all tabs are right for them to be visible (also brings the window in front if needed)
+- `delete()` delete the vue-object and the gl-object
+- `nodePath` is the unique path to this node from the golden-layout root (can change).
+ The golden-layout object has a method `getSubChild(path: string)` that returns this vue-object (useful between page reload)
+
 #### Containers
 
 Containers have an additional `color-group: boolean` property defaulted to `false`.
 A container for which this property is set to `true` will see all his descendants have a color assigned to their tabs.
 
 This is meant to be used when the same component can be used twice on different objects, to follow in the pop-outs which is the descendant of which.
+
+Note: by default, routes that are `glCustomContainer` have a `color-group` set to `true`
 
 ## Specific components
 

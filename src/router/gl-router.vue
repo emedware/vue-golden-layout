@@ -51,7 +51,7 @@ export default class glRouter extends glCustomContainer {
 		return route.path === this.emptyRoute;
 	}
 	@Watch('activeRoute') setPath(path: string) {
-		if(path != this.$route.fullPath)
+		if(path && path != this.$route.fullPath)
 			this.$router.replace(path);
 	}
 	@Watch('$route')
