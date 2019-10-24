@@ -3,14 +3,6 @@ import { goldenChild, goldenItem } from "./index"
 import { allocateColor, freeColor } from '../colors'
 import { genericTemplate } from '../golden.vue'
 
-export function UsingSlots(...slots: string[]) {
-	return function(target: any) {
-		//TODO: find another way than to use the prototype (browse throught the lineage) not to have this accessible in the component's data
-		target.prototype.usedSlots = target.prototype.usedSlots ?
-			slots.concat(target.prototype.usedSlots) : slots;
-	}
-}
-
 @Component({mixins: [{
 	data(vm: any) {
 		if(vm.colorGroup)
@@ -19,7 +11,6 @@ export function UsingSlots(...slots: string[]) {
 			vm.groupColor = vm.belongGroupColor;
 	}
 }]})
-@UsingSlots('default')
 export class goldenContainer extends goldenItem {
 	@Provide() groupColor: string|null
 	@Prop({default: false}) colorGroup: boolean
