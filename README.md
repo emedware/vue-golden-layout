@@ -154,7 +154,6 @@ itemCreated
 @Prop({default: true}) reorderEnabled: boolean
 @Prop({default: false}) selectionEnabled: boolean
 @Prop({default: true}) popoutWholeStack: boolean
-@Prop({default: true}) blockedPopoutsThrowError: boolean
 @Prop({default: true}) closePopoutsOnUnload: boolean
 @Prop({default: true}) showPopoutIcon: boolean
 @Prop({default: true}) showMaximiseIcon: boolean
@@ -219,7 +218,7 @@ Components defined in it that are not `closable` nor `reorder-enabled` will *sta
 ### gl-router
 
 The router is a `glContainer` that aims to sublimate the `<router-view />`
-It let people manage their routes in tabs, open them in a split screen or even popped-out in another browser window on another physical display.
+It lets users manage their routes in tabs, open them in a split screen or even popped-out in another browser window on another physical display.
 
 The main usage is `<gl-router />`. Any options of `router-view` still has to be implemented.
 

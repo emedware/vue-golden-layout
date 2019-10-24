@@ -18,8 +18,7 @@
 			</gl-component>
 			<gl-component v-for="stackSub in state.stackSubs" :key="stackSub"
 					:title="'dynamic'+stackSub"
-					@destroy="remStack(stackSub)"
-					:state="{stackSub}">
+					@destroy="remStack(stackSub)">
 				Dynamic item (id: {{stackSub}})
 				<button @click="remStack(stackSub)">Remove</button>
 				<p><input v-model="testText" /></p>

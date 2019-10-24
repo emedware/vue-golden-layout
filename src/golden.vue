@@ -49,7 +49,6 @@ export default class goldenLayout extends goldenContainer {
 	@Prop({default: true}) reorderEnabled: boolean
 	@Prop({default: false}) selectionEnabled: boolean
 	@Prop({default: true}) popoutWholeStack: boolean
-	@Prop({default: true}) blockedPopoutsThrowError: boolean
 	@Prop({default: true}) closePopoutsOnUnload: boolean
 	@Prop({default: true}) showPopoutIcon: boolean
 	@Prop({default: true}) showMaximiseIcon: boolean
@@ -159,7 +158,6 @@ export default class goldenLayout extends goldenContainer {
 					reorderEnabled: this.reorderEnabled,
 					selectionEnabled: this.selectionEnabled,
 					popoutWholeStack: this.popoutWholeStack,
-					blockedPopoutsThrowError: this.blockedPopoutsThrowError,
 					closePopoutsOnUnload: this.closePopoutsOnUnload,
 					showPopoutIcon: this.showPopoutIcon,
 					showMaximiseIcon: this.showMaximiseIcon,

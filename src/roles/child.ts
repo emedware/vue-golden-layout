@@ -59,6 +59,7 @@ export class goldenChild extends goldenItem {
 	focus() {
 		var brwsr = this.childMe.glObject, doc;
 		if(brwsr) {
+			// TODO: cfr layout.selectionEnabled
 			this.show();
 			for(; !brwsr.isRoot; brwsr = brwsr.parent) {
 				if(brwsr.parent.isStack)
