@@ -16,7 +16,6 @@ export class goldenLink extends goldenChild implements goldenContainer {
 	readonly glChildren: goldenChild[]
 	vueChild: (child: number)=> goldenChild
 	vueChildren: ()=> goldenChild[]
-	events: string[]
 	groupColor: string|null
 	colorGroup: boolean
 	

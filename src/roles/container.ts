@@ -77,7 +77,6 @@ export class goldenContainer extends goldenItem {
 	vueChildren(): goldenChild[] {
 		return <goldenChild[]>this.$children.map(comp=> (<goldenItem>comp).childMe).filter(x=> x instanceof goldenItem);
 	}
-	events: string[] = ['open', 'resize', 'destroy', 'close', 'tab', 'hide', 'show']
 	destroyed() {
 		if(this.groupColor)
 			freeColor(this.groupColor);

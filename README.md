@@ -145,6 +145,20 @@ itemDestroyed
 itemCreated
 ```
 
+#### Components' events
+
+Straight forwards from golden-layout, refer to their doc
+
+```javascript
+open
+destroy
+close
+tab
+hide
+show
+resize
+```
+
 ### Properties
 
 #### Layout' properties
