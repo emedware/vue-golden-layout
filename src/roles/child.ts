@@ -59,6 +59,7 @@ export class goldenChild extends goldenItem {
 	focus() {
 		var brwsr = this.childMe.glObject, doc;
 		if(brwsr) {
+			// TODO: cfr layout.selectionEnabled
 			this.show();
 			for(; !brwsr.isRoot; brwsr = brwsr.parent) {
 				if(brwsr.parent.isStack)
@@ -128,8 +129,7 @@ export class goldenChild extends goldenItem {
 			}, this);
 	}
 	destroyed() {
-		if(this.glObject && ~this.glObject.parent.contentItems.indexOf(this.glObject))
+		if(this.glObject && this.glObject.parent && ~this.glObject.parent.contentItems.indexOf(this.glObject))
 			this.glObject.parent.removeChild(this.glObject);
 	}
-	events: string[] = ['stateChanged', 'titleChanged', 'activeContentItemChanged', 'beforeItemDestroyed', 'itemDestroyed', 'itemCreated']
 }

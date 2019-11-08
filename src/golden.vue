@@ -40,6 +40,11 @@ interface slotComponent {
 	content: any
 }
 
+const componentEvents = ['open', 'destroy', 'close', 'tab', 'hide', 'show', 'resize'];
+const itemEvents = ['stateChanged', 'titleChanged', 'activeContentItemChanged', 'beforeItemDestroyed', 'itemDestroyed', 'itemCreated'];
+const layoutEvents = ['itemCreated', 'stackCreated', 'rowCreated', 'tabCreated', 'columnCreated', 'componentCreated',
+	'selectionChanged', 'windowOpened', 'windowClosed', 'itemDestroyed', 'initialised', 'activeContentItemChanged'];
+
 @Component({directives: {resize}})
 export default class goldenLayout extends goldenContainer {
 	$router : any
@@ -49,7 +54,6 @@ export default class goldenLayout extends goldenContainer {
 	@Prop({default: true}) reorderEnabled: boolean
 	@Prop({default: false}) selectionEnabled: boolean
 	@Prop({default: true}) popoutWholeStack: boolean
-	@Prop({default: true}) blockedPopoutsThrowError: boolean
 	@Prop({default: true}) closePopoutsOnUnload: boolean
 	@Prop({default: true}) showPopoutIcon: boolean
 	@Prop({default: true}) showMaximiseIcon: boolean
@@ -159,7 +163,6 @@ export default class goldenLayout extends goldenContainer {
 					reorderEnabled: this.reorderEnabled,
 					selectionEnabled: this.selectionEnabled,
 					popoutWholeStack: this.popoutWholeStack,
-					blockedPopoutsThrowError: this.blockedPopoutsThrowError,
 					closePopoutsOnUnload: this.closePopoutsOnUnload,
 					showPopoutIcon: this.showPopoutIcon,
 					showMaximiseIcon: this.showMaximiseIcon,
@@ -190,8 +193,7 @@ export default class goldenLayout extends goldenContainer {
 					(container: any, state: any)=> {
 						var component = this.getSubChild(container._config.vue)
 						container.getElement().append(component.$el);
-						//TODO: `events` should not be an instance property
-						forwardEvt(container, component, component.events);
+						forwardEvt(container, component, componentEvents);
 						component.container = container;
 					});
 				// Register global components given by other vue-components
@@ -257,6 +259,8 @@ export default class goldenLayout extends goldenContainer {
 				}
 				if(itm.vueObject.initialState)
 					itm.vueObject.initialState(itm.config);
+				if(itm.vueObject.$emit)
+					forwardEvt(itm, itm.vueObject, itemEvents);
 				var color = itm.vueObject.childMe && itm.vueObject.childMe.tabColor;
 				if(color && itm.tab)
 					colorizeTab(itm.tab, color);
@@ -283,8 +287,7 @@ export default class goldenLayout extends goldenContainer {
 						--itm.parent.config.activeItemIndex;
 					});
 			});
-			forwardEvt(gl, this, ['itemCreated', 'stackCreated', 'rowCreated', 'tabCreated', 'columnCreated', 'componentCreated',
-				'selectionChanged', 'windowOpened', 'windowClosed', 'itemDestroyed', 'initialised', 'activeContentItemChanged']);
+			forwardEvt(gl, this, layoutEvents);
 			//#endregion
 			try{
 				gl.init();

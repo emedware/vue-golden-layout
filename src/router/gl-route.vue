@@ -46,7 +46,6 @@ export default class glRoute extends glRouteBase {
 		}
 		if(comp instanceof Promise) comp = await comp;
 		this.component = comp;
-		//TODO: ComponentOptions.extends
 		this.type = 'function'=== typeof comp && xInstanceOf(comp.prototype, 'glCustomContainer') ?
 			'container' : 'component';
 		freezeRoute(this, route);

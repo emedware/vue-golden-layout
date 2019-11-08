@@ -14,7 +14,6 @@ import { glCustomContainer, goldenContainer } from '../roles'
 import glDstack from '../gl-dstack'
 import glRoute from './gl-route.vue'
 import { defaultTitler, UsingRoutes } from './utils'
-import { UsingSlots } from '../roles'
 import VueRouter, { Location, Route } from 'vue-router'
 
 function opened(location: Location) {
@@ -23,7 +22,6 @@ function opened(location: Location) {
 
 @Component({components: {glRoute, glDstack}})
 @UsingRoutes
-@UsingSlots('route')
 export default class glRouter extends glCustomContainer {
 	$router : VueRouter
 	$route : Route

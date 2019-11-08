@@ -1,9 +1,7 @@
 import { Component, Model, Watch, Emit } from 'vue-property-decorator'
-import { UsingSlots } from './roles'
 import group from './gl-group.vue'
 
-//We have to re-define : ts is lost with Vue files
-@UsingSlots('default')
+// We have to re-define : ts is lost with Vue files
 export class glGroup extends group {
 	closable: boolean
 	config: any
