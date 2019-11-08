@@ -129,7 +129,7 @@ export class goldenChild extends goldenItem {
 			}, this);
 	}
 	destroyed() {
-		if(this.glObject && ~this.glObject.parent.contentItems.indexOf(this.glObject))
+		if(this.glObject && this.glObject.parent && ~this.glObject.parent.contentItems.indexOf(this.glObject))
 			this.glObject.parent.removeChild(this.glObject);
 	}
 }
