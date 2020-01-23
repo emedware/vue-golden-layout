@@ -11,16 +11,15 @@
 }
 </style>
 <script lang="ts">
-import Vue from 'vue'
-import { Component, Inject, Model, Prop, Watch, Emit } from 'vue-property-decorator'
-import { goldenContainer, goldenChild } from './roles'
+import { Component } from 'vue-property-decorator'
+import { goldenChild } from './roles'
 import { Dictionary } from './utils.js'
 
 @Component
 export default class glComponent extends goldenChild {
 	toggleMaximise() {
 		this.container && this.container.toggleMaximise();
-	}
+	}S
 	initialState(config: Dictionary) {}
 	
 	getChildConfig() : any {

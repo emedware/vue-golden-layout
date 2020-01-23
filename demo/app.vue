@@ -38,7 +38,7 @@ body {
 </style>
 <script lang="ts">
 import Vue from 'vue'
-import { Component, Inject, Model, Prop, Watch } from 'vue-property-decorator'
+import { Component } from 'vue-property-decorator'
 import { letters } from './router'
 import PHead from './p-head.vue'
 import demoStack from './demo-stack.vue'

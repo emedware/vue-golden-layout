@@ -8,6 +8,7 @@ import glRouter from './router/gl-router.vue'
 import glRoute from './router/gl-route.vue'
 export { glCustomContainer } from './roles'
 export { isSubWindow } from './utils';
+import Vue, { VueConstructor } from 'vue'
 
 var components : any = {
 	goldenLayout, glComponent,
@@ -21,9 +22,12 @@ export {
 	glRouter, glRoute
 }
 
+/**
+ * Vue plugin installation
+ */
 export default {
-	install(Vue : any) {
+	install(vue : VueConstructor<Vue>) {
 		for(let i in components)
-			Vue.component(i, components[i]);
+			vue.component(i, components[i]);
 	}
 };

@@ -10,6 +10,7 @@ export default class glDstack extends glRow {
 	@Prop({default: false}) closable: boolean
 	
 	@Model('tab-change') activeTab: string
+	// eslint-disable-next-line no-unused-vars
 	@Emit() tabChange(tabId: string) { }
 	@Watch('activeTab', {immediate: true}) progTabChange(tabId: any) {
 		if('undefined'!== typeof tabId && null!== tabId) {
@@ -24,8 +25,7 @@ export default class glDstack extends glRow {
 	get glChildrenTarget() { return this.stack; }
 	content: any[]
 	getChildConfig(): any {
-		var that = this,
-			config = (<any>glRow).extendOptions.methods.getChildConfig.apply(this);  //super is a @Component
+		var config = (<any>glRow).extendOptions.methods.getChildConfig.apply(this);  //super is a @Component
 		this.content = config.content.filter((x: any) => !x.isClosable && !x.reorderEnabled);
 		config.content = [{
 			type: 'stack',
@@ -79,7 +79,7 @@ export default class glDstack extends glRow {
 	}
 	cachedStack: any = null
 	get stack() {
-		var ci = this.glObject , rv: any, that = this;
+		var ci = this.glObject , rv: any;
 		if(!ci) return null;
 		if(this.cachedStack && this.cachedStack.vueObject.glObject)
 			return this.cachedStack;
