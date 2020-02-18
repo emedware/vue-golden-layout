@@ -19,7 +19,7 @@ import { Dictionary } from './utils.js'
 export default class glComponent extends goldenChild {
 	toggleMaximise() {
 		this.container && this.container.toggleMaximise();
-	}S
+	}
 	initialState(config: Dictionary) {}
 	
 	getChildConfig() : any {
