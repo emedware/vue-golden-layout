@@ -21,6 +21,7 @@ import * as GoldenLayout from 'golden-layout'
 import { goldenContainer, goldenChild, goldenItem } from './roles'
 import * as resize from 'vue-resize-directive'
 import { isSubWindow, Dictionary, Semaphore, newSemaphore, statusChange, localWindow, isDragging } from './utils'
+import * as $ from 'jquery'
 
 export type globalComponent = (gl: goldenLayout, container: any, state: any)=> void;
 var globalComponents: Dictionary<globalComponent> = {};
@@ -143,14 +144,10 @@ export default class goldenLayout extends goldenContainer {
 	rootPath?: {[path: string]: goldenItem}
 	parentLayout?: goldenLayout
 	async mounted() {
-		var me = this, layoutRoot = this.$refs.layoutRoot, gl: GoldenLayout,
+		var me = this, gl: GoldenLayout,
 			state = this.state instanceof Promise ?
 				this.state : Promise.resolve(this.state);
 
-		//Used to debug poped-up windows
-		var sleep = (timeout: number, rv: any)=> new Promise(function(resolve: (value: any)=> void, _: any) {
-			setTimeout(()=> resolve(rv), timeout);
-		});
 		state
 			.then(async (state: any)=> {
 			if(state && !isSubWindow) {
@@ -177,7 +174,7 @@ export default class goldenLayout extends goldenContainer {
 					dragProxyHeight: this.dragProxyHeight
 				};
 			}
-			this.gl = gl = new GoldenLayout(this.config, <Element>layoutRoot);
+			this.gl = gl = new GoldenLayout(this.config, $(<Element>this.$refs.layoutRoot));
 			(<any>gl).vueObject = this;
 			var poppedoutVue = (<any>window).poppedoutVue;
 			if(poppedoutVue) {
