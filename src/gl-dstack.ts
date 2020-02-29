@@ -38,12 +38,9 @@ export default class glDstack extends glRow {
 	}
 	get activeContentItemChanged() {
 		return (()=> {
-			var v = this.stack.config.activeItemIndex;
-			if('number'=== typeof v) {
-				var vueObject = this.stack.contentItems[v].vueObject;
-				if(vueObject)
-					this.tabChange(vueObject.givenTabId);
-			}
+			var vueObject = this.stack.getActiveContentItem().vueObject;
+			if(vueObject)
+				this.tabChange(vueObject.givenTabId);
 		}).bind(this);
 	}
 	initStack(stack: any) {
