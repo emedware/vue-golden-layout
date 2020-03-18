@@ -174,7 +174,7 @@ export default class goldenLayout extends goldenContainer {
 					dragProxyHeight: this.dragProxyHeight
 				};
 			}
-			this.gl = gl = new GoldenLayout(this.config, $(<Element>this.$refs.layoutRoot));
+			this.gl = gl = new GoldenLayout(this.config, $(<HTMLElement>this.$refs.layoutRoot));
 			(<any>gl).vueObject = this;
 			var poppedoutVue = (<any>window).poppedoutVue;
 			if(poppedoutVue) {
