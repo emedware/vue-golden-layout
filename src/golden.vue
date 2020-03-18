@@ -26,9 +26,12 @@ import * as $ from 'jquery'
 export type globalComponent = (gl: goldenLayout, container: any, state: any)=> void;
 var globalComponents: Dictionary<globalComponent> = {};
 
-//avoid the objects being observed
-(<any>GoldenLayout.prototype)._isVue = true;
-(<any>GoldenLayout).__lm.items.AbstractContentItem.prototype._isVue = true;
+function unobserve(obj: any, key: string = 'prototype') {
+	obj[key]._isVue = true;
+}
+
+unobserve(GoldenLayout);
+unobserve((<any>GoldenLayout).__lm.items.AbstractContentItem);
 
 export const genericTemplate = 'Generic.Vue';
 export function registerGlobalComponent(name: string, comp: globalComponent) {

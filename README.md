@@ -107,7 +107,7 @@ Notes:
 - The property `state` can be given minified or not
 - The event `state` gives indeed the minified version of the config, and the expanded version as a second argument.
 - It is also the `v-model` of the `golden-layout`
-- In order to reload a state, the Vue object structure must be reloaded identical too
+- In order to reload a state, the Vue object structure must corresp to the state it be applied to
 
 ## Components events and properties
 
