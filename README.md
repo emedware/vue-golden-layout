@@ -196,7 +196,7 @@ Therefore:
 #### Contained objects' properties
 
 - `title: string`: Used for tab title
-- `tabId: string`: Used ad the `v-model` of a `gl-stack` or `gl-dstack` to determine/set the active tab
+- `tabId: string`: Used as the `v-model` of a `gl-stack` or `gl-dstack` to determine/set the active tab
 - `width: number`
 - `height: number`
 - `closable: boolean`

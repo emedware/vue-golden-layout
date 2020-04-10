@@ -298,7 +298,10 @@ export default class goldenLayout extends goldenContainer {
 			}
 		});
 	}
-	onResize() { this.gl && this.gl.updateSize(); }
+	onResize() {
+		this.gl && this.gl.updateSize(10, 10);
+		this.gl && this.gl.updateSize();
+	}
 	destroyed() {
 		statusChange.unloading = true;
 		this.gl.destroy();
