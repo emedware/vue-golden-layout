@@ -1,6 +1,6 @@
 var path = require("path"),
 	externals = require("webpack-node-externals"),
-	{default: DtsBundlePlugin} = require("webpack-dts-bundle"),
+	DtsBundlePlugin = require("./dts-bundle-plugin"),
 	VueLoader = require("vue-loader");
 
 module.exports = {
@@ -20,8 +20,12 @@ module.exports = {
 		new DtsBundlePlugin({
 			name: "vue-golden-layout",
 			main: "dist/index.d.ts",
+			baseDir: 'dist',
 			out: "vue-golden-layout.d.ts",
 			removeSource: true
+		}, {
+			"golden.d.ts": "golden.vue.d.ts",
+			"utils.js.d.ts": "utils.d.ts"
 		}),
 		new VueLoader.VueLoaderPlugin()
 	],
