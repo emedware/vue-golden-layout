@@ -1,6 +1,7 @@
 <template>
 	<gl-row :closable="false">
-		<gl-component title="compA" class="test-component" width="30">
+		<gl-component title="compA" class="test-component" width="30" v-model="testState">
+			<input v-model="testState.text" />
 			<h1>CompA</h1>
 			<button @click="state.bottomSheet = !state.bottomSheet">Toggle</button>
 			<button @click="addStack">Add</button>
@@ -39,7 +40,7 @@ export default class demoStack extends glCustomContainer {
 		stackSubs: number[],
 		ssId: number
 	}
-
+	testState: any = {text: 'Nothing new'}
 	letters = letters
 	testText = "testing text."
 	addStack() {

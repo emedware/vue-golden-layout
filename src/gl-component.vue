@@ -11,7 +11,7 @@
 }
 </style>
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
+import { Component, Model, Watch } from 'vue-property-decorator'
 import { goldenChild } from './roles'
 import { Dictionary } from './utils.js'
 
@@ -20,13 +20,21 @@ export default class glComponent extends goldenChild {
 	toggleMaximise() {
 		this.container && this.container.toggleMaximise();
 	}
-	initialState(config: Dictionary) {}
 	
+	initialState(config: Dictionary) {
+		this.$emit('load-state', config.componentState);
+	}
+	// State object available to vue objects
+	@Model('load-state', {default: null}) state: Dictionary
+	@Watch('state', {deep: true}) innerStateChanged() {
+		this.glObject.emitBubblingEvent('stateChanged');
+	}
 	getChildConfig() : any {
 		return {
 			type: 'component',
 			isClosable: this.closable,
 			reorderEnabled: this.reorderEnabled,
+			componentState: this.state
 		};
 	}
 }

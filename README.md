@@ -92,6 +92,10 @@ Component are described *by extension* - namely, by giving their content using t
 </gl-component>
 ```
 
+#### Model
+
+Component' model is an *object* that will be saved and retrieved in the golden-layout entire state.
+
 ## Saving/restoring states
 
 > TL;DR: The state is the model of the golden-layout object
