@@ -21,20 +21,11 @@ export default class glComponent extends goldenChild {
 		this.container && this.container.toggleMaximise();
 	}
 	
-	initialState(config: Dictionary) {
-		this.$emit('load-state', config.componentState);
-	}
-	// State object available to vue objects
-	@Model('load-state', {default: null}) state: Dictionary
-	@Watch('state', {deep: true}) innerStateChanged() {
-		this.glObject.emitBubblingEvent('stateChanged');
-	}
 	getChildConfig() : any {
 		return {
 			type: 'component',
 			isClosable: this.closable,
-			reorderEnabled: this.reorderEnabled,
-			componentState: this.state
+			reorderEnabled: this.reorderEnabled
 		};
 	}
 }

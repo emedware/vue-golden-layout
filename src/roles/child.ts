@@ -1,7 +1,8 @@
-import { Component, Prop, Watch, Inject } from 'vue-property-decorator'
+import { Component, Prop, Watch, Inject, PropSync } from 'vue-property-decorator'
 import { xInstanceOf, statusChange } from '../utils'
 import { goldenContainer, goldenItem } from "./index"
 import goldenLayout from "../golden"
+import { Dictionary } from '../utils.js'
 
 @Component
 export class goldenChild extends goldenItem {
@@ -113,6 +114,13 @@ export class goldenChild extends goldenItem {
 	get nodePath() {
 		return this.vueParent.childPath(this.childMe);
 	}
+
+	// State object available to vue objects
+	@PropSync('state', {default: null}) syncedState: Dictionary
+	@Watch('state', {deep: true}) innerStateChanged() {
+		this.glObject.emitBubblingEvent('stateChanged');
+	}
+
 	mounted() {
 		var dimensions: any = {};
 		if(undefined!== this.width) dimensions.width = this.width;
@@ -125,7 +133,8 @@ export class goldenChild extends goldenItem {
 				isClosable: this.rootProp('closable'),
 				reorderEnabled: this.rootProp('reorderEnabled'),
 				title: childConfig.title||this.givenProp('title'),
-				vue: this.nodePath
+				vue: this.nodePath,
+				componentState: this.syncedState
 			}, this);
 	}
 	destroyed() {

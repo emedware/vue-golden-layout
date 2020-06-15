@@ -259,6 +259,9 @@ export default class goldenLayout extends goldenContainer {
 				}
 				if(itm.vueObject.initialState)
 					itm.vueObject.initialState(itm.config);
+				//Q&D: This should be done in roles/child.ts, but inheritance does not rhyme with Vue
+				itm.vueObject.syncedState = itm.config.componentState;
+
 				if(itm.vueObject.$emit)
 					forwardEvt(itm, itm.vueObject, itemEvents);
 				var color = itm.vueObject.childMe && itm.vueObject.childMe.tabColor;
