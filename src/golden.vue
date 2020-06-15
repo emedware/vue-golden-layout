@@ -26,8 +26,12 @@ import * as $ from 'jquery'
 export type globalComponent = (gl: goldenLayout, container: any, state: any)=> void;
 var globalComponents: Dictionary<globalComponent> = {};
 
+// https://github.com/rpkilby/vue-nonreactive/
 function unobserve(obj: any, key: string = 'prototype') {
-	obj[key]._isVue = true;
+	const Observer = (new Vue()).$data
+                                .__ob__
+                                .constructor;
+	obj.__ob__ = new Observer({});
 }
 
 unobserve(GoldenLayout);
