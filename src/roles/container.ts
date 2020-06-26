@@ -9,6 +9,7 @@ import { genericTemplate } from '../golden.vue'
 			vm.groupColor = allocateColor();
 		else if(vm.belongGroupColor)
 			vm.groupColor = vm.belongGroupColor;
+		return {}
 	}
 }]})
 export class goldenContainer extends goldenItem {
