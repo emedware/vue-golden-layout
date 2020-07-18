@@ -1,5 +1,5 @@
 <template>
-	<gl-row id="lr-col">
+	<gl-row id="lr-row">
 		<gl-dstack>
 			<gl-component title="Master" :closable="false" :reorderEnabled="false">
 				<p-head :title="$route.meta.title" />

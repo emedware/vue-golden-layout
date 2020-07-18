@@ -17,7 +17,7 @@ module.exports = {
 		new HtmlWebpackPlugin({
 			template: path.resolve(__dirname, './index.ejs'),
 			favicon: path.resolve(__dirname, './favicon.ico'),
-			title: 'vue-golden-layout'
+			title: 'vue-golden-layout-demo'
 		}),
 		new VueLoader.VueLoaderPlugin()
 	],

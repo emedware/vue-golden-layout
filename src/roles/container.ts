@@ -22,7 +22,7 @@ export class goldenContainer extends goldenItem {
 	watchComputeChildrenPath: number = 0
 	computeChildrenPath() { ++this.watchComputeChildrenPath; }
 	childPath(comp: goldenChild): string {
-		this.watchComputeChildrenPath;
+		this.computeChildrenPath();
 		var rv = this.childMe.nodePath?`${this.childMe.nodePath}.`:'';
 		var ndx = this.vueChildren().indexOf(comp);
 		console.assert(!!~ndx, 'Child exists');
