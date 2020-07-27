@@ -99,7 +99,7 @@ export class goldenChild extends goldenItem {
 	delete() {
 		if(!statusChange.unloading && !this._isDestroyed) {	// If unloading, it might persist corrupted data
 			this.$parent.computeChildrenPath()
-			this.$emit('destroy', this);
+			//this.$emit('destroy', this); //Already emited as a forward-event.
 			this.$destroy();
 		}
 	}
