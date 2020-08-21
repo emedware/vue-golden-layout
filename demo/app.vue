@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<button class="reset" @click="reset">Reset localStorage</button>
-		<golden-layout class="hscreen" v-model="state">
+		<golden-layout class="hscreen" v-model="state" @creation-error="reset">
 			<gl-col :closable="false">
 				<gl-router empty-route="/a" :routes="routes">
 					<template slot="route" slot-scope="{ meta }">
