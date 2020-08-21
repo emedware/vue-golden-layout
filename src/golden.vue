@@ -23,6 +23,14 @@ import * as resize from 'vue-resize-directive'
 import { isSubWindow, Dictionary, Semaphore, newSemaphore, statusChange, localWindow, isDragging } from './utils'
 import * as $ from 'jquery'
 
+export class CreationError extends Error {
+	inner: Error
+	constructor(inner: Error) {
+		super();
+		this.inner = inner;
+	}
+}
+
 export type globalComponent = (gl: goldenLayout, container: any, state: any)=> void;
 var globalComponents: Dictionary<globalComponent> = {};
 
@@ -195,10 +203,15 @@ export default class goldenLayout extends goldenContainer {
 			else {
 				gl.registerComponent(genericTemplate, 
 					(container: any, state: any)=> {
-						var component = this.getSubChild(container._config.vue)
-						container.getElement().append(component.$el);
-						forwardEvt(container, component, componentEvents);
-						component.container = container;
+						try {
+							var component = this.getSubChild(container._config.vue)
+							container.getElement().append(component.$el);
+							forwardEvt(container, component, componentEvents);
+							component.container = container;
+						} catch(x) {
+							this.$emit('creation-error', x);
+							throw new CreationError(x)
+						}
 					});
 				// Register global components given by other vue-components
 				for(var tpl in globalComponents)
@@ -217,7 +230,7 @@ export default class goldenLayout extends goldenContainer {
 						var config;
 						try {
 							//gl.toConfig() raise exceptions when opening a popup
-							//it allso raise a 'stateChanged' event when closing a popup => inf call
+							//it also raise a 'stateChanged' event when closing a popup => inf call
 							config = gl.toConfig();
 						}
 						catch(e) {
@@ -236,7 +249,7 @@ export default class goldenLayout extends goldenContainer {
 					var config;
 					try {
 						//gl.toConfig() raise exceptions when opening a popup
-						//it allso raise a 'stateChanged' event when closing a popup => inf call
+						//it also raise a 'stateChanged' event when closing a popup => inf call
 						config = gl.toConfig();
 					}
 					catch(e) {}

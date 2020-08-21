@@ -25,8 +25,8 @@
 		"build": "webpack --config demo/webpack.config.js",
 		"demo": "webpack-dev-server --config demo/webpack.config.js"
 	},
-	"repository": "github:eddow/vue-golden-layout.git",
-	"author": "fmdm",
+	"repository": "github:emedware/vue-golden-layout.git",
+	"author": "emedware",
 	"license": "ISC",
 	"devDependencies": {
 		"@types/core-js": "^2.5.3",
@@ -69,7 +69,7 @@
 		"vue": "^2.6.11"
 	},
 	"bugs": {
-		"url": "https://github.com/eddow/vue-golden-layout/issues"
+		"url": "https://github.com/emedware/vue-golden-layout/issues"
 	},
-	"homepage": "https://github.com/eddow/vue-golden-layout"
+	"homepage": "https://github.com/emedware/vue-golden-layout"
 }
