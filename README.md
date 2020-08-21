@@ -108,6 +108,7 @@ Notes:
 - The event `state` gives indeed the minified version of the config, and the expanded version as a second argument.
 - It is also the `v-model` of the `golden-layout`
 - In order to reload a state, the Vue object structure must corresp to the state it be applied to
+  - If there is a miss-match between the Vue object structure and the state, the `golden-layout` object `creation-error` event will be raised
 
 ### Sub-object states
 
