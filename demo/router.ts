@@ -19,7 +19,7 @@ for(let l of letters) {
 }
 
 export default new VueRouter({
-	mode: 'history',
+	mode: 'hash',
 	routes
 })
 Vue.use(VueRouter);

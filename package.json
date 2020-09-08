@@ -23,7 +23,8 @@
 	"scripts": {
 		"prepack": "webpack",
 		"build": "webpack --config demo/webpack.config.js",
-		"demo": "webpack-dev-server --config demo/webpack.config.js"
+		"demo": "webpack-dev-server --config demo/webpack.config.js",
+		"build-demo": "webpack --config demo/webpack.config.js"
 	},
 	"repository": "github:emedware/vue-golden-layout.git",
 	"author": "emedware",
