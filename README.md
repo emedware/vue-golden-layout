@@ -38,6 +38,8 @@ Note: each component who is not rendered in a stack will indeed be rendered in a
 
 ### Bigger example
 
+> Demo available [here](https://rawcdn.githack.com/emedware/vue-golden-layout/master/demo/dist/index.html)
+
 A more complex exemple is in the project when git-cloned.
 In order to test, the static sample application can be compiled like this:
 
@@ -48,7 +50,7 @@ npm run demo
 
 You can now browse `http://localhost:9000`
 
-The example can also be found in the sources under the '/demo' folder
+The example can be found in the sources under the '/demo' folder
 
 ## Usage
 
