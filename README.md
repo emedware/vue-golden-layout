@@ -3,7 +3,7 @@
 
 [![npm](https://img.shields.io/npm/v/vue-golden-layout.svg)](https://www.npmjs.com/package/vue-golden-layout)
 [![NPM downloads](https://img.shields.io/npm/dm/vue-golden-layout.svg?style=flat)](https://npmjs.org/package/vue-golden-layout)
-[![Known Vulnerabilities](https://snyk.io/test/github/eddow/vue-golden-layout/badge.svg)](https://snyk.io/test/github/eddow/vue-golden-layout)
+[![Known Vulnerabilities](https://snyk.io/test/github/emedware/vue-golden-layout/badge.svg)](https://snyk.io/test/github/emedware/vue-golden-layout)
 [![codebeat badge](https://codebeat.co/badges/8fb41a11-58bd-4f6f-948b-5ac12ec59b5b)](https://codebeat.co/projects/github-com-eddow-vue-golden-layout-master)
 
 Integration of the golden-layout to Vue
@@ -101,7 +101,7 @@ Component are described *by extension* - namely, by giving their content using t
 The `golden-layout` has a *property* and an *event* named `state`.
 
 - The event is triggered when the state has changed (even deeply, like a deep watch).
-- The property is used [**at mount**](https://github.com/eddow/vue-golden-layout/issues/20#issuecomment-433828678) to initialise the configuration. After that, any change will have no effect.
+- The property is used [**at mount**](https://github.com/emedware/vue-golden-layout/issues/20#issuecomment-433828678) to initialise the configuration. After that, any change will have no effect.
 - The `state` property can be a `Promise`, then the golden-layout will be rendered only when the `Promise` has been resolved.
 
 Notes:

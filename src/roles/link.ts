@@ -1,12 +1,13 @@
 import { Component } from 'vue-property-decorator'
-import { goldenContainer, goldenChild, goldenItem } from "./index"
+import { goldenContainer } from './container'
+import { goldenChild } from "./child"
+import { goldenItem } from "./item"
 import goldenLayout from "../golden"
 
 @Component({mixins: [goldenContainer]})
 export class goldenLink extends goldenChild implements goldenContainer {
 	// declaration of goldenContainer properties
 	destroyed: ()=> void
-	readonly definedVueComponent: goldenContainer
 	config: any
 	layout: goldenLayout
 	childPath:(comp: goldenChild)=> string

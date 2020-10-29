@@ -31,7 +31,6 @@ type VueComponent = ComponentOptions<Vue> | typeof Vue | AsyncComponent;
 })
 export default class glRoute extends glRouteBase {
 	closable: boolean
-	location: Location
 	@Prop({default: 'Loading'}) loading: string
 	type: string|null = null
 	component: VueComponent

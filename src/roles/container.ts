@@ -15,7 +15,7 @@ import { genericTemplate } from '../golden.vue'
 export class goldenContainer extends goldenItem {
 	@Provide() groupColor: string|null
 	@Prop({default: false}) colorGroup: boolean
-	readonly definedVueComponent: goldenContainer
+	get definedVueComponent(): goldenContainer { throw 'Not overriden'; }
 	config: any = {
 		content: []
 	}

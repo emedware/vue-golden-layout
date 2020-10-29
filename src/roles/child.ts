@@ -1,8 +1,7 @@
 import { Component, Prop, Watch, Inject, PropSync } from 'vue-property-decorator'
-import { xInstanceOf, statusChange } from '../utils'
+import { Dictionary, xInstanceOf, statusChange } from '../utils'
 import { goldenContainer, goldenItem } from "./index"
-import goldenLayout from "../golden"
-import { Dictionary } from '../utils.js'
+import goldenLayout from '../golden'
 
 @Component
 export class goldenChild extends goldenItem {
@@ -116,7 +115,7 @@ export class goldenChild extends goldenItem {
 	}
 
 	// State object available to vue objects
-	@PropSync('state', {default: null}) syncedState: Dictionary
+	@PropSync('state', {default: ()=> ({})}) syncedState: Dictionary
 	@Watch('state', {deep: true}) innerStateChanged() {
 		this.glObject.emitBubblingEvent('stateChanged');
 	}

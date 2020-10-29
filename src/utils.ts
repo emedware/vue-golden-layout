@@ -125,3 +125,25 @@ window.addEventListener('beforeunload', ()=> { statusChange.unloading = true; })
 export function isDragging(): boolean {
 	return $('body').hasClass('lm_dragging');
 }
+function enumerable(e: boolean) {
+	//https://stackoverflow.com/questions/40930251/how-to-create-a-typescript-enumerablefalse-decorator-for-a-property
+	const rv: {
+		(target: any, name: string): void;
+		(target: any, name: string, desc: PropertyDescriptor): PropertyDescriptor;
+	} = (target: any, name: string, desc?: any) => {
+		if(desc) {
+			desc.enumerable = e;
+			return desc;
+		}
+		Object.defineProperty(target, name,  {
+			set(value) {
+				Object.defineProperty(this, name, {
+					value, enumerable: e, writable: true, configurable: true,
+				});
+			},
+			enumerable: e,
+			configurable: true,
+		});
+	};
+	return rv;
+}

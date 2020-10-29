@@ -3,10 +3,11 @@ import { goldenLink } from '../roles'
 import { defaultTitler } from './utils'
 import VueRouter, { Location, Route } from 'vue-router';
 
+// TODO 2 route-base created for each route
 @Component
 export default class glRouteBase extends goldenLink {
 	$router: VueRouter
-	$route: Route	
+	$route: Route
 	@Prop() path: string
 	@Prop() name: string
 	@Prop({default: false}) closable: boolean
@@ -21,6 +22,11 @@ export default class glRouteBase extends goldenLink {
 	
 	get location(): Location {
 		console.assert(!!this.name || !!this.path, 'At least one route specification - `name` or `path` is given.');
+		if(!this.syncedState.path && !this.syncedState.name) {
+			// TODO Find out why this is necessary
+			this.syncedState.name = this.name;
+			this.syncedState.path = this.path;
+		}
 		var rv: Location = {};
 		if(this.name) rv.name = this.name;
 		if(this.path) rv.path = this.path;
