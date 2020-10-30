@@ -12,7 +12,8 @@ export class goldenLink extends goldenChild implements goldenContainer {
 	layout: goldenLayout
 	childPath:(comp: goldenChild)=> string
 	getChild: (path: string)=> goldenChild
-	readonly glChildrenTarget: any
+	//readonly glChildrenTarget: any
+	get glChildrenTarget() { return this.glObject; }
 	addGlChild: (child : any, comp : any)=> void
 	readonly glChildren: goldenChild[]
 	vueChild: (child: number)=> goldenChild

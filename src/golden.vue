@@ -138,7 +138,11 @@ export default class goldenLayout extends goldenContainer {
 		return newSemaphore();
 	}
 	get definedVueComponent() { return this; }
-	@Provide() get layout() { return this; }
+	@Provide() layout: goldenLayout
+	constructor() {
+		super();
+		this.layout = this;
+	}
 	@Provide() groupColor: string|null = null
 	
 	getSubChild(path: string): goldenChild {
