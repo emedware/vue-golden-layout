@@ -117,7 +117,8 @@ export class goldenChild extends goldenItem {
 	// State object available to vue objects
 	@PropSync('state', {default: ()=> ({})}) syncedState: Dictionary
 	@Watch('state', {deep: true}) innerStateChanged() {
-		this.glObject.emitBubblingEvent('stateChanged');
+		if(this.glObject)
+			this.glObject.emitBubblingEvent('stateChanged');
 	}
 
 	mounted() {

@@ -56,7 +56,7 @@ interface slotComponent {
 	content: any
 }
 
-const componentEvents = ['open', 'destroy', 'close', 'tab', 'hide', 'show', 'resize'];
+const componentEvents = ['open', 'destroy', 'close', 'tab', 'hide', 'show', 'resize', 'showed'];
 const itemEvents = ['stateChanged', 'titleChanged', 'activeContentItemChanged', 'beforeItemDestroyed', 'itemDestroyed', 'itemCreated'];
 const layoutEvents = ['itemCreated', 'stackCreated', 'rowCreated', 'tabCreated', 'columnCreated', 'componentCreated',
 	'selectionChanged', 'windowOpened', 'windowClosed', 'itemDestroyed', 'initialised', 'activeContentItemChanged'];

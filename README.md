@@ -6,6 +6,8 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/emedware/vue-golden-layout/badge.svg)](https://snyk.io/test/github/emedware/vue-golden-layout)
 [![codebeat badge](https://codebeat.co/badges/8fb41a11-58bd-4f6f-948b-5ac12ec59b5b)](https://codebeat.co/projects/github-com-eddow-vue-golden-layout-master)
 
+[![Rate on Openbase](https://badges.openbase.io/js/rating/vue-golden-layout.svg)](https://openbase.io/js/vue-golden-layout?utm_source=embedded&utm_medium=badge&utm_campaign=rate-badge)
+
 Integration of the golden-layout to Vue
 
 ## Installation
