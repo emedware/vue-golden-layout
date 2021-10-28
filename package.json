@@ -55,7 +55,7 @@
 		"vue-template-es2015-compiler": "^1.9.1",
 		"webpack": "^4.44.2",
 		"webpack-cli": "^4.1.0",
-		"webpack-dev-server": "^3.11.0",
+		"webpack-dev-server": "^4.4.0",
 		"webpack-dev-server-status-bar": "^1.1.2",
 		"webpack-node-externals": "^2.5.2"
 	},
