@@ -2,11 +2,10 @@
 # vue-golden-layout
 
 [![npm](https://img.shields.io/npm/v/vue-golden-layout.svg)](https://www.npmjs.com/package/vue-golden-layout)
-[![NPM downloads](https://img.shields.io/npm/dm/vue-golden-layout.svg?style=flat)](https://npmjs.org/package/vue-golden-layout)
-[![Known Vulnerabilities](https://snyk.io/test/github/emedware/vue-golden-layout/badge.svg)](https://snyk.io/test/github/emedware/vue-golden-layout)
-[![codebeat badge](https://codebeat.co/badges/8fb41a11-58bd-4f6f-948b-5ac12ec59b5b)](https://codebeat.co/projects/github-com-eddow-vue-golden-layout-master)
+[![Not Maintained](https://img.shields.io/badge/Maintenance%20Level-Not%20Maintained-yellow.svg)](https://gist.github.com/cheerfulstoic/d107229326a01ff0f333a1d3476e068d)
 
-[![Rate on Openbase](https://badges.openbase.io/js/rating/vue-golden-layout.svg)](https://openbase.io/js/vue-golden-layout?utm_source=embedded&utm_medium=badge&utm_campaign=rate-badge)
+_DEPRECATED_: The project is not maintained anymore. A new version for Vue3 has been begun here : https://github.com/emedware/v3-gl-ext
+
 
 Integration of the golden-layout to Vue
 
@@ -348,4 +347,4 @@ Each vue object has a `glObject` property and, vice versa, each golden-layout ob
 
 Vue objects (rows, components, stacks, ...) all have a `$parent` that retrieve their Vue' parent. Also their children might be retrieved with `$children`.
 
-Though, the user might change the order of things and who contain what. To retrieve the golden-layout-wise hierarchy, we can use `glParent` as well as `glChindren` on the vue objects to retrieve vue objects.
+Though, the user might change the order of things and who contain what. To retrieve the golden-layout-wise hierarchy, we can use `glParent` as well as `glChildren` on the vue objects to retrieve vue objects.
